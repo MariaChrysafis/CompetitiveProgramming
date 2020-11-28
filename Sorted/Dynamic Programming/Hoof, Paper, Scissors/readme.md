@@ -2,7 +2,7 @@ Let our moves be represented in the 0-indexed array arr.
 
 This is clearly a dynamic programming problem. If this isn't immediately obvious, then work through the case when K = 1 (in fact, this is the silver version of the problem, which uses prefix sums). 
 
-Let's try to find the state. It would probably be useful to know how far into the game we are. That is, we need to know how many moves in we are, which can be anything from 0 to N. We also probably want to know how many times we've switched our gesture, which can be anything from 0 to K. Lastly, it would be of use to know what our last gesture was.
+Let's try to find the state. It would probably be useful to know how far into the game we are. That is, we need to know how many moves in we are, which can be anything from 0 to N. We also probably want to know how many times we've switched our gesture, which can be anything from 0 to K. Lastly, it would be of use to know what our last gesture was. So our state holds the number of moves in we are, how many gestures changes we've made, and our last move.
 
 We've found our state. Let DP[i][j][k] represent the maximum number of games Bessie can win if we've changed gestures i times, we're j moves in, and our last move is k. Note that k is a number, so let's map H, P, S to a number(1). Our mapping doesn't really matter; that is, so long as H,P,S are distinct numbers from 0 to 2, we're fine.
 
