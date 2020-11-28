@@ -8,7 +8,7 @@ We've found our state. Let DP[i][j][k] represent the maximum number of games Bes
 
 Let's work with the edge cases: dp[0][0][k] is clearly 0. When j = 0, we know that we've made 0 changes to our gesture; we can easily calculate that. If i = 0, then dp[i][j][k] = 0.
 
-Now, onto the meat of the problem: the transitions. DP[i][j][k] can be equal to DP[i][j - 1][k] + (k beats arr[j - 1]). This is basically saying that we can always continue down the same path as before and keep the same move we did the previous time. But what if we want to change moves? Let's say we want to change our move from k1 to k. Then, DP[i][j][k] = DP[i - 1][j - 1][k1] + (k1 beats arr[j - 1]). We can say the same thign if we want to change our move from k2 to k.
+Now, onto the meat of the problem: the transitions. DP[i][j][k] can be equal to DP[i][j - 1][k] + (k beats arr[j - 1]). This is basically saying that we can always continue down the same path as before and keep the same move we did the previous time. But what if we want to change moves? Let's say we want to change our move from k1 to k. Then, DP[i][j][k] = DP[i - 1][j - 1][k1] + (k1 beats arr[j - 1]). We can say the same thing if we want to change our move from k2 to k.
 
 And that's all.
 
