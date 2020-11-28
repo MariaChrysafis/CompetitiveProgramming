@@ -6,7 +6,7 @@ Let's try to find the state. It would probably be useful to know how far into th
 
 We've found our state. Let DP[i][j][k] represent the maximum number of games Bessie can win if we've changed gestures i times, we're j moves in, and our last move is k. Note that k is a number, so let's map H, P, S to a number(1). Our mapping doesn't really matter; that is, so long as H,P,S are distinct numbers from 0 to 2, we're fine.
 
-Let's work with the edge cases: dp[0][0][k] is clearly 0. When j = 0, we know that we've made 0 changes to our gesture; we can easily calculate that. If i = 0, then dp[i][j][k] = 0.
+Let's work with the edge cases: DP[0][0][k] is clearly 0. When j = 0, we know that we've made 0 changes to our gesture; we can easily calculate that. If i = 0, then DP[i][j][k] = 0.
 
 Now, onto the meat of the problem: the transitions. DP[i][j][k] can be equal to DP[i][j - 1][k] + (k beats arr[j - 1]). This is basically saying that we can always continue down the same path as before and keep the same move we did the previous time. But what if we want to change moves? Let's say we want to change our move from k1 to k. Then, DP[i][j][k] = DP[i - 1][j - 1][k1] + (k1 beats arr[j - 1]). We can say the same thing if we want to change our move from k2 to k.
 
