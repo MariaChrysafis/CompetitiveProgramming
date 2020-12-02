@@ -1,13 +1,3 @@
-/*
-   REMINDERS TO SELF:
-   - think becore implementing
-   - CF likes to troll with long long vs ll stuff
-   - a crazy person repeats teh same the same result
-   - don't create unneeded edge cases
-   - nutella
-*/
-// Created by Maria Chrysafis
-
 /* Include all headers */
 #include <iostream>
 #include <string>
