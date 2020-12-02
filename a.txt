@@ -1,1 +1,0 @@
-Each organism has a carrying capacity - in other words, the number of organiomo a place can support without "overflowing". We have a carrying capacity because resources are limited. For example, if we have too many plants, there may not be enough water to support them. What,s natural 
