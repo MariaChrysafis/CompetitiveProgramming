@@ -1,13 +1,3 @@
-/*
-   REMINDERS TO SELF:
-   - think before implementing
-   - CF likes to troll with long long vs int stuff
-   - a crazy person repeats the same thing expecting the same result
-   - don't create unneeded edge cases
-   - nutella
-*/
-// Created by Maria Chrysafis
-//Time: $%Y%$-$%M%$-$%D%$ $%h%$:$%m%$:$%s%$
 /* Include all headers */
 #include <iostream>
 #include <string>
