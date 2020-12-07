@@ -1,26 +1,26 @@
-#include <iostream>
-#include <string>
-#include <vector>
 #include <algorithm>
-#include <sstream>
-#include <queue>
-#include <deque>
 #include <bitset>
-#include <iterator>
-#include <list>
-#include <stack>
-#include <map>
-#include <set>
-#include <functional>
-#include <numeric>
-#include <utility>
-#include <limits>
-#include <cstdio>
 #include <cmath>
+#include <cstdio>
+#include <deque>
+#include <functional>
+#include <iostream>
+#include <iterator>
+#include <limits>
+#include <list>
+#include <map>
+#include <numeric>
+#include <queue>
+#include <set>
+#include <sstream>
+#include <stack>
+#include <string>
+#include <utility>
+#include <vector>
 const int INF = 100000;
 using namespace std;
-pair<int, int> step[] = {{0, -1}, {0, 1}, {-1, 0}, {1, 0},
-              {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
+pair<int, int> step[] = {{0, -1},  {0, 1},  {-1, 0}, {1, 0},
+                         {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
 vector<vector<char> > board;
 vector<vector<char> > identity;
 void print(vector<vector<char> > v) {
@@ -28,7 +28,9 @@ void print(vector<vector<char> > v) {
   cout << " +-----------------+" << endl;
   for (int i = 0; i < 8; i++) {
     cout << i << "| ";
-    for (int j = 0; j < 8; j++) { cout << v[i][j] << " "; }
+    for (int j = 0; j < 8; j++) {
+      cout << v[i][j] << " ";
+    }
     cout << "|";
     cout << endl;
   }
@@ -131,7 +133,6 @@ vector<vector<char> > move(int i, int j, char c, vector<vector<char> > arr) {
     }
   }
   if (orig == arr) {
-
     return {{}};
   }
   return arr;
@@ -163,7 +164,6 @@ pair<int, int> child(char c) {
   pair<int, int> optimal = {-1, -1};
   for (int i = 0; i < 8; i++) {
     for (int j = 0; j < 8; j++) {
-
       if (board[i][j] != '.') continue;
       new_board = move(i, j, c, board);
       if (new_board.size() != 8) {
@@ -181,10 +181,14 @@ pair<int, int> child(char c) {
   return optimal;
 }
 int main() {
-  ios_base::sync_with_stdio(0); cin.tie(0); board.resize(8);
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  board.resize(8);
   for (int i = 0; i < 8; i++) {
     board[i].resize(8);
-    for (int j = 0; j < 8; j++) { board[i][j] = '.'; }
+    for (int j = 0; j < 8; j++) {
+      board[i][j] = '.';
+    }
   }
   board[4][4] = 'b';
   board[3][4] = 'w';
@@ -194,7 +198,6 @@ int main() {
   cin >> c;
 
   if (c == 'w') {
-
     int x = 64;
     while (x--) {
       pair<int, int> p = child('b');
