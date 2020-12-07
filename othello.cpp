@@ -17,30 +17,18 @@
 #include <limits>
 #include <cstdio>
 #include <cmath>
-#define pii pair<int, int>
-#define pb push_back
-#define pf push_front
-#define ll long long
-#define vvc vector<vector<char> >
-#define mp make_pair
-#define REP(i, a) for (int i = 0; i < a; i++)
-#define FOR(i, a, b) for (int i = a; i < b; i++)
-#define trav(a, x) for (auto& a : x)
-#define IO                      \
-  ios_base::sync_with_stdio(0); \
-  cin.tie(0);
 const int INF = 100000;
 using namespace std;
-pii step[] = {{0, -1},  {0, 1},  {-1, 0}, {1, 0},
+pair<int, int> step[] = {{0, -1}, {0, 1}, {-1, 0}, {1, 0},
               {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
-vvc board;
-vvc identity;
-void print(vvc v) {
+vector<vector<char> > board;
+vector<vector<char> > identity;
+void print(vector<vector<char> > v) {
   cout << "   0 1 2 3 4 5 6 7" << endl;
   cout << " +-----------------+" << endl;
-  REP(i, 8) {
+  for (int i = 0; i < 8; i++) {
     cout << i << "| ";
-    REP(j, 8) { cout << v[i][j] << " "; }
+    for (int j = 0; j < 8; j++) { cout << v[i][j] << " "; }
     cout << "|";
     cout << endl;
   }
@@ -52,28 +40,20 @@ bool valid(int i, int j) { return (i >= 0 && j >= 0 && i < 8 && j < 8); }
 if (c == 'w') return 'b';
 return 'w';
 }
-int get_rate(vvc arr, char c) {
-  /*
-   Gives the rating of the current game board arr if we're color c
-*/
-  // higher the rating the better
+int get_rate(vector<vector<char> > arr, char c) {
   int rating = 0;
-  REP(i, arr.size()) {
-    REP(j, arr.size()) {
+  for (int i = 0; i < arr.size(); i++) {
+    for (int j = 0; j < arr.size(); j++) {
       if (arr[i][j] == c) rating--;
     }
   }
   return rating;
 }
-vector<vector<char> > move(int i, int j, char c, vvc arr) {
-  /*
-   * Outputs the game board position after somebody hath moved
-   * Color c moves to (i,j) and arr is original game board
-*/
+vector<vector<char> > move(int i, int j, char c, vector<vector<char> > arr) {
   arr[i][j] = c;
-  vvc orig = arr;
+  vector<vector<char> > orig = arr;
   bool okay = false;
-  trav(p, step) {
+  for (auto& p : step) {
     if (valid(i + p.first, j + p.second) &&
         arr[i + p.first][j + p.second] != '.') {
       okay = true;
@@ -151,17 +131,17 @@ vector<vector<char> > move(int i, int j, char c, vvc arr) {
     }
   }
   if (orig == arr) {
-    // then there's an issue
+
     return {{}};
   }
   return arr;
 }
-vvc grandchild(char c, vvc orig_board) {
-  vvc new_board = orig_board;
-  vvc worst_board;
+vector<vector<char> > grandchild(char c, vector<vector<char> > orig_board) {
+  vector<vector<char> > new_board = orig_board;
+  vector<vector<char> > worst_board;
   int myMin = INF;
-  REP(i, 8) {
-    REP(j, 8) {
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 8; j++) {
       if (orig_board[i][j] != '.') continue;
       new_board = move(i, j, c, orig_board);
       if (new_board.size() != 8) {
@@ -177,34 +157,34 @@ vvc grandchild(char c, vvc orig_board) {
   }
   return worst_board;
 }
-pii child(char c) {
-  vvc new_board = board;
+pair<int, int> child(char c) {
+  vector<vector<char> > new_board = board;
   int myMax = -INF;
-  pii optimal = {-1, -1};
-  REP(i, 8) {
-    REP(j, 8) {
-      // check if moving here is valid
+  pair<int, int> optimal = {-1, -1};
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 8; j++) {
+
       if (board[i][j] != '.') continue;
       new_board = move(i, j, c, board);
       if (new_board.size() != 8) {
         new_board = board;
         continue;
       }
-      // cout << i << " " << j << endl;
-      vvc pos = grandchild(op(c), new_board);
+
+      vector<vector<char> > pos = grandchild(op(c), new_board);
       if (get_rate(pos, c) > myMax) {
         myMax = get_rate(pos, c);
-        optimal = mp(i, j);
+        optimal = make_pair(i, j);
       }
     }
   }
   return optimal;
 }
 int main() {
-  IO board.resize(8);
-  REP(i, 8) {
+  ios_base::sync_with_stdio(0); cin.tie(0); board.resize(8);
+  for (int i = 0; i < 8; i++) {
     board[i].resize(8);
-    REP(j, 8) { board[i][j] = '.'; }
+    for (int j = 0; j < 8; j++) { board[i][j] = '.'; }
   }
   board[4][4] = 'b';
   board[3][4] = 'w';
@@ -212,12 +192,12 @@ int main() {
   board[4][3] = 'w';
   char c;
   cin >> c;
-  // board[3][3] = 'b';
+
   if (c == 'w') {
-    // we are white we not start
+
     int x = 64;
     while (x--) {
-      pii p = child('b');
+      pair<int, int> p = child('b');
       cout << p.first << " " << p.second << endl;
       board = move(p.first, p.second, 'b', board);
       print(board);
@@ -237,7 +217,7 @@ int main() {
       board = move(a, b, 'b', board);
       print(board);
       cout << endl;
-      pii p = child('w');
+      pair<int, int> p = child('w');
       cout << p.first << " " << p.second << endl;
       board = move(p.first, p.second, 'w', board);
       cout << endl;
