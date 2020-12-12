@@ -15,7 +15,7 @@ public:
             spec1 = (n + m - 1)/2;
         }
         double sum = 0;
-        for(int i = 0; i < n + m; i++){
+        for(int i = 0; i <= (n + m)/2; i++){
             bool l1 = false;
             if(loc2 == m){
                 v.push_back(nums1[loc1]);
