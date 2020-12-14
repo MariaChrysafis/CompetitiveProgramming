@@ -1,6 +1,9 @@
+autocmd VimEnter * hi Normal guibg=NONE ctermbg=NONE .
+
 set nocompatible              " be iMproved, required
 filetype off                  " required
-
+set pythonthreehome=/path/to/Library/Frameworks/Python.framework/Versions/3.X
+set pythonthreedll=/path/to/Library/Frameworks/Python.framework/Versions/3.X/lib/libpython3.Xm.dylib
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -15,12 +18,14 @@ Plugin 'joshdick/onedark.vim'
 Plugin 'sheerun/vim-polyglot'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'arecarn/crunch.vim'
+Plugin 'vim-airline/vim-airline'
+Plugin 'chrisbra/vim-autosave'
+Plugin 'preservim/nerdtree'
 call vundle#end()            " required
 filetype plugin indent on    " required
-colorscheme darkblue
+colorscheme onedark
 
 filetype off
-
 autocmd BufNewFile,BufRead *.cpp set formatprg=astyle\ -T4pb
 
 augroup templates
@@ -28,7 +33,6 @@ augroup templates
   " Check Directory for template files
   autocmd BufNewFile *.* silent! execute '0r ~/.vim/templates/skeleton.'.expand("<afile>:e")
 augroup END
-
 set nocompatible              " be iMproved, required
 filetype off                  " required
 set nowrap
