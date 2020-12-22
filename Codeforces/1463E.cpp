@@ -6,14 +6,8 @@
 #include <unordered_map>
 using namespace std;
 class Solution {
-  const int n, k;
-  uint64_t myTest64Bit;
-  uint32_t myTest32Bit;
-  uint16_t myTest16Bit;
-  uint8_t myTest8Bit;
- 
-  size_t my64BItOther; // Usually 64 bits, depending on the computer
- 
+  const int n
+  cont int k;
   int* arr;
   map<pair<int, int>, int> color;
   vector<int> Color;
@@ -229,24 +223,6 @@ public:
 };
  
 int main() {
-#ifdef MARIA
-  assert(sizeof(size_t) == 4);
-          assert(sizeof(uint32_t) == 4);
-          assert(sizeof(long[2]) == 16);
-          assert(sizeof(int32_t) == 4);
-          assert(sizeof(int16_t) == 2);
-          assert(sizeof(int8_t) == 1);
-          assert(sizeof(char) == 1);
-          assert(sizeof(char *) == 8);
-          assert(sizeof(int *) == 8);
-          assert(sizeof(long *) == 8);
-          assert(sizeof(long long *) == 8);
-          assert(sizeof(char *) == sizeof(size_t));
- 
-          assert((-1 >> 10) == -1);
-          assert((-1 << 1) == -2);
-          assert((256 >> 8) == 1);
-#endif
   ios_base::sync_with_stdio(false);
   cin.tie(NULL);
   int n;
