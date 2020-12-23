@@ -1,12 +1,5 @@
 # Maria's Competitive-Programming
 
-## Logistics
-Contains:
-- USACO Solutions
-- Codeforces Solutions
-- Project Euler Solutions
-- CSES Solutions
-
 ## USACO Contest Scores
 | Contest | Score | Place |
 | ------------ | ---------- | ------------ |
