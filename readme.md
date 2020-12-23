@@ -12,3 +12,9 @@
 
 ## Codeforces Contests Scores
 See [here](https://codeforces.com/contests/with/olympia).
+
+## LeetCode Contest Scores
+| Contest | Problems Solved | Place |
+| ------------ | ---------- | ------------ |
+| Weekly Contest 217 | 3 | 352 |
+| Weekly Contest 219 | 2 | 3134 |
