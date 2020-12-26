@@ -2,7 +2,7 @@
 ## 2020 December
 - [x] 2020 December Silver (Cowntagion)
 - [x] 2020 December Silver (Rectangular Pasture)
-- [ ] 2020 December Silver (Stuck in a Rut)
+- [x] 2020 December Silver (Stuck in a Rut)
 
 # Gold
 ## 2020 December
