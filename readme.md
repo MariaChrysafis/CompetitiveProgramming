@@ -17,6 +17,6 @@ See [here](https://codeforces.com/contests/with/olympia).
 See [here](https://leetcode.com/passionFruitFlower/) for my LeetCode profile.
 | Contest | Problems Solved | Place |
 | ------------ | ---------- | ------------ |
-| Weekly Contest 217 | 3 | 352 |
+| Weekly Contest 217 | 3 | 349 |
 | Weekly Contest 219 | 2 | 3134 |
 | Biweekly Contest 42 | 2 | ? |
