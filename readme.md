@@ -14,6 +14,7 @@
 See [here](https://codeforces.com/contests/with/olympia).
 
 ## LeetCode Contest Scores
+See [here](https://leetcode.com/passionFruitFlower/) for my LeetCode profile.
 | Contest | Problems Solved | Place |
 | ------------ | ---------- | ------------ |
 | Weekly Contest 217 | 3 | 352 |
