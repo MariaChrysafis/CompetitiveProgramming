@@ -18,3 +18,4 @@ See [here](https://codeforces.com/contests/with/olympia).
 | ------------ | ---------- | ------------ |
 | Weekly Contest 217 | 3 | 352 |
 | Weekly Contest 219 | 2 | 3134 |
+| Biweekly Contest 42 | 2 | ? |
