@@ -1,4 +1,8 @@
 # Silver
+## 2019 December
+- [] MooBuzz
+- [] Meetings
+- [] Milk Visits
 ## 2020 December
 - [x] 2020 December Silver (Cowntagion)
 - [x] 2020 December Silver (Rectangular Pasture)
