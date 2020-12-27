@@ -37,15 +37,7 @@ public:
     }
 
     static int iWantABetterName(int x1, int x2, int y1, int y2, pair<int, int> p1) {
-        int x = 0;
-        if (p1.first == x1 || p1.first == x2) {
-            x++;
-        }
-        int y = 0;
-        if (p1.second == y1 || p1.second == y2) {
-            y++;
-        }
-        return x + y;
+        return (p1.second == y1 || p1.second == y2) + (p1.first == x1 || p1.first == x2);
     }
 
     int doubleCount(vector<pair<int, int>> v) {
