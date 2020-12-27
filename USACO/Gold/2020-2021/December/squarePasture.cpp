@@ -11,7 +11,6 @@ using namespace std;
 class Problem3SquarePasture {
 public:
     vector<pair<int, int>> v1;
-
     
     static int min4(int a, int b, int c, int d) {
         return min(min(a, b), min(c, d));
@@ -32,7 +31,6 @@ public:
     static bool comp(pair<int, int> p1, pair<int, int> p2) {
         return p1.second < p2.second;
     }
-
 
     bool inRange(int l, int r, int x) {
         return (x >= l && x <= r);
