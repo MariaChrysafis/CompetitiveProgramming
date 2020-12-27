@@ -12,4 +12,4 @@
 ## 2020 December
 - [ ] 2020 December Gold (Replication)
 - [ ] 2020 December Gold (Bovine Genetics)
-- [ ] 2020 December Gold (Square Pasture)
+- [x] 2020 December Gold (Square Pasture)
