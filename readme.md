@@ -20,3 +20,4 @@ See [here](https://leetcode.com/passionFruitFlower/) for my LeetCode profile.
 | Weekly Contest 217 | 3 | 349 |
 | Weekly Contest 219 | 2 | 3134 |
 | Biweekly Contest 42 | 2 | 2502 |
+| Weekly Contest 221 | 2 | 2652 |
