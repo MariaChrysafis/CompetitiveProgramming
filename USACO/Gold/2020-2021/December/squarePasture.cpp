@@ -1,189 +1,205 @@
-package com.company;
+#include <iostream>
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+#include <iostream>
+#include <map>
+#include <vector>
+#include <algorithm>
+#include <unordered_map>
 
-class Solution {
-    private static class Node {
-        String sub = "";                       // a substring of the input string
-        List<Integer> ch = new ArrayList<>();  // list of child nodes
+using namespace std;
+
+class Problem3SquarePasture {
+public:
+    vector<pair<int, int>> v1;
+
+    static int min4(int a, int b, int c, int d) {
+        return min(min(a, b), min(c, d));
     }
 
-    private static class SuffixTree {
-        private final List<Node> nodes = new ArrayList<>();
-
-        public SuffixTree(String str) {
-            nodes.add(new Node());
-            for (int i = 0; i < str.length(); ++i) {
-                addSuffix(str.substring(i));
-            }
-        }
-
-        private void addSuffix(String suf) {
-            int n = 0;
-            int i = 0;
-            while (i < suf.length()) {
-                char b = suf.charAt(i);
-                List<Integer> children = nodes.get(n).ch;
-                int x2 = 0;
-                int n2;
-                while (true) {
-                    if (x2 == children.size()) {
-                        // no matching child, remainder of suf becomes new node.
-                        n2 = nodes.size();
-                        Node temp = new Node();
-                        temp.sub = suf.substring(i);
-                        nodes.add(temp);
-                        children.add(n2);
-                        return;
-                    }
-                    n2 = children.get(x2);
-                    if (nodes.get(n2).sub.charAt(0) == b) {
-                        break;
-                    }
-                    x2++;
-                }
-                // find prefix of remaining suffix in common with child
-                String sub2 = nodes.get(n2).sub;
-                int j = 0;
-                while (j < sub2.length()) {
-                    if (suf.charAt(i + j) != sub2.charAt(j)) {
-                        // split n2
-                        int n3 = n2;
-                        // new node for the part in common
-                        n2 = nodes.size();
-                        Node temp = new Node();
-                        temp.sub = sub2.substring(0, j);
-                        temp.ch.add(n3);
-                        nodes.add(temp);
-                        nodes.get(n3).sub = sub2.substring(j);  // old node loses the part in common
-                        nodes.get(n).ch.set(x2, n2);
-                        break;  // continue down the trie
-                    }
-                    j++;
-                }
-                i += j;  // advance past part in common
-                n = n2;  // continue down the trie
-            }
-        }
-
-        public void visualize() {
-            if (nodes.isEmpty()) {
-                System.out.println("<empty>");
-                return;
-            }
-            visualize_f(0, "");
-        }
-
-        private void visualize_f(int n, String pre) {
-            List<Integer> children = nodes.get(n).ch;
-            if (children.isEmpty()) {
-                System.out.println(". " + nodes.get(n).sub);
-                return;
-            }
-            System.out.println("┐ " + nodes.get(n).sub);
-            for (int i = 0; i < children.size() - 1; i++) {
-                Integer c = children.get(i);
-                System.out.print(pre + "├─");
-                visualize_f(c, pre + "│ ");
-            }
-            System.out.print(pre + "└─");
-            visualize_f(children.get(children.size() - 1), pre + "  ");
-        }
+    static int max4(int a, int b, int c, int d) {
+        return max(max(a, b), max(c, d));
     }
 
-    static class TrieNode {
-        TrieNode[] children;
-        List<Integer> palindromeList;
-        int index;
-
-        TrieNode() {
-            children = new TrieNode[26];
-            palindromeList = null;
-            index = -1;
-        }
+    static int min3(int a, int b, int c) {
+        return min(min(a, b), c);
     }
 
-    static class Trie {
-        TrieNode root;
+    static int max3(int a, int b, int c) {
+        return max(max(a, b), c);
+    }
 
-        public Trie() {
-            root = new TrieNode();
+    static bool comp(pair<int, int> p1, pair<int, int> p2) {
+        return p1.second < p2.second;
+    }
+
+    static bool inRange(int l, int r, int x) {
+        return (x >= l && x <= r);
+    }
+
+    static int iWantABetterName(int x1, int x2, int y1, int y2, pair<int, int> p1) {
+        int x = 0;
+        if (p1.first == x1 || p1.first == x2) {
+            x++;
         }
+        int y = 0;
+        if (p1.second == y1 || p1.second == y2) {
+            y++;
+        }
+        return x + y;
+    }
 
-        public void insert(String str, int index) {
-            TrieNode cur = root;
-            int n = str.length();
-            int i = 0;
-            while (i < n) {
-                if (isPalindrome(str, i, n - 1)) {
-                    if (cur.palindromeList == null) {
-                        cur.palindromeList = new ArrayList<>();
+    int doubleCount(vector<pair<int, int>> v) {
+        int n = v.size();
+        int counter = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                for (int k = j + 1; k < n; k++) {
+                    int x1 = min3(v[i].first, v[j].first, v[k].first);
+                    int x2 = max3(v[i].first, v[j].first, v[k].first);
+                    int y1 = min3(v[i].second, v[j].second, v[k].second);
+                    int y2 = max3(v[i].second, v[j].second, v[k].second);
+                    if (iWantABetterName(x1, x2, y1, y2, v[i]) == 0 || iWantABetterName(x1, x2, y1, y2, v[j]) == 0 ||
+                            iWantABetterName(x1, x2, y1, y2, v[k]) == 0) {
+                        continue;
                     }
-                    cur.palindromeList.add(index);
-                }
-                int ch = str.charAt(i) - 'a';
-                if (cur.children[ch] == null) {
-                    cur.children[ch] = new TrieNode();
-                }
-                cur = cur.children[ch];
-                i++;
-            }
-            cur.index = index;
-        }
-
-        public void find(String str, int index, List<List<Integer>> result) {
-            TrieNode cur = root;
-            int n = str.length();
-            int i = n - 1;
-            for (; i >= 0; i--) {
-                if (cur.index != -1) {
-                    if (isPalindrome(str, 0, i)) {
-                        result.add(Arrays.asList(cur.index, index));
+                    if (x2 - x1 == y2 - y1) {
+                        counter++;
                     }
                 }
-                int ch = str.charAt(i) - 'a';
-                if (cur.children[ch] == null) {
-                    return;
+            }
+        }
+        return counter;
+    }
+
+    int overCount(vector<pair<int, int>> v) {
+        int n = v.size();
+        int counter = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                for (int k = j + 1; k < n; k++) {
+                    for (int l = k + 1; l < n; l++) {
+                        int x1 = min4(v[i].first, v[j].first, v[k].first, v[l].first);
+                        int x2 = max4(v[i].first, v[j].first, v[k].first, v[l].first);
+                        int y1 = min4(v[i].second, v[j].second, v[k].second, v[l].second);
+                        int y2 = max4(v[i].second, v[j].second, v[k].second, v[l].second);
+                        if (iWantABetterName(x1, x2, y1, y2, v[i]) != 1 || iWantABetterName(x1, x2, y1, y2, v[j]) != 1) {
+                            continue;
+                        }
+                        if (iWantABetterName(x1, x2, y1, y2, v[k]) != 1 || iWantABetterName(x1, x2, y1, y2, v[l]) != 1) {
+                            continue;
+                        }
+                        if (x2 - x1 == y2 - y1) {
+                            counter++;
+                        }
+                    }
                 }
-                cur = cur.children[ch];
             }
-            if (cur.palindromeList != null) {
-                for (Integer ind : cur.palindromeList) {
-                    result.add(Arrays.asList(ind, index));
+        }
+        return counter;
+    }
+
+    int zerocount(vector<pair<int, int>> v) {
+        int counter = 0;
+        int n = v.size();
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int width = max(v[i].first, v[j].first) - min(v[i].first, v[j].first);
+                int height = max(v[i].second, v[j].second) - min(v[i].second, v[j].second);
+                if (width == height) {
+                    counter++;
                 }
             }
-            if (cur.index != -1 && cur.index != index) {
-                result.add(Arrays.asList(cur.index, index));
+        }
+        return counter;
+    }
+
+    vector<pair<int, int>> interval(int y1, int y2, int x1, int x2) {
+        vector<pair<int, int>> vec;
+        for (int i = 0; i < v1.size(); i++) {
+            if (inRange(y1, y2, v1[i].second) && inRange(x1, x2, v1[i].first)) {
+                vec.push_back(v1[i]);
             }
         }
+        return vec;
+    }
 
-        public boolean isPalindrome(String str, int begin, int end) {
-            while (begin < end && str.charAt(begin) == str.charAt(end)) {
-                begin++;
-                end--;
+    vector<pair<int, int>> merge(vector<pair<int, int>> v2, vector<pair<int, int>> v3) {
+        vector<pair<int, int>> vec;
+        sort(v2.begin(), v2.end(), comp);
+        sort(v3.begin(), v3.end(), comp);
+        int i2 = 0;
+        int i3 = 0;
+        while (i2 != v2.size() || i3 != v3.size()) {
+            if (i2 == v2.size()) {
+                vec.push_back(v3[i3]);
+                i3++;
+                continue;
             }
-            return begin >= end;
+            if (i3 == v3.size()) {
+                vec.push_back(v2[i2]);
+                i2++;
+                continue;
+            }
+            if (v2[i2].second < v3[i3].second) {
+                vec.push_back(v2[i2]);
+                i2++;
+            } else if (v2[i2].second > v3[i3].second) {
+                vec.push_back(v3[i3]);
+                i3++;
+            } else {
+                vec.push_back(v2[i2]);
+                i2++;
+                i3++;
+            }
         }
+        return vec;
     }
 
-
-    public List<List<Integer>> palindromePairs(String[] words) {
-        Trie trie = new Trie();
-        List<List<Integer>> result = new ArrayList<>();
-        for (int i = 0; i < words.length; i++) {
-            trie.insert(words[i], i);
+    int ans(std::istream &in, std::ostream &out, int n, vector<pair<int, int>> v) {
+        v1 = v;
+        sort(v1.begin(), v1.end(), comp);
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int x1 = min(v[i].first, v[j].first);
+                int x2 = max(v[i].first, v[j].first);
+                int y1 = min(v[i].second, v[j].second);
+                int y2 = max(v[i].second, v[j].second);
+                int width = x2 - x1;
+                int height = y2 - y1;
+                if (height >= width) {
+                    continue;
+                }
+                vector<pair<int, int>> a = interval(y2 - width, y1 - 1, x1, x2); /* lower */
+                vector<pair<int, int>> b = interval(y2 + 1, y1 + width, x1, x2); /* upper */
+                for (auto x : b) {
+                    x.second -= width;
+                }
+                for (auto x : a) {
+                    x.second++;
+                }
+                vector<pair<int, int>> vec = merge(a, b);
+                sum += vec.size() + 1;
+            }
         }
-        for (int i = 0; i < words.length; i++) {
-            trie.find(words[i], i, result);
-        }
-        return result;
+        return sum;
     }
 
-
-    public static void main(String[] args) {
-        int u = 0;
-        System.out.println(new Solution().maximizeXor(new int[]{0, 1, 2, 3, 4}, new int[][]{{3, 1}, {1, 3}, {5, 6}}));
+    void solve(std::istream &in, std::ostream &out) {
+        int n;
+        in >> n;
+        vector<pair<int, int>> v;
+        for (int i = 0; i < n; i++) {
+            int a, b;
+            in >> a >> b;
+            v.push_back(make_pair(a, b));
+        }
+        int x = ans(in, out, n, v);
+        for (int i = 0; i < n; i++) {
+            swap(v[i].first, v[i].second);
+        }
+        //out << '-' << endl;
+        int y = ans(in, out, n, v);
+        out << y + x + n + 1 + zerocount(v) - overCount(v) - doubleCount(v) << endl;
     }
-}
+};
