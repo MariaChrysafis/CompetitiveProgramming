@@ -11,7 +11,7 @@ using namespace std;
 class Problem3SquarePasture {
 public:
     vector<pair<int, int>> v1;
-    
+
     static int min4(int a, int b, int c, int d) {
         return min(min(a, b), min(c, d));
     }
@@ -32,11 +32,11 @@ public:
         return p1.second < p2.second;
     }
 
-    bool inRange(int l, int r, int x) {
+    static bool inRange(int l, int r, int x) {
         return (x >= l && x <= r);
     }
 
-    int eq2(int x1, int x2, int y1, int y2, pair<int, int> p1) {
+    static int iWantABetterName(int x1, int x2, int y1, int y2, pair<int, int> p1) {
         int x = 0;
         if (p1.first == x1 || p1.first == x2) {
             x++;
@@ -58,8 +58,8 @@ public:
                     int x2 = max3(v[i].first, v[j].first, v[k].first);
                     int y1 = min3(v[i].second, v[j].second, v[k].second);
                     int y2 = max3(v[i].second, v[j].second, v[k].second);
-                    if (eq2(x1, x2, y1, y2, v[i]) == 0 || eq2(x1, x2, y1, y2, v[j]) == 0 ||
-                        eq2(x1, x2, y1, y2, v[k]) == 0) {
+                    if (iWantABetterName(x1, x2, y1, y2, v[i]) == 0 || iWantABetterName(x1, x2, y1, y2, v[j]) == 0 ||
+                            iWantABetterName(x1, x2, y1, y2, v[k]) == 0) {
                         continue;
                     }
                     if (x2 - x1 == y2 - y1) {
@@ -82,10 +82,10 @@ public:
                         int x2 = max4(v[i].first, v[j].first, v[k].first, v[l].first);
                         int y1 = min4(v[i].second, v[j].second, v[k].second, v[l].second);
                         int y2 = max4(v[i].second, v[j].second, v[k].second, v[l].second);
-                        if (eq2(x1, x2, y1, y2, v[i]) != 1 || eq2(x1, x2, y1, y2, v[j]) != 1) {
+                        if (iWantABetterName(x1, x2, y1, y2, v[i]) != 1 || iWantABetterName(x1, x2, y1, y2, v[j]) != 1) {
                             continue;
                         }
-                        if (eq2(x1, x2, y1, y2, v[k]) != 1 || eq2(x1, x2, y1, y2, v[l]) != 1) {
+                        if (iWantABetterName(x1, x2, y1, y2, v[k]) != 1 || iWantABetterName(x1, x2, y1, y2, v[l]) != 1) {
                             continue;
                         }
                         if (x2 - x1 == y2 - y1) {
@@ -172,11 +172,11 @@ public:
                 }
                 vector<pair<int, int>> a = interval(y2 - width, y1 - 1, x1, x2); /* lower */
                 vector<pair<int, int>> b = interval(y2 + 1, y1 + width, x1, x2); /* upper */
-                for (int i = 0; i < b.size(); i++) {
-                    b[i].second -= width;
+                for (auto x : b) {
+                    x.second -= width;
                 }
-                for (int i = 0; i < a.size(); i++) {
-                    a[i].second++;
+                for (auto x : a) {
+                    x.second++;
                 }
                 vector<pair<int, int>> vec = merge(a, b);
                 sum += vec.size() + 1;
