@@ -160,11 +160,13 @@ public:
         sort(v1.begin(), v1.end(), comp);
         int sum = 0;
         for (int i = 0; i < n; i++) {
+            auto current = v[i];
             for (int j = i + 1; j < n; j++) {
-                int x1 = min(v[i].first, v[j].first);
-                int x2 = max(v[i].first, v[j].first);
-                int y1 = min(v[i].second, v[j].second);
-                int y2 = max(v[i].second, v[j].second);
+                auto next = v[j];
+                int x1 = min(current.first, next.first);
+                int x2 = max(current.first, next.first);
+                int y1 = min(current.second, next.second);
+                int y2 = max(current.second, next.second);
                 int width = x2 - x1;
                 int height = y2 - y1;
                 if (height >= width) {
