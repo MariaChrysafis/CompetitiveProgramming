@@ -166,11 +166,11 @@ public:
                 }
                 vector<pair<int, int>> a = interval(y2 - width, y1 - 1, x1, x2); /* lower */
                 vector<pair<int, int>> b = interval(y2 + 1, y1 + width, x1, x2); /* upper */
-                for (auto x : b) {
-                    x.second -= width;
+                for (int i = 0; i < b.size(); i++) {
+                    b[i].second -= width;
                 }
-                for (auto x : a) {
-                    x.second++;
+                for (int i = 0; i < a.size(); i++) {
+                    a[i].second++;
                 }
                 vector<pair<int, int>> vec = merge(a, b);
                 sum += vec.size() + 1;
