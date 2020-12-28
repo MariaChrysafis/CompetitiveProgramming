@@ -28,15 +28,6 @@ public:
   };
 
 vector<coord> v1;
-
-static int min4(int a, int b, int c, int d) {
-  return min(min(a, b), min(c, d));
-}
-
-static int max4(int a, int b, int c, int d) {
-  return max(max(a, b), max(c, d));
-}
-
 static int min3(int a, int b, int c) {
   return min(min(a, b), c);
 }
@@ -69,12 +60,18 @@ int doubleCount(vector<coord> v) {
   int n = v.size();
   int counter = 0;
   for (int i = 0; i < n; i++) {
+    coord curMin0 = v[i];
+    coord curMax0 = v[i];
     for (int j = i + 1; j < n; j++) {
+      coord curMin1 = curMin0.min(v[j]);
+      coord curMax1 = curMax0.max(v[j]);
       for (int k = j + 1; k < n; k++) {
-        int x1 = min3(v[i].x, v[j].x, v[k].x);
-        int x2 = max3(v[i].x, v[j].x, v[k].x);
-        int y1 = min3(v[i].y, v[j].y, v[k].y);
-        int y2 = max3(v[i].y, v[j].y, v[k].y);
+        coord curMin2 = curMin1.min(v[k]);
+        coord curMax2 = curMax1.max(v[k]);
+        int x1 = curMin2.x;
+        int x2 = curMax2.x;
+        int y1 = curMin2.y;
+        int y2 = curMax2.y;
         if (eq2(x1, x2, y1, y2, v[i]) == 0 || eq2(x1, x2, y1, y2, v[j]) == 0 ||
             eq2(x1, x2, y1, y2, v[k]) == 0) {
           continue;
