@@ -101,9 +101,7 @@ int zerocount(vector<coord> v) {
   int n = v.size();
   for (int i = 0; i < n; i++) {
     for (int j = i + 1; j < n; j++) {
-      int width = max(v[i].x, v[j].x) - min(v[i].x, v[j].x);
-      int height = max(v[i].y, v[j].y) - min(v[i].y, v[j].y);
-      if (width == height) {
+      if (v[i].isSquare(v[j])) {
         counter++;
       }
     }
@@ -191,7 +189,6 @@ void solve(std::istream &in, std::ostream &out) {
   for (int i = 0; i < n; i++) {
     swap(v[i].x, v[i].y);
   }
-  //out << '-' << endl;
   int y = ans(in, out, n, v);
   out << y + x + n + 1 + zerocount(v) - overCount(v) - doubleCount(v) << endl;
 }
