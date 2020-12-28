@@ -12,7 +12,7 @@ class Problem3SquarePasture {
 public:
   class coord {
   public:
-    coord(int x, int y) : x(x), y(y) {}
+    coord(int xStart, int yStart) : x(xStart), y(yStart) {}
 
   public:
     coord min(const coord & other) {
@@ -21,7 +21,9 @@ public:
     coord max(const coord & other) {
       return coord(std::max(other.x, this->x), std::max(other.y, this->y));
     }
-
+    bool isSquare(const coord & other){
+      return (abs(other.x - this->x) == abs(other.y - this->y));
+    }
   public:
     int x;
     int y;
@@ -37,8 +39,8 @@ bool inRange(int l, int r, int x) {
   return (x >= l && x <= r);
 }
 
-int eq2(int x1, int x2, int y1, int y2, coord p1) {
-  return (p1.x == x1 || p1.x == x2) + (p1.y == y1 || p1.y == y2);
+int eq2(coord c1, coord c2, coord p1) {
+ return (p1.x == c1.x || p1.x == c2.x) + (p1.y == c1.y || p1.y == c2.y);
 }
 
 int doubleCount(vector<coord> v) {
@@ -51,17 +53,12 @@ int doubleCount(vector<coord> v) {
       coord curMin1 = curMin0.min(v[j]);
       coord curMax1 = curMax0.max(v[j]);
       for (int k = j + 1; k < n; k++) {
-        coord curMin2 = curMin1.min(v[k]);
-        coord curMax2 = curMax1.max(v[k]);
-        int x1 = curMin2.x;
-        int x2 = curMax2.x;
-        int y1 = curMin2.y;
-        int y2 = curMax2.y;
-        if (eq2(x1, x2, y1, y2, v[i]) == 0 || eq2(x1, x2, y1, y2, v[j]) == 0 ||
-            eq2(x1, x2, y1, y2, v[k]) == 0) {
+        coord curMin = curMin1.min(v[k]);
+        coord curMax = curMax1.max(v[k]);
+        if (eq2(curMin, curMax, v[i]) == 0 || eq2(curMin, curMax, v[j]) == 0 || eq2(curMin, curMax, v[k]) == 0) {
           continue;
         }
-        if (x2 - x1 == y2 - y1) {
+        if (curMin.isSquare(curMax)) {
           counter++;
         }
       }
@@ -86,17 +83,10 @@ int overCount(vector<coord> v) {
         for (int l = k + 1; l < n; l++) {
           coord curMax = curMax2.max(v[l]);
           coord curMin = curMin2.min(v[l]);
-          int x1 = curMin.x;
-          int x2 = curMax.x;
-          int y1 = curMin.y;
-          int y2 = curMax.y;
-          if (eq2(x1, x2, y1, y2, v[i]) != 1 || eq2(x1, x2, y1, y2, v[j]) != 1) {
+          if (eq2(curMin, curMax, v[i]) != 1 || eq2(curMin,curMax,v[j]) != 1 || eq2(curMin, curMax, v[k]) != 1 || eq2(curMin, curMax, v[l]) != 1) {
             continue;
           }
-          if (eq2(x1, x2, y1, y2, v[k]) != 1 || eq2(x1, x2, y1, y2, v[l]) != 1) {
-            continue;
-          }
-          if (x2 - x1 == y2 - y1) {
+          if (curMax.isSquare(curMin)) {
             counter++;
           }
         }
