@@ -67,7 +67,7 @@ class Problem3SquarePasture {
     }
     return counter;
   }
-  
+
   int zerocount(vector<coord> v) {
     int counter = 0;
     int n = v.size();
@@ -110,7 +110,11 @@ class Problem3SquarePasture {
         set<int> a1 = interval(y2 - width, y1 - 1, x1, x2, 0);
         vector<int> unite;
         set_union(a.begin(),a.end(),b.begin(),b.end(), std::back_inserter(unite));
-        if(width != height) sum += unite.size() + 1;
+        if(width != height){
+          sum += unite.size() + 1;
+        }else{
+          count--;
+        }
         unite.clear();
         set_union(a1.begin(),a1.end(),b.begin(),b.end(), std::back_inserter(unite));
         count += a.size() + b.size() - unite.size();
@@ -133,6 +137,6 @@ public: void solve(std::istream &in, std::ostream &out) {
       swap(v[i].x, v[i].y);
     }
     int y = ans(in, out, n, v, 1);
-    out << y + x + n + 1 - count/2 + zerocount(v) - doubleCount(v) << endl;
+    out << y + x + n + 1 - count/2 - doubleCount(v) << endl;
   }
 };
