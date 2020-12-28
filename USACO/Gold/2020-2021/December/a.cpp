@@ -91,10 +91,7 @@ public:
             int x2 = max4(v[i].x, v[j].x, v[k].x, v[l].x);
             int y1 = min4(v[i].y, v[j].y, v[k].y, v[l].y);
             int y2 = max4(v[i].y, v[j].y, v[k].y, v[l].y);
-            if (eq2(x1, x2, y1, y2, v[i]) != 1 || eq2(x1, x2, y1, y2, v[j]) != 1) {
-              continue;
-            }
-            if (eq2(x1, x2, y1, y2, v[k]) != 1 || eq2(x1, x2, y1, y2, v[l]) != 1) {
+            if (eq2(x1, x2, y1, y2, v[i]) != 1 || eq2(x1, x2, y1, y2, v[j]) != 1 || eq2(x1, x2, y1, y2, v[k]) != 1 || eq2(x1, x2, y1, y2, v[l]) != 1) {
               continue;
             }
             if (x2 - x1 == y2 - y1) {
@@ -112,9 +109,7 @@ public:
     int n = v.size();
     for (int i = 0; i < n; i++) {
       for (int j = i + 1; j < n; j++) {
-        int width = max(v[i].x, v[j].x) - min(v[i].x, v[j].x);
-        int height = max(v[i].y, v[j].y) - min(v[i].y, v[j].y);
-        if (width == height) {
+        if (abs(v[i].x - v[j].x) == abs(v[i].y - v[j].y)) {
           counter++;
         }
       }
