@@ -68,18 +68,6 @@ class Problem3SquarePasture {
     return counter;
   }
 
-  int zerocount(vector<coord> v) {
-    int counter = 0;
-    int n = v.size();
-    for (int i = 0; i < n; i++) {
-      for (int j = i + 1; j < n; j++) {
-        if (isSquare(v[i],v[j])) {
-          counter++;
-        }
-      }
-    }
-    return counter;
-  }
   int count = 0;
   set<int> interval(int y1, int y2, int x1, int x2, int delta) {
     set<int> vec;
