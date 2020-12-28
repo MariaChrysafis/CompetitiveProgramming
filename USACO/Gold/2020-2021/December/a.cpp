@@ -28,13 +28,6 @@ public:
   };
 
 vector<coord> v1;
-static int min3(int a, int b, int c) {
-  return min(min(a, b), c);
-}
-
-static int max3(int a, int b, int c) {
-  return max(max(a, b), c);
-}
 
 static bool comp(coord p1, coord p2) {
   return p1.y < p2.y;
@@ -45,15 +38,7 @@ bool inRange(int l, int r, int x) {
 }
 
 int eq2(int x1, int x2, int y1, int y2, coord p1) {
-  int x = 0;
-  if (p1.x == x1 || p1.x == x2) {
-    x++;
-  }
-  int y = 0;
-  if (p1.y == y1 || p1.y == y2) {
-    y++;
-  }
-  return x + y;
+  return (p1.x == x1 || p1.x == x2) + (p1.y == y1 || p1.y == y2);
 }
 
 int doubleCount(vector<coord> v) {
