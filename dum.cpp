@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <unordered_map>
+#include <set>
 
 using namespace std;
 
@@ -12,6 +13,12 @@ class Problem3SquarePasture {
   struct coord{
     int x;
     int y;
+    bool operator<(const coord& c) const{
+      return (c.y < this->y);
+    }
+    bool operator==(coord c) const{
+      return (c.y == y);
+    }
   };
   coord myMin(coord a, coord b) {
     return {min(a.x,b.x),min(a.y, b.y)};
@@ -102,40 +109,14 @@ class Problem3SquarePasture {
     return counter;
   }
 
-  vector<coord> interval(int y1, int y2, int x1, int x2) {
-    vector<coord> vec;
+  set<int> interval(int y1, int y2, int x1, int x2, int delta) {
+    set<int> vec;
     for (int i = 0; i < v1.size(); i++) {
       if (inRange(y1, y2, v1[i].y) && inRange(x1, x2, v1[i].x)) {
-        vec.push_back(v1[i]);
+        vec.insert(v1[i].y + delta);
       }
     }
     return vec;
-  }
-
-  int merge(vector<coord> v2, vector<coord> v3) {
-    int i2 = 0;
-    int i3 = 0;
-    int counter = 0;
-    while (i2 != v2.size() || i3 != v3.size()) {
-      counter++;
-      if (i2 == v2.size()) {
-        i3++;
-      }
-      else if (i3 == v3.size()) {
-        i2++;
-      }
-      else if (v2[i2].y < v3[i3].y) {
-        i2++;
-      }
-      else if (v2[i2].y > v3[i3].y) {
-        i3++;
-      }
-      else {
-        i2++;
-        i3++;
-      }
-    }
-    return counter;
   }
 
   int ans(std::istream &in, std::ostream &out, int n, vector<coord> v) {
@@ -153,21 +134,17 @@ class Problem3SquarePasture {
         if (height >= width) {
           continue;
         }
-        vector<coord> a = interval(y2 - width, y1 - 1, x1, x2); /* lower */
-        vector<coord> b = interval(y2 + 1, y1 + width, x1, x2); /* upper */
-        for (int i = 0; i < b.size(); i++) {
-          b[i].y -= width;
-        }
-        for (int i = 0; i < a.size(); i++) {
-          a[i].y++;
-        }
-        sum += merge(a, b) + 1;
+        set<int> a = interval(y2 - width, y1 - 1, x1, x2, 1); /* lower */
+        set<int> b = interval(y2 + 1, y1 + width, x1, x2, -width); /* upper */
+        vector<int> unite;
+        set_union(a.begin(),a.end(),b.begin(),b.end(), std::back_inserter(unite));
+        sum += unite.size() + 1;
       }
     }
     return sum;
   }
 
-  public: void solve(std::istream &in, std::ostream &out) {
+public: void solve(std::istream &in, std::ostream &out) {
     int n;
     in >> n;
     vector<coord> v;
