@@ -127,13 +127,11 @@ int merge(vector<coord> v2, vector<coord> v3) {
     counter++;
     if (i2 == v2.size()) {
       i3++;
-      continue;
     }
-    if (i3 == v3.size()) {
+    else if (i3 == v3.size()) {
       i2++;
-      continue;
     }
-    if (v2[i2].y < v3[i3].y) {
+    else if (v2[i2].y < v3[i3].y) {
       i2++;
     }
     else if (v2[i2].y > v3[i3].y) {
