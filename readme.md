@@ -1,6 +1,4 @@
 # Maria's Competitive-Programming
-## Goal: Solve a new USACO Gold Problem EVERY DAY
-Status: okay so far, no days missed :P
 ## USACO Contest Scores
 | Contest | Score | Place |
 | ------------ | ---------- | ------------ |
