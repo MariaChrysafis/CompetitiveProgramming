@@ -15,3 +15,6 @@ See [here](https://codeforces.com/contests/with/olympia).
 
 ## LeetCode Contest Scores
 See [here](https://leetcode.com/passionFruitFlower/) for my LeetCode profile.
+
+## Codechef
+See [here](https://www.codechef.com/users/airamc) for my CodeChef profile.
