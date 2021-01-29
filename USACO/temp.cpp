@@ -28,7 +28,26 @@ public:
   const int INF = 1000000;
   vector<int> DP;
   vector<bool> hv;
-  //vector<int> pref;
+  vector<vector<int>> pref;
+  void fill1(){
+    for(int i = 0; i < M; i++){
+      pref[i][0] = mat[arr[0]][i];
+      for(int j = 1; j < N; j++){
+        pref[i][j] = pref[i][j - 1] + mat[arr[j]][i];
+        cout << pref[i][j] << " ";
+      }
+      cout << endl;
+    }
+  }
+  int interval(int a, int b, int c){
+    if(b < a){
+      return 0;
+    }
+    if(a == 0){
+      return pref[c][b];
+    }
+    return pref[c][b] - pref[c][a - 1];
+  }
   int fill(int x){
     if(x < 0){
       return 0;
@@ -44,6 +63,8 @@ public:
         }
         cost += mat[arr[j]][c];
       }
+      int val = interval(x - K + 2,x,c);
+      cost = val;
       for(int i = x - K + 1; i >= 0; i--){
         cost += mat[arr[i]][c];
         DP[x] = min(DP[x],cost + fill(i - 1));
@@ -83,10 +104,14 @@ public:
     }
     mat = fw;
     arr.resize(N);
-
+    pref.resize(26);
+    for(int i = 0; i < 26; i++){
+      pref[i].resize(N);
+    }
     for(int i = 0; i < N; i++){
       arr[i] = to_int(s[i]);
     }
+    fill1();
     int x = fill(N - 1);
     out << x << endl;
   }
