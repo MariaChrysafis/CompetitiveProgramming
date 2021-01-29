@@ -17,7 +17,7 @@ public:
     int x = c - 'a';
     return x;
   }
-  const int INF = 1000000;
+  const int INF = 100000000;
   const static int MAX = 100000;
   int DP[26][MAX];
   int pref[26][MAX];
@@ -44,7 +44,7 @@ public:
       soFarMin[i] = INF;
     }
     for(int i = 0; i < N; i++){
-      for(int x = i + K - 1; x < N; x++){
+      for(int x = i + K - 1; x < min(i + 2 * K - 1,N); x++){
         for(int ch = 0; ch < M; ch++){
           int a;
           if(i >= 1) a = soFarMin[i - 1];
