@@ -1,4 +1,4 @@
-## Maria Chrysafis' solutions to past USACO Gold contests
+## Problem Completed:
 | Contest Year  | Contest Month | Problem Name| Date Completed|
 | ------------- | ------------- | ------------|----------|
 | 2015-2016 | February  | [cbarn2](http://usaco.org/index.php?page=viewproblem2&cpid=622) | January 28th, 2021 |
