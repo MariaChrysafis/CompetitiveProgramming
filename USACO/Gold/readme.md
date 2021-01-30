@@ -5,3 +5,4 @@
 | 2016-2017 | December | [moocast](http://usaco.org/index.php?page=viewproblem2&cpid=669) | December 22nd, 2020|
 | 2016-2017 | December | [checklist](http://usaco.org/index.php?page=viewproblem2&cpid=670) | January 22nd, 2020|
 | 2016-2017 | December | [lasers](http://usaco.org/index.php?page=viewproblem2&cpid=671) | January 22nd, 2020|
+| 2016-2017 | February | [visitfj](http://usaco.org/index.php?page=viewproblem2&cpid=717) | January 28th, 2020|
