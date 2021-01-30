@@ -19,6 +19,9 @@ public:
   long long MOD = 1000000009;
   int fill(){
     DP[0][0][1] = (FJ[0] > FP[0]);
+    for(int k = 2; k <= K; k++){
+      DP[0][0][k] = 1;
+    }
     for(int fj = 1; fj < N; fj++){
       DP[fj][0][1] = DP[fj - 1][0][1] + (FJ[fj] > FP[0]);
       for(int k = 2; k <= K; k++){
@@ -32,7 +35,7 @@ public:
       }
     }
     for(int fj = 0; fj < N; fj++){
-      for(int fp = 0; fp < N; fp++){
+      for(int fp = 0; fp < M; fp++){
         DP[fj][fp][0] = 1;
       }
     }
@@ -66,6 +69,8 @@ public:
     for(int i = 0; i < M; i++){
       in >> FP[i];
     }
+    sort(FJ, FJ + N);
+    sort(FP, FP + M);
     for(int i = 0; i < N; i++){
       for(int j = 0; j < M; j++){
         for(int k = 0; k <= K; k++){
