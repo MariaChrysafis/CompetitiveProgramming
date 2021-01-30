@@ -31,9 +31,15 @@ public:
     DP[0][0][1] = (FJ[0] > FP[0]);
     for(int fj = 1; fj < N; fj++){
       DP[fj][0][1] = DP[fj - 1][0][1] + (FJ[fj] > FP[0]);
+      for(int k = 2; k <= K; k++){
+        DP[fj][0][k] = 0;
+      }
     }
     for(int fp = 1; fp < M; fp++){
       DP[0][fp][1] = DP[fp - 1][0][1] + (FJ[0] > FP[fp]);
+      for(int k = 2; k <= K; k++){
+        DP[0][fp][k] = 0;
+      }
     }
     for(int fj = 1; fj < N; fj++){
       for(int fp = 1; fp < M; fp++){
@@ -52,8 +58,8 @@ public:
         DP[fj][fp][0] = 0;
       }
     }
-    for(int fj = 0; fj < N; fj++) {
-      for (int fp = 0; fp < M; fp++) {
+    for(int fj = 1; fj < N; fj++) {
+      for (int fp = 1; fp < M; fp++) {
         for(int k = 2; k <= K; k++) {
           long long counter = 0;
           for (int i = 1; i <= fj; i++) {
