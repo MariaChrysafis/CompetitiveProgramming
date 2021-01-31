@@ -9,6 +9,7 @@
 | 2016-2017 | February | [visitfj](http://usaco.org/index.php?page=viewproblem2&cpid=717) | November 28th, 2020|
 | 2017-2018 | December | [barnpainting](http://usaco.org/index.php?page=viewproblem2&cpid=766) | December 2nd, 2020|
 | 2017-2018 | December | [hayfeast](http://usaco.org/index.php?page=viewproblem2&cpid=767) | January 26th, 2021 |
+| 2017-2018 | January | [spainting](http://www.usaco.org/index.php?page=viewproblem2&cpid=791) | January 31st, 2021 |
 | 2017-2018 | February | [taming](http://usaco.org/index.php?page=viewproblem2&cpid=815) | January 28th, 2021 |
 | 2018-2019 | December | [teamwork](http://usaco.org/index.php?page=viewproblem2&cpid=863) | December 1st, 2020 |
 | 2018-2019 | US Open | [snakes](http://usaco.org/index.php?page=viewproblem2&cpid=945) | January 27th, 2021 |
