@@ -25,32 +25,30 @@ public:
     cin.tie(NULL);
     int T,A,B;
     in >> T >> A >> B;
-    bool pos[T + 1][1];
-    pos[0][0] = true;
+    bool pos[T + 1];
+    pos[0] = true;
     for(int i = 1; i <= T; i++){
-      pos[i][0] = false;
+      pos[i] = false;
     }
     for(int i = 0; i <= T; i++){
       if(i - A >= 0){
-        pos[i][0] = pos[i - A][0] || pos[i][0];
+        pos[i] = pos[i - A] || pos[i];
       }
       if(i - B >= 0){
-        pos[i][0] = pos[i][0] || pos[i - B][0];
+        pos[i] = pos[i] || pos[i - B];
       }
     }
     int pref[T];
     pref[0] = 0;
     for(int i = 1; i <= T; i++){
-      pref[i] = max(pref[i - 1], pos[i][0] * i);
-      //out << pref[i] << endl;
+      pref[i] = max(pref[i - 1], pos[i] * i);
     }
     int myMax = 0;
     for(int i = 0; i <= T; i++){
-      if(!pos[i][0]){
+      if(!pos[i]){
         continue;
       }
-      int cur = i/2;
-      myMax = max(cur + pref[T - cur],myMax);
+      myMax = max(i/2 + pref[T - i/2],myMax);
     }
     out << myMax << endl;
   }
