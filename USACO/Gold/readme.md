@@ -18,4 +18,5 @@
 | 2019-2020 | December | [cowmbat](http://usaco.org/index.php?page=viewproblem2&cpid=971) | January 29th, 2021 |
 | 2019-2020 | January | [time](http://usaco.org/index.php?page=viewproblem2&cpid=993) | December 1st, 2020 |
 | 2019-2020 | February | [timeline](http://usaco.org/index.php?page=viewproblem2&cpid=1017) | December 1st, 2020 |
-| 2020-2021 | December | [bovineGenetics](http://usaco.org/index.php?page=viewproblem2&cpid=1066) | Ferbruary 2nd, 2020|
+| 2020-2021 | December | [squarePasture](http://usaco.org/index.php?page=viewproblem2&cpid=1067) | December 28, 2020|
+| 2020-2021 | December | [bovineGenetics](http://usaco.org/index.php?page=viewproblem2&cpid=1066) | Ferbruary 2nd, 2021|
