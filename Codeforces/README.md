@@ -1,3 +1,3 @@
-Codeforces Solutions.
+Some solutions to Codeforces problems.
 
-Go by the handle Olympia.
+My handle is Olympia.
