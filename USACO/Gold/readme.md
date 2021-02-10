@@ -17,6 +17,7 @@
 | 2016-2017 | January | [hps](http://usaco.org/index.php?page=viewproblem2&cpid=694) | January 28th, 2021|
 | 2016-2017 | February | [visitfj](http://usaco.org/index.php?page=viewproblem2&cpid=717) | November 28th, 2020|
 | 2016-2017 | February | [nocross](http://www.usaco.org/index.php?page=viewproblem2&cpid=718) | February 6th, 2021|
+| 2016-2017 | February | [circlecross](http://www.usaco.org/index.php?page=viewproblem2&cpid=719) | February 9th, 2021|
 | 2017-2018 | December | [barnpainting](http://usaco.org/index.php?page=viewproblem2&cpid=766) | December 2nd, 2020|
 | 2017-2018 | December | [hayfeast](http://usaco.org/index.php?page=viewproblem2&cpid=767) | January 26th, 2021 |
 | 2017-2018 | January | [spainting](http://www.usaco.org/index.php?page=viewproblem2&cpid=791) | January 31st, 2021 |
