@@ -18,14 +18,9 @@ bool operator<(const bessie a1, const bessie a2) {
   if(a1.x != a2.x){
     return a1.x < a2.x;
   }
-  if(adj[a1.x][a2.x] == 4) {
     vector<int> v1 = {a1.x, a1.y, a1.oranges, a1.dirx, a1.diry};
     vector<int> v2 = {a2.x, a2.y, a2.oranges, a2.dirx, a2.diry};
     return v1 < v2;
-  }
-  vector<int> v1 = {a1.x, a1.y, a1.oranges};
-  vector<int> v2 = {a2.x, a2.y, a2.oranges};
-  return v1 < v2;
 }
 class Problem3BessiesDream {
 public:
@@ -63,7 +58,7 @@ public:
         }
       }
     }
-    map<bessie, bool> vis;
+    map<bessie, int> vis;
     while (!q.empty()) {
       bessie cur = q.front().second;
       int dist = q.front().first;
@@ -78,22 +73,19 @@ public:
       vis[cur] = true;
       if (adj[cur.x][cur.y] == 0) {
         continue;
-      }
-      if (adj[cur.x][cur.y] == 1) {
+      }else if (adj[cur.x][cur.y] == 1) {
         for (pair<int, int> p : d) {
           int i = p.first;
           int j = p.second;
           q.push({dist + 1, {cur.x + i, cur.y + j, cur.oranges, i, j}});
         }
-      }
-      if (adj[cur.x][cur.y] == 2) {
+      }else if (adj[cur.x][cur.y] == 2) {
         for (pair<int, int> p : d) {
           int i = p.first;
           int j = p.second;
           q.push({dist + 1, {cur.x + i, cur.y + j, 1, i, j}});
         }
-      }
-      if (adj[cur.x][cur.y] == 3) {
+      }else if (adj[cur.x][cur.y] == 3) {
         if (cur.oranges == 0) {
           continue;
         }
@@ -102,8 +94,7 @@ public:
           int j = p.second;
           q.push({dist + 1, {cur.x + i, cur.y + j, 1, i, j}});
         }
-      }
-      if (adj[cur.x][cur.y] == 4) {
+      }else if (adj[cur.x][cur.y] == 4) {
         if(cur.x + cur.dirx < 0 || cur.x + cur.dirx >= n){
           continue;
         }
