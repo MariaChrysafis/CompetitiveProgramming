@@ -8,6 +8,7 @@
 | ------------- | ------------- | ------------|----------|
 | 2015-2016 | December | [cardgame](http://usaco.org/index.php?page=viewproblem2&cpid=573) | February 13th, 2021|
 | 2015-2016 | December  | [feast](http://usaco.org/index.php?page=viewproblem2&cpid=574) | February 1st, 2021 |
+| 2015-2016 | December | [dream](http://usaco.org/index.php?page=viewproblem2&cpid=575) | February 13th, 2021 |
 | 2015-2016 | January | [angry](http://www.usaco.org/index.php?page=viewproblem2&cpid=597) | February 5th, 2021 |
 | 2015-2016 | January | [radio](http://usaco.org/index.php?page=viewproblem2&cpid=598) | February 6th, 2021 |
 | 2015-2016 | February  | [cbarn2](http://usaco.org/index.php?page=viewproblem2&cpid=622) | January 28th, 2021 |
