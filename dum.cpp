@@ -56,7 +56,7 @@ public:
     //find first element >= des
     while(l != r){
       int mid = (l + r)/2;
-      if(cur[mid] >= des){
+      if(counter[mid].back() >= des){
         r = mid;
       }else{
         l = mid + 1;
