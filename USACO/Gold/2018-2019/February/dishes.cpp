@@ -12,11 +12,6 @@
 #include <iostream>
 #include <vector>
 using namespace std;
-template <typename T> void pop_front(std::vector<T> &v) {
-  if (v.size() > 0) {
-    v.erase(v.begin());
-  }
-}
 class Problem2Dishwashing {
 public:
   vector<int> glob;
@@ -38,17 +33,6 @@ public:
     deque<int> d;
     d.push_back(x);
     return d;
-  }
-  int best(int des) {
-    for (int i = 0; i < counter.size(); i++) {
-      if (!counter[i].empty()) {
-        int x = counter[i].back();
-        if (des < x) {
-          return i;
-        }
-      }
-    }
-    return -1;
   }
   int bs(int l, int r, int des) {
     // find first element >= des
