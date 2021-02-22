@@ -14,6 +14,7 @@ class Problem2Dishwashing {
 public:
   vector<int> glob;
   vector<deque<int>> counter;
+  vector<int> cur;
   vector<int> remap(vector<int> vec) {
     vector<pair<int, int>> ind;
     for (int i = 0; i < vec.size(); i++) {
@@ -42,7 +43,23 @@ public:
     }
     return -1;
   }
+  int bs(int l, int r, int des){
+    //find first element >= des
+    while(l != r){
+      int mid = (l + r)/2;
+      if(cur[mid] >= des){
+        r = mid;
+      }else{
+        l = mid + 1;
+      }
+    }
+    if(cur[l] > des){
+      return l;
+    }
+    return -1;
+  }
   bool valid(int pref){
+    cur.resize(pref);
     vector<int> vec;
     for(int i = 0; i <= pref; i++){
       vec.push_back(glob[i]);
@@ -57,17 +74,16 @@ public:
       x++;
     }
     for(int i = dum; i < vec.size(); i++){
-      if(vec.size() == 25){
-        //cout << vec[i] << " " << counter.size() << endl;
-      }
       //cout << i << endl;
       if(counter.empty()){
         counter.push_back(create(vec[i]));
+        cur[counter.size() - 1] = vec[i];
         continue;
       }
       if(counter[ind].empty()){
         //there's nothing for Elsie to do
         counter[ind] = create(vec[i]);
+        cur[ind] = vec[i];
         continue;
       }
       if(vec[i] == x){
@@ -77,18 +93,24 @@ public:
           x++;
           counter[ind].pop_back();
           if(counter[ind].empty()){
+            cur[ind] = -1;
             if(counter.size() > ind + 1){
               ind++;
             }
+          }else{
+            cur[ind] = counter[ind].front();
           }
         }
         continue;
       }
       //We place the plate in some other stack
-      if(best(vec[i]) == -1){
+      int bind = bs(ind,counter.size() - 1,vec[i]);
+      if(bind == -1){
         counter.push_back(create(vec[i]));
+        cur[counter.size() - 1] = vec[i];
       }else{
-        counter[best(vec[i])].push_back(vec[i]);
+        counter[bind].push_back(vec[i]);
+        cur[bind] = vec[i];
       }
     }
     vector<int> myVec;
@@ -98,9 +120,6 @@ public:
         int a = d.front();
         myVec.push_back(a);
         d.pop_front();
-        if(vec.size() == 25){
-          //cout << myVec[i] << " ";
-        }
       }
     }
     vector<int> temp = myVec;
@@ -126,16 +145,7 @@ public:
       }else{
         r = m - 1;
       }
-      //cout << l << " " << r << endl;
     }
     out << l + 1 << endl;
-    return;
-    glob = v;
-    for(int i = 0; i < n; i++){
-      if(!valid(i)){
-        out << i;
-        return;
-      }
-    }
   }
 };
