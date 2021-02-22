@@ -12,6 +12,7 @@ void pop_front(std::vector<T> &v)
 }
 class Problem2Dishwashing {
 public:
+  vector<int> glob;
   vector<deque<int>> counter;
   vector<int> remap(vector<int> vec) {
     vector<pair<int, int>> ind;
@@ -41,7 +42,11 @@ public:
     }
     return -1;
   }
-  bool valid(vector<int> vec){
+  bool valid(int pref){
+    vector<int> vec;
+    for(int i = 0; i <= pref; i++){
+      vec.push_back(glob[i]);
+    }
     counter.clear();
     int ind = 0; /* the index of the first non-empty deque */
     int x = 0; /* the smallest unpicked one */
@@ -110,12 +115,27 @@ public:
       int a;
       in >> a;
       v.push_back(a);
-      //cout << i << endl;
-      if(!valid(v)){
+    }
+    glob = v;
+    int l = 0;
+    int r = v.size() - 1;
+    while(l < r){
+      int m = (l - r)/2 + r;
+      if(valid(m)){
+        l = m;
+      }else{
+        r = m - 1;
+      }
+      //cout << l << " " << r << endl;
+    }
+    out << l + 1 << endl;
+    return;
+    glob = v;
+    for(int i = 0; i < n; i++){
+      if(!valid(i)){
         out << i;
         return;
       }
     }
-    out << n << endl;
   }
 };
