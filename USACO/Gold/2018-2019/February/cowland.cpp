@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <fstream>
+
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -62,19 +63,6 @@ public:
         }
       }
       return up[u][0];
-    }
-    int el(int u, int prev){
-      if(adj[u].size() == 1){
-        sub[u] = 1;
-        return 1;
-      }
-      sub[u] = 1;
-      for(int v: adj[u]){
-        if(v != prev){
-          sub[u] += el(v,u);
-        }
-      }
-      return sub[u];
     }
   };
   struct segmentTree{
@@ -146,7 +134,9 @@ public:
     t.f = dum, t.s = dum, t.sub = dum, t.up = up;
     t.cntr = 0, t.adj = adj;
     t.dfsForLCA(0, 0);
-    t.el(0,-1);
+    for(int i = 0; i < n; i++){
+      t.sub[i] = t.s[i] - t.f[i];
+    }
     int newN = cl(2 * n);
     vector<pair<int,int>> vec(2 * newN);
     vector<int> arr1(2 * newN);
@@ -193,6 +183,8 @@ public:
     }
   }
 };
+
+
 int main() {
   ios_base::sync_with_stdio(false);
   cin.tie(NULL);
