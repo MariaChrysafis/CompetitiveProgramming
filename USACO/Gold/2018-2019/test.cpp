@@ -181,10 +181,9 @@ public:
     }
     int ans(){
       int myMax = 0;
-      for(int i = 0; i < 10; i++){
+      for(int i = 0; i < MAX; i++){
         myMax = max(best1[i],max(best2[i],myMax));
-        //out << best2[i] << endl;
-        for(int j = i + 1; j < 10; j++){
+        for(int j = i + 1; j < MAX; j++){
           int x = best1[i] + best2[j];
           myMax = max(x, myMax);
         }
