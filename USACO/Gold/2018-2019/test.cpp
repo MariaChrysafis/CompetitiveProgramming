@@ -217,6 +217,7 @@ public:
     f1.vr = vr1;
     f1.K = K;
     f1.perform();
+    f1.best();
     field f2;
     f2.vr = vr2;
     f2.K = K;
