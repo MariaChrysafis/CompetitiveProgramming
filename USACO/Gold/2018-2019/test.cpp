@@ -191,6 +191,14 @@ public:
       }
       return myMax;
     }
+    void perform(){
+      init();
+      fill();
+      fill_pref();
+      crux1();
+      crux2();
+      best();
+    }
   };
   void solve(std::istream &in, std::ostream &out) {
     int N, K;
@@ -207,31 +215,12 @@ public:
     }
     field f1;
     f1.vr = vr1;
-    f1.grid = {{}};
-    f1.dp1 = {{}};
     f1.K = K;
-    f1.pref = {{}};
-    f1.init();
-    f1.fill();
-    f1.fill_pref();
-    f1.crux1();
-    f1.crux2();
-    f1.best1 = {};
-    f1.best2 = {};
-    f1.best();
+    f1.perform();
     field f2;
     f2.vr = vr2;
-    f2.grid = {{}};
-    f2.dp1 = {{}};
     f2.K = K;
-    f2.pref = {{}};
-    f2.init();
-    f2.fill();
-    f2.fill_pref();
-    f2.crux1();
-    f2.crux2();
-    f2.best1 = {};
-    f2.best2 = {};
+    f2.perform();
     f2.best();
     int cntr = 0;
     for(int i = 0; i < MAX; i++){
