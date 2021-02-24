@@ -8,6 +8,9 @@
 #include <fstream>
 
 #include <iostream>
+#include <fstream>
+
+
 #include <vector>
 using namespace std;
 const int MAX = 205;
@@ -27,9 +30,14 @@ public:
     vector<vector<int>> pref;
     vector<vector<vector<int>>> dp1; /* to the left */
     vector<vector<vector<int>>> dp2; /* to the right */
+    vector<int> best1;
+    vector<int> best2;
     void init(){
+      best1.resize(MAX);
+      best2.resize(MAX);
       grid.resize(MAX), dp1.resize(MAX), pref.resize(MAX), dp2.resize(MAX);
       for(int i = 0; i < MAX; i++){
+        best1[i] = best2[i] = 0;
         grid[i].resize(MAX), dp1[i].resize(MAX), pref[i].resize(MAX), dp2[i].resize(MAX);
         for(int j = 0; j < MAX; j++){
           grid[i][j] = 0, dp1[i][j].resize(MAX), pref[i][j] = 0, dp2[i][j].resize(MAX);
@@ -151,72 +159,91 @@ public:
         }
       }
     }
+    void best(){
+      for(int i = 0; i < MAX; i++){
+        int myMax = dp1[i][0][0];
+        for(int j = 0; j < MAX; j++){
+          for(int k = 0; k < MAX; k++){
+            myMax = max(myMax, dp1[i][j][k]);
+          }
+        }
+        best1[i] = myMax;
+      }
+      for(int i = 0; i < MAX; i++){
+        int myMax = dp2[i][0][0];
+        for(int j = 0; j < MAX; j++){
+          for(int k = 0; k < MAX; k++){
+            myMax = max(myMax, dp2[i][j][k]);
+          }
+        }
+        best2[i] = myMax;
+      }
+    }
+    int ans(){
+      int myMax = 0;
+      for(int i = 0; i < 10; i++){
+        myMax = max(best1[i],max(best2[i],myMax));
+        //out << best2[i] << endl;
+        for(int j = i + 1; j < 10; j++){
+          int x = best1[i] + best2[j];
+          myMax = max(x, myMax);
+        }
+      }
+      return myMax;
+    }
   };
   void solve(std::istream &in, std::ostream &out) {
     int N, K;
     in >> N >> K;
-    vector<rectangle> vr;
+    vector<rectangle> vr1;
+    vector<rectangle> vr2;
     for(int i = 0; i < N; i++){
       coord c1, c2;
       in >> c1.x >> c1.y >> c2.x >> c2.y;
-      vr.push_back({c1,c2});
+      vr1.push_back({c1,c2});
+      swap(c1.y,c1.x);
+      swap(c2.y, c2.x);
+      vr2.push_back({c1,c2});
     }
-    field f;
-    f.vr = vr;
-    f.grid = {{}};
-    f.dp1 = {{}};
-    f.K = K;
-    f.pref = {{}};
-    f.init();
-    f.fill();
-    f.fill_pref();
-    f.crux1();
-    f.crux2();
-    int best1[MAX];
-    int best2[MAX];
-    for(int i = 0; i < MAX; i++){
-      best1[i] = best2[i] = 0;
-    }
-    for(int i = 0; i < MAX; i++){
-      int myMax = f.dp1[i][0][0];
-      for(int j = 0; j < MAX; j++){
-        for(int k = 0; k < MAX; k++){
-          myMax = max(myMax, f.dp1[i][j][k]);
-        }
-      }
-      best1[i] = myMax;
-    }
-    for(int i = 0; i < MAX; i++){
-      int myMax = f.dp2[i][0][0];
-      for(int j = 0; j < MAX; j++){
-        for(int k = 0; k < MAX; k++){
-          myMax = max(myMax, f.dp2[i][j][k]);
-        }
-      }
-      best2[i] = myMax;
-    }
+    field f1;
+    f1.vr = vr1;
+    f1.grid = {{}};
+    f1.dp1 = {{}};
+    f1.K = K;
+    f1.pref = {{}};
+    f1.init();
+    f1.fill();
+    f1.fill_pref();
+    f1.crux1();
+    f1.crux2();
+    f1.best1 = {};
+    f1.best2 = {};
+    f1.best();
+    field f2;
+    f2.vr = vr2;
+    f2.grid = {{}};
+    f2.dp1 = {{}};
+    f2.K = K;
+    f2.pref = {{}};
+    f2.init();
+    f2.fill();
+    f2.fill_pref();
+    f2.crux1();
+    f2.crux2();
+    f2.best1 = {};
+    f2.best2 = {};
+    f2.best();
     int cntr = 0;
     for(int i = 0; i < MAX; i++){
       for(int j = 0; j < MAX; j++){
-        if(f.grid[i][j] == K){
+        if(f1.grid[i][j] == K){
           cntr++;
         }
       }
     }
-    int myMax = 0;
-    for(int i = 0; i < 10; i++){
-      myMax = max(best1[i],max(best2[i],myMax));
-      //out << best2[i] << endl;
-      for(int j = i + 1; j < 10; j++){
-        int x = best1[i] + best2[j];
-        out << x << " " << i << " " << j << endl;
-        myMax = max(cntr + x, myMax);
-      }
-    }
-    out << myMax << endl;
+    out << max(f2.ans(),f1.ans()) + cntr << endl;
   }
 };
-
 
 int main() {
   ios_base::sync_with_stdio(false);
