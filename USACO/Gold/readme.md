@@ -47,6 +47,7 @@
 | 2019-2020 | February | [timeline](http://usaco.org/index.php?page=viewproblem2&cpid=1017) | December 1st, 2020 |
 | 2019-2020 | February | [help](http://usaco.org/index.php?page=viewproblem2&cpid=1018#) | February 8th, 2021 | 
 | 2019-2020 | US Open | [haircut](http://www.usaco.org/index.php?page=viewproblem2&cpid=1041) | February 10th, 2021|
+| 2019-2020 | US Open | [fcolor](http://usaco.org/index.php?page=viewproblem2&cpid=1042) | March 4th, 2021 |
 | 2019-2020 | US Open | [exercise](http://www.usaco.org/index.php?page=viewproblem2&cpid=1043) | February 2nd, 2021|
 | 2020-2021 | December | [Square Pasture](http://usaco.org/index.php?page=viewproblem2&cpid=1067) | December 28th, 2020|
 | 2020-2021 | December | [Bovine Genetics](http://usaco.org/index.php?page=viewproblem2&cpid=1066) | February 2nd, 2021|
