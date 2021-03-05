@@ -2,20 +2,26 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <unordered_map>
 #include <set>
 #include <vector>
+#include <algorithm>
+#include <cassert>
+#include <iostream>
+#include <vector>
+#include <cmath>
 //#include <multiset>
 using namespace std;
 vector<int> arr;
 vector<vector<int>> dp;
 vector<vector<int>> pref;
-map<int, int> ap;
+vector<int> ap;
+const int MAX = 2 * pow(10,6);
 int rng(int l, int r, int x) {
-  x = ap[x];
-  if (x == 0 || r < l) {
+  x = ap[x + MAX];
+  if (x == -1 || r < l) {
     return 0;
   }
-  x--;
   int pl;
   if (l == 0) {
     pl = 0;
@@ -25,51 +31,30 @@ int rng(int l, int r, int x) {
   }
   return pref[r][x] - pl;
 }
-int memoize(int x, int y) {
-  if (dp[x][y] != -1) {
-    return dp[x][y];
-  }
-  if (x >= y) {
-    dp[x][y] = 0;
-    return 0;
-  }
-  if (y - x < 2) {
-    dp[x][y] = 0;
-    return 0;
-  }
-  if (y - x == 2) {
-    dp[x][y] = 0;
-    if (arr[x] + arr[x + 1] + arr[x + 2] == 0) {
-      dp[x][y] = 1;
-    }
-    return dp[x][y];
-  }
-  dp[x][y] = memoize(x + 1, y) + memoize(x, y - 1) - memoize(x + 1, y - 1);
-  dp[x][y] += rng(x + 1, y - 1, -arr[x] - arr[y]);
-  return dp[x][y];
-}
-void solve() {
-  int n = arr.size();
-  pref.resize(n);
-  for (int i = 0; i < n; i++) {
-    pref[i].resize(n);
-  }
-  for (int i = 0; i < n; i++) {
-    ap[arr[i]] = i + 1;
-  }
-}
 int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(NULL);
   freopen("threesum.in","r",stdin);
   freopen("threesum.out","w",stdout);
   int N, Q;
   cin >> N >> Q;
   arr.resize(N);
   dp.resize(N);
+  ap.resize(2 * MAX);
+  for(int i = 0; i < 2 * MAX; i++){
+    ap[i] = -1;
+  }
   for (int i = 0; i < N; i++) {
     cin >> arr[i];
     dp[i].resize(N);
   }
-  solve();
+  pref.resize(arr.size());
+  for (int i = 0; i < arr.size(); i++) {
+    pref[i].resize(arr.size());
+  }
+  for (int i = 0; i < arr.size(); i++) {
+    ap[arr[i] + MAX] = i;
+  }
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
       dp[i][j] = -1;
@@ -79,10 +64,23 @@ int main() {
       pref[j][i] = pref[j - 1][i] + (arr[j] == arr[i]);
     }
   }
+  for(int x = N - 1; x >= 0; x--){
+    for(int y = 0; y < N; y++){
+      if(y - x < 2){
+        dp[x][y] = 0;
+        continue;
+      }
+      if(y - x == 2){
+        dp[x][y] = (arr[x] + arr[x + 1] + arr[x + 2] == 0);
+        continue;
+      }
+      dp[x][y] = dp[x + 1][y] + dp[x][y - 1] - dp[x + 1][y - 1];
+      dp[x][y] += rng(x + 1, y - 1, -arr[x] - arr[y]);
+    }
+  }
+  int a, b;
   while (Q--) {
-    int a, b;
     cin >> a >> b;
-    a--, b--;
-    cout << memoize(a, b) << '\n';
+    cout << dp[a - 1][b - 1] << '\n';
   }
 }
