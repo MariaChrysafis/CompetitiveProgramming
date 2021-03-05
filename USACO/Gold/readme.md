@@ -52,4 +52,5 @@
 | 2020-2021 | December | [Square Pasture](http://usaco.org/index.php?page=viewproblem2&cpid=1067) | December 28th, 2020|
 | 2020-2021 | December | [Bovine Genetics](http://usaco.org/index.php?page=viewproblem2&cpid=1066) | February 2nd, 2021|
 | 2020-2021 | January | [Uddered But Not Herd](http://usaco.org/index.php?page=viewproblem2&cpid=1089) | February 28th, 2021 |
+| 2020-2021 | February | [Stone Game](http://www.usaco.org/index.php?page=viewproblem2&cpid=1113) | March 5th, 2021 |
 | 2020-2021 | February | [Modern Art 3](http://usaco.org/index.php?page=viewproblem&cpid=1102) | February 27th, 2021 |
