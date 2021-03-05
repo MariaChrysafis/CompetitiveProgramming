@@ -9,19 +9,18 @@
 #include <cassert>
 #include <iostream>
 #include <vector>
+#include <cmath>
 //#include <multiset>
 using namespace std;
-vector<int> arr;
-vector<vector<int>> dp;
 vector<vector<int>> pref;
-unordered_map<int, int> ap;
+vector<int> ap;
+const int MAX = 2 * pow(10,6);
+int pl;
 int rng(int l, int r, int x) {
-  x = ap[x];
-  if (x == 0 || r < l) {
+  x = ap[x + MAX];
+  if (x == -1 || r < l) {
     return 0;
   }
-  x--;
-  int pl;
   if (l == 0) {
     pl = 0;
   }
@@ -30,28 +29,29 @@ int rng(int l, int r, int x) {
   }
   return pref[r][x] - pl;
 }
-void solve() {
-  int n = arr.size();
-  pref.resize(n);
-  for (int i = 0; i < n; i++) {
-    pref[i].resize(n);
-  }
-  for (int i = 0; i < n; i++) {
-    ap[arr[i]] = i + 1;
-  }
-}
 int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(NULL);
   freopen("threesum.in","r",stdin);
   freopen("threesum.out","w",stdout);
   int N, Q;
   cin >> N >> Q;
-  arr.resize(N);
-  dp.resize(N);
+  int arr[N];
+  ap.resize(2 * MAX);
+  for(int i = 0; i < 2 * MAX; i++){
+    ap[i] = -1;
+  }
   for (int i = 0; i < N; i++) {
     cin >> arr[i];
-    dp[i].resize(N);
   }
-  solve();
+  int dp[N][N];
+  pref.resize(N);
+  for (int i = 0; i < N; i++) {
+    pref[i].resize(N);
+  }
+  for (int i = 0; i < N; i++) {
+    ap[arr[i] + MAX] = i;
+  }
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
       dp[i][j] = -1;
@@ -65,20 +65,17 @@ int main() {
     for(int y = 0; y < N; y++){
       if(y - x < 2){
         dp[x][y] = 0;
-        continue;
-      }
-      if(y - x == 2){
+      }else if(y - x == 2){
         dp[x][y] = (arr[x] + arr[x + 1] + arr[x + 2] == 0);
-        continue;
+      }else {
+        dp[x][y] = dp[x + 1][y] + dp[x][y - 1] - dp[x + 1][y - 1];
+        dp[x][y] += rng(x + 1, y - 1, -arr[x] - arr[y]);
       }
-      dp[x][y] = dp[x + 1][y] + dp[x][y - 1] - dp[x + 1][y - 1];
-      dp[x][y] += rng(x + 1, y - 1, -arr[x] - arr[y]);
     }
   }
+  int a, b;
   while (Q--) {
-    int a, b;
     cin >> a >> b;
-    a--, b--;
-    cout << dp[a][b] << '\n';
+    cout << dp[a - 1][b - 1] << '\n';
   }
 }
