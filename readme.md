@@ -7,6 +7,7 @@
 | 2020 January Silver | 121 | 736 |
 | 2020 December Silver | 350 | 1257 |
 | 2021 January Silver ```*``` | 1000| 1 |
+| 2021 February Gold | 394 | 190 |
 
 ```*``` signifies in-contest promotion
 
