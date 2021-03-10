@@ -37,6 +37,7 @@
 | 2018-2019 | December | [teamwork](http://usaco.org/index.php?page=viewproblem2&cpid=863) | December 1st, 2020 |
 | 2018-2019 | January | [poetry](http://usaco.org/index.php?page=viewproblem2&cpid=897) | February 2nd, 2021|
 | 2018-2019 | January | [sleepy](http://www.usaco.org/index.php?page=viewproblem2&cpid=898) | February 10th, 2021|
+| 2018-2019 | January | [shortcut](http://usaco.org/index.php?page=viewproblem2&cpid=899) | March 10th, 2021 |
 | 2018-2019 | February | [cowland](http://usaco.org/index.php?page=viewproblem2&cpid=921) | February 23rd, 2021|
 | 2018-2019 | February | [dishes](http://usaco.org/index.php?page=viewproblem2&cpid=922) | February 22nd, 2021 |
 | 2018-2019 | February | [paintbarn](http://usaco.org/index.php?page=viewproblem2&cpid=923) | February 23rd, 2021|
