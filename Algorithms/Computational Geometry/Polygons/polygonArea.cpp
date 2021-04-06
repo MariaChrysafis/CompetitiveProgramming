@@ -1,7 +1,9 @@
 #include <iostream>
 #include <vector>
 
-#define ll long long
+// Rename ll to ingt64
+typedef long long ll;
+
 using namespace std;
 
 struct point {
