@@ -1,38 +1,38 @@
 #include <iostream>
 #include <vector>
 
-#define ll long long
 using namespace std;
 
-struct point {
-    ll x, y;
+struct Point {
+    int64_t x;
+    int64_t y;
 
-    bool operator==(point &p) {
+    bool operator==(Point &p) {
         return (p.x == x && p.y == y);
     }
 };
 
-struct triangle {
-    point a;
-    point b;
-    point c;
+struct Triangle {
+    Point a;
+    Point b;
+    Point c;
 
-    ll signedArea() {
+    int64_t signedArea() {
         return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
     }
 };
 
-bool innerPoint(point q, point a, point b) {
+bool innerPoint(Point q, Point a, Point b) {
     if (a.y > b.y) {
         swap(a, b);
     }
-    triangle t = {a, b, q};
+    Triangle t = {a, b, q};
     return (a.y <= q.y) && (b.y > q.y) && (t.signedArea() > 0);
 }
 
-bool between(point a, point b, point c) {
-    triangle t = {a, b, c};
-    if (t.signedArea() != 0) {
+bool between(Point a, Point b, Point c) {
+    Triangle triangle = {a, b, c};
+    if (triangle.signedArea() != 0) {
         return false;
     }
     bool a1 = (b.x <= max(a.x, c.x) && b.y <= max(a.y, c.y));
@@ -40,11 +40,11 @@ bool between(point a, point b, point c) {
     return a1 && a2;
 }
 
-struct polygon {
-    vector<point> points;
+struct Polygon {
+    vector<Point> points;
 
-    bool pointInPolygon(point &p) {
-        //check if p lies inside the polygon
+    bool pointInPolygon(Point &p) {
+        //check if p lies inside the Polygon
         int n = points.size();
         int cntr = 0;
         for (int i = 0; i < n; i++) {
@@ -63,7 +63,7 @@ struct polygon {
         return (cntr % 2 == 1);
     }
 
-    bool pointOnPolygon(point &p) {
+    bool pointOnPolygon(Point &p) {
         int n = points.size();
         for (int i = 0; i < n; i++) {
             int cur = i;
@@ -75,9 +75,9 @@ struct polygon {
         return false;
     }
 
-    ll area() {
+    int64_t area() {
         int n = points.size();
-        ll sum = 0;
+        int64_t sum = 0;
         for (int i = 0; i < n - 1; i++) {
             sum += points[i].x * points[i + 1].y;
         }
@@ -93,13 +93,13 @@ struct polygon {
 void solve() {
     int n;
     cin >> n;
-    polygon poly;
+    Polygon polygon;
     for (int i = 0; i < n; i++) {
-        point p;
+        Point p;
         cin >> p.x >> p.y;
-        poly.points.push_back(p);
+        polygon.points.push_back(p);
     }
-    cout << abs(poly.area()) << endl;
+    cout << abs(polygon.area()) << endl;
 }
 
 int main() {
