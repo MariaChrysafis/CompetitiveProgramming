@@ -3,9 +3,9 @@
 
 using namespace std;
 
-int64_t gcd(int64_t a, int64_t b){
-    if(min(a, b) == 0) return max(a, b);
-    return gcd(max(a, b) % min(a,b), min(a, b));
+int64_t gcd(int64_t a, int64_t b) {
+    if (min(a, b) == 0) return max(a, b);
+    return gcd(max(a, b) % min(a, b), min(a, b));
 }
 
 struct Point {
@@ -16,15 +16,16 @@ struct Point {
         return (p.x == x && p.y == y);
     }
 
-    Point operator-(Point &p){
+    Point operator-(Point &p) {
         return {p.x - x, p.y - y};
     }
 };
 
-struct Line{
+struct Line {
     Point p1;
     Point p2;
-    int64_t latticePointsOnLine(){
+
+    int64_t latticePointsOnLine() {
         p1 = p1 - p2;
         p1.x = abs(p1.x);
         p1.y = abs(p1.y);
@@ -108,10 +109,11 @@ struct Polygon {
         sum -= points[0].x * points[n - 1].y;
         return sum;
     }
-    int64_t boundaryLattice(){
+
+    int64_t boundaryLattice() {
         int n = points.size();
         int64_t cntr = 0;
-        for(int i = 0; i < n; i++){
+        for (int i = 0; i < n; i++) {
             int cur = i;
             int nxt = (i + 1) % n;
             Line l = {points[cur], points[nxt]};
@@ -119,8 +121,9 @@ struct Polygon {
         }
         return cntr;
     }
-    int64_t latticePoints(){
-        return (abs(area()) - boundaryLattice())/2 + 1;
+
+    int64_t latticePoints() {
+        return (abs(area()) - boundaryLattice()) / 2 + 1;
     }
 };
 
