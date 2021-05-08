@@ -1,3 +1,4 @@
+//verified on https://codeforces.com/contest/1404/problem/B
 struct tree{
     vector<vector<int>> adj;
     vector<int> dist(int src){
