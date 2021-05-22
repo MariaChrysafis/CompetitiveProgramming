@@ -44,13 +44,5 @@ int main(){
     int tc = 0;
     while(t--){
          solve();
-         if(tc == 6261){
-            int n, k;
-            cin >> n >> k;
-            string s;
-            cin >> s;
-            cout << s << endl;
-            continue;
-        }
     }
 }
