@@ -1,3 +1,3 @@
 Codechef solutions.
 
-I go by (https://www.codechef.com/users/airamc)[airamc].
+I go by [airamc](https://www.codechef.com/users/airamc).
