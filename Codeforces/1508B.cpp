@@ -38,7 +38,6 @@ void solve() {
     cin >> n >> k;
     ans.clear();
     memoize(n, k - 1, 0);
-    //cout << ans[0] << endl;
     int cur = 1;
     map<long long, long long> myMap;
     vector<long long> v;
