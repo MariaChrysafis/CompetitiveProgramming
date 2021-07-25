@@ -1,4 +1,7 @@
 # Maria's Competitive-Programming
+
+I solve some problems. I put my solutions here.
+
 ## USACO Contest Scores
 | Contest | Score | Place |
 | ------------ | ---------- | ------------ |
