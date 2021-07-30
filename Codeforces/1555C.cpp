@@ -76,42 +76,39 @@ ll ans (ll W, ll H, ll x1, ll y1, ll x2, ll y2, ll w, ll h){
     return a1;
 }
 void solve(){
-    int n, m;
-    cin >> n >> m;
-    string s;
-    cin >> s;
-    vector<int> pref[3][3];
-    for(int i = 0; i < 3; i++){
-        //'a' + i
-        char cur = 'a' + i;
-        for(int j = 0; j < 3; j++){
-            //position j % 3
-            pref[i][j].resize(n + 1);
-            pref[i][j][0] = 0;
-            for(int pos = 0; pos < s.length(); pos++){
-                pref[i][j][pos + 1] = pref[i][j][pos] + (pos % 3 == j && s[pos] == cur);
-            }
-            //print(pref[i][j]);
+    int n;
+    cin >> n;
+    vector<ll> a[2];
+    ll sum[2];
+    for(int i = 0; i < 2; i++){
+        a[i].resize(n);
+        sum[i] = 0;
+        for(int j = 0; j < n; j++){
+            cin >> a[i][j];
+            sum[i] += a[i][j];
         }
+        //print(a[i]);
     }
-    while(m--){
-        int l, r;
-        cin >> l >> r;
-        int myMax = 0;
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                for(int k = 0; k < 3; k++){
-                    if(i == j || i == k || j == k) continue;
-                    int a = pref[0][i][r] - pref[0][i][l - 1];
-                    a += pref[1][j][r] - pref[1][j][l - 1];
-                    a += pref[2][k][r] - pref[2][k][l - 1];
-                    myMax = max(myMax, a);
-                }
-            }
-        }
-        cout << r - l - myMax + 1 << endl;
+    vector<int> pref(n + 1), suf(n + 1);
+    pref[0] = 0;
+    for(int i = 0; i < n; i++){
+        pref[i + 1] = pref[i] + a[0][i];
     }
+    suf[n] = 0;
+    for(int i = n - 1; i >= 0; i--){
+        suf[i] = suf[i + 1] + a[1][i];
+    }
+    //print(pref);
+    ll ans = 1e10;
+    for(int i = 1; i <= n; i++){
+        ans = min(ans, max(sum[0] - pref[i], sum[1] - suf[i - 1]));
+    }
+    cout << ans << endl;
 }
 int main(){
-    solve();
+    int t;
+    cin >> t;
+    while(t--){
+        solve();
+    }
 }
