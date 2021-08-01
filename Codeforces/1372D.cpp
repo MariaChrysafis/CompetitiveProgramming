@@ -63,3 +63,4 @@ int main() {
         myMax = max(seg.query(i, i + n / 2), myMax);
     }
     cout << myMax << endl;
+}
