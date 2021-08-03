@@ -54,7 +54,7 @@ void solve(){
     Seg<int> segTree;
     segTree.init(n + 1);
     vector<int> dp(n);
-    map<int,set<int>> myMap;
+    map<int,set<pair<int,int>>> myMap;
     for(int i = 0; i < k; i++){
         //cout << pref_hol[i + 1] << " " << pref_gur[i + 1] << endl;
         //return;
@@ -64,7 +64,7 @@ void solve(){
             dp[i] = 1;
         }
         segTree.upd(i, dp[i]);
-        myMap[dp[i]].insert(i);
+        myMap[dp[i]].insert({pref_hol[i + 1] - pref_gur[i + 1], i});
     }
     //print(dp);
     for(int i = k; i < n; i++){
@@ -75,16 +75,16 @@ void solve(){
         int right = i - 1;
         int x = segTree.query(left, right);
         dp[i] = min(dp[i], x + 1);
-        for(int u: myMap[x]){
-            if(u < left) continue;
-            int gur = pref_gur[i + 1] - pref_gur[u + 1];
-            int hol = pref_hol[i + 1] - pref_hol[u + 1];
+        for(pair<int,int> u: myMap[x]){
+            if(u.second < left) continue;
+            int gur = pref_gur[i + 1] - pref_gur[u.second + 1];
+            int hol = pref_hol[i + 1] - pref_hol[u.second + 1];
             if(hol > gur){
                 dp[i] = min(dp[i], x);
             }
         }
-        myMap[dp[i]].insert(i);
-        myMap[dp[left]].erase(left);
+        myMap[dp[i]].insert({pref_hol[i + 1] - pref_gur[i + 1], i});
+        myMap[dp[left]].erase({pref_hol[left + 1] - pref_gur[left + 1], left});
         segTree.upd(i, dp[i]);
     }
     cout << dp.back() << endl;
