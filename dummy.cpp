@@ -6,16 +6,6 @@
 #include <iomanip>
 #include <map>
 using namespace std;
-void setIO(string s) { // the argument is the filename without the extension
-    freopen((s+".in").c_str(),"r",stdin);
-    freopen((s+".out").c_str(),"w",stdout);
-}
-void print(vector<int> v){
-    for(int i: v){
-        cout << i << " ";
-    }
-    cout << endl;
-}
 template<class T> struct Seg { // comb(ID,b) = b
     const T ID = 1e9; T comb(T a, T b) { return min(a,b); }
     int n; vector<T> seg;
@@ -32,8 +22,23 @@ template<class T> struct Seg { // comb(ID,b) = b
         return comb(ra,rb);
     }
 };
+void setIO(string s) { // the argument is the filename without the extension
+    freopen((s+".in").c_str(),"r",stdin);
+    freopen((s+".out").c_str(),"w",stdout);
+}
+void print(vector<int> v){
+    for(int i: v){
+        cout << i << " ";
+    }
+    cout << endl;
+}
 vector<int> pref_hol;
 vector<int> pref_gur;
+struct cmp {
+    bool operator() (int a, int b) const {
+        return (pref_hol[a + 1] - pref_gur[a + 1] > pref_hol[b + 1] - pref_gur[b + 1]);
+    }
+};
 void solve(){
     int n, k;
     cin >> n >> k;
@@ -49,40 +54,41 @@ void solve(){
     Seg<int> segTree;
     segTree.init(n + 1);
     vector<int> dp(n);
-    map<int,vector<int>> myMap;
-    dp[0] = (s[0] == 'G');
-    myMap[dp[0]].push_back(0);
-    segTree.upd(0, dp[0]);
+    map<int,set<int>> myMap;
     for(int i = 0; i < k; i++){
+        //cout << pref_hol[i + 1] << " " << pref_gur[i + 1] << endl;
+        //return;
         if(pref_hol[i + 1] > pref_gur[i + 1]){
             dp[i] = 0;
         }else{
             dp[i] = 1;
         }
-        //dp[i] = (pref_hol[i] >= pref_gur[i]);
+        segTree.upd(i, dp[i]);
+        myMap[dp[i]].insert(i);
     }
+    //print(dp);
     for(int i = k; i < n; i++){
         dp[i] = 1e9;
     }
-    //print(dp);
-    for(int i = 1; i < n; i++){
+    for(int i = k; i < n; i++){
         int left = max(i - k, 0);
         int right = i - 1;
         int x = segTree.query(left, right);
         dp[i] = min(dp[i], x + 1);
         for(int u: myMap[x]){
-            if(u < left || u > right) continue;
+            if(u < left) continue;
             int gur = pref_gur[i + 1] - pref_gur[u + 1];
             int hol = pref_hol[i + 1] - pref_hol[u + 1];
             if(hol > gur){
                 dp[i] = min(dp[i], x);
             }
         }
-        myMap[dp[i]].push_back(i);
+        myMap[dp[i]].insert(i);
+        myMap[dp[left]].erase(left);
         segTree.upd(i, dp[i]);
     }
-    //print(dp);
     cout << dp.back() << endl;
+
 }
 
 int main() {
