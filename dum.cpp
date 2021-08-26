@@ -48,6 +48,26 @@ bool comp(pair<int,int> p1, pair<int,int> p2){
     }
     return (p1.second < p2.second);
 }
+vector<int> response(vector<int> v, vector<pair<int,int>> queries){
+    SegSum<int> st;
+    st.init(v.size() + 1);
+    map<int,int> oc;
+    for(int i = 0; i < v.size(); i++) oc[v[i]] = -1;
+    int last = -1;
+    vector<int> dist;
+    for(int i = 0; i < queries.size(); i++){
+        for(int j = last + 1; j <= queries[i].second; j++){
+            if(oc[v[j]] != -1){
+                st.upd(oc[v[j]], 0);
+            }
+            st.upd(j, 1);
+            oc[v[j]] = j;
+        }
+        last = queries[i].second;
+        dist.push_back(st.query(queries[i].first, queries[i].second));
+    }
+    return dist;
+}
 int main() {
     int n;
     cin >> n;
@@ -90,14 +110,14 @@ int main() {
     }
     vector<pair<int,int>> orig = queries;
     sort(queries.begin(), queries.end(), comp);
+    vector<int> dist = response(v, queries);
+    //for(int i: dist) cout << i << " ";
+    //cout << endl;
     int pr[queries.size()];
     for(int i = 0; i < queries.size(); i++) pr[i] = 0;
+    int ind = 0;
     for(pair<int,int> p: queries){
-        set<int> s;
-        for(int i = p.first; i <= p.second; i++){
-            s.insert(v[i]);
-        }
-        int ans = s.size();
+        int ans = dist[ind];
         for(pair<int,int> q: bad_intervals){
             if(p.first <= q.first && p.second >= q.second){
                 ans++;
@@ -105,6 +125,7 @@ int main() {
             if(p.second < q.second) break;
         }
         f[p] = ans;
+        ind++;
     }
     for(pair<int,int> p: orig){
         cout << f[p] << "\n";
