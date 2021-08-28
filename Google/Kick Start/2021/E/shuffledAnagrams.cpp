@@ -17,23 +17,6 @@ bool valid(string s1, string s2){
 const int INF = 1e9;
 string solve(string inp){
     string orig = inp;
-    map<char,int> oc;
-    for(char c: inp) {
-        oc[c]++;
-    }
-    for(int i = 0; i < inp.length(); i++){
-        char c = inp[i];
-        for(int j = 0; j < 26; j++){
-            if(c == 'z') c = 'a';
-            else c++;
-            if(oc[c]){
-                oc[c]--;
-                inp[i] = c;
-                break;
-            }
-        }
-    }
-    if(valid(orig, inp)) return inp;
     for(int i = 0; i < orig.length(); i++){
         if(orig[i] == inp[i]){
             for(int j = 0; j < orig.length(); j++){
