@@ -16,10 +16,10 @@ I solve some problems. I put my solutions here.
 ```*``` signifies in-contest promotion
 
 ## Codeforces Contests Scores
-See [here](https://codeforces.com/contests/with/olympia).
+See [here](https://codeforces.com/contests/with/olympia). As of the time of writing, I am Codeforces Expert rank.
 
 ## LeetCode Contest Scores
-See [here](https://leetcode.com/passionFruitFlower/) for my LeetCode profile.
+See [here](https://leetcode.com/passionFruitFlower/) for my LeetCode profile. As of the time of writing, I am LeetCode Knight.
 
 ## Codechef
-See [here](https://www.codechef.com/users/airamc) for my CodeChef profile.
+See [here](https://www.codechef.com/users/airamc) for my CodeChef profile. As of time of writing, I am 5 stars.
