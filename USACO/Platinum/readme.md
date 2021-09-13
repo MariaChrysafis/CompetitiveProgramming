@@ -3,6 +3,7 @@
 | ------------- | ------------- | ------------|----------|
 | 2015-2016 | January | [fortmoo](http://www.usaco.org/index.php?page=viewproblem2&cpid=600) | March 5th, 2021 |
 | 2015-2016 | February | [fencedin](http://usaco.org/index.php?page=viewproblem2&cpid=625) | February 19th, 2021|
+| 2016-2017 | US Open | [262144](http://www.usaco.org/index.php?page=viewproblem2&cpid=648) | September 12th, 2021 |
 | 2016-2017 | December | [team](http://www.usaco.org/index.php?page=viewproblem2&cpid=673) | January 31st, 2020 |
 | 2016-2017 | January | [mincross](http://usaco.org/index.php?page=viewproblem2&cpid=720) | February 9th, 2021 |
 | 2018-2019 | January | [redistricting](http://www.usaco.org/index.php?page=viewproblem2&cpid=900) | August 2nd, 2021 |
