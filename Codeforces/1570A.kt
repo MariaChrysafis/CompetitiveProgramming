@@ -1,17 +1,9 @@
-package com.company
-
+import java.io.*
 import java.util.*
-import kotlin.jvm.JvmStatic
 
-object Main {
-    @JvmStatic
-    fun main(args: Array<String>) {
-        val sc = Scanner(System.`in`)
-        val t = sc.nextInt()
-        for (i in 0 until t) {
-            val x = sc.nextInt()
-            val y = sc.nextInt()
-            println(x + y)
-        }
+fun main() {
+    repeat(readLine()!!.toInt()) {
+        val (n, m) = readLine()!!.split(" ").map { it.toInt() }
+        println(n + m)
     }
 }
