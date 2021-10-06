@@ -1,69 +1,75 @@
 #include <iostream>
 #include <vector>
+#include <cassert>
+#include <map>
+#include <set>
+#include <chrono>
+
+#include <queue>
+#include <algorithm>
+#include <cmath>
+#include <fstream>
+
+#pragma GCC optimize("O3")
 using namespace std;
-vector<int> pref;
-int range(int l, int r) {
-    if (r >= pref.size()) {
-        r = pref.size() - 1;
+
+int vec_max(vector<int> v) {
+    int myMax = 0;
+    for (int i: v) {
+        myMax = max(myMax, i);
     }
-    int pl;
-    if (l <= 0) {
-        pl = 0;
-    } else {
-        pl = pref[l - 1];
-    }
-    return pref[r] - pl;
+    return myMax;
 }
 int main() {
-    int N;
-    cin >> N;
-    if (N == 1) {
-        int a;
-        cin >> a;
-        cout << a / 2 + (a % 2 == 1) << endl;
-        return 0;
+    int n;
+    cin >> n;
+    vector<int> v(n);
+    int pref[(int)3e6 + 10];
+    int oc[(int)3e6 + 10];
+    for (int i = 0; i < n; i++) {
+        cin >> v[i];
+        oc[v[i]]++;
     }
-    int arr[N];
-    int myMax = 0;
-    for (int i = 0; i < N; i++) {
-        cin >> arr[i];
-        myMax = max(arr[i], myMax);
+    pref[0] = 0;
+    for (int i = 1; i < (int)3e6; i++) {
+        pref[i] = pref[i - 1] + oc[i - 1];
     }
-    pref.resize(myMax + 1);
-    for (int i = 0; i <= myMax; i++) {
-        pref[i] = 0;
-    }
-    for (int i = 0; i < N; i++) {
-        pref[arr[i]]++;
-    }
-    for (int i = 1; i <= myMax; i++) {
-        pref[i] += pref[i - 1];
-    }
-    long long ans = 0;
-    for (int i = 1; i <= myMax; i++) {
-        // this means that we take i from some guy
-        long long cntr = 0;
-        long long cc = 0;
-        for (int x = 0; i * x <= myMax; x++) {
-            // we take from something in the range of [i * x, i * (x + 1) - 1]
-            int rng = range(i * x, i * (x + 1) - 1);
-            int rng1 = range(i * (x - 1), i * x - 1);
-            if (rng1 % 2 == 1 && rng % 2 == 1) {
-                cntr++;
-                cc += rng;
+    long long cntr = 0;
+    int myMax = vec_max(v);
+    for (int div = 1; div <= myMax; div++) {
+        long long myMap[myMax/div + 1];
+        vector<int> s;
+        for (int i = 0; i <= myMax/div; i++) {
+            int right;
+            right = pref[div * (i + 1)];
+            myMap[i] = right - pref[div * i];
+            if(myMap[i] % 2 == 1) {
+                s.push_back(i);
+                if(s.size() > 2) {
+                    break;
+                }
             }
         }
-        long long count = 0;
-        for (int x = 0; i * x <= myMax; x++) {
-            int rng = range(i * x, i * (x + 1) - 1);
-            if (rng % 2 == 1) {
-                count++;
-            }
+        if(s.size() > 2) {
+            continue;
         }
-        //cout << count << endl;
-        if (count == 2) {
-            ans += cc;
+        for (int i: s) {
+            if (i == 0) continue;
+            myMap[i]--;
+            myMap[i - 1]++;
+            bool fine = true;
+            for(int j = 1; j < myMax/div + 1; j++) {
+                if(myMap[j] % 2 == 1) {
+                    fine = false;
+                    break;
+                }
+            }
+            if(fine) {
+                cntr += myMap[i] + 1;
+            }
+            myMap[i]++;
+            myMap[i - 1]--;
         }
     }
-    cout << ans << endl;
+    cout << cntr << endl;
 }
