@@ -58,6 +58,7 @@
 | 2020-2021 | January | [Uddered But Not Herd](http://usaco.org/index.php?page=viewproblem2&cpid=1089) | February 28th, 2021 |
 | 2020-2021 | February | [Stone Game](http://www.usaco.org/index.php?page=viewproblem2&cpid=1113) | October 6th, 2021 |
 | 2020-2021 | February | [Modern Art 3](http://usaco.org/index.php?page=viewproblem&cpid=1102) | February 27th, 2021 |
+| 2020-2021 | February | [Count the Cows](http://usaco.org/index.php?page=viewproblem2&cpid=1115) | October 7th, 2021 |
 | 2020-2021 | US Open | [United Cows of Farmer John](http://usaco.org/index.php?page=viewproblem&cpid=1125) | April 4th, 2021 |
 | 2020-2021 | US Open | [Permutation](http://usaco.org/index.php?page=viewproblem2&cpid=1139#) | October 5th, 2021 |
 | 2020-2021 | US Open | [Portals](http://www.usaco.org/index.php?page=viewproblem2&cpid=1138) | October 6th, 2021 |
