@@ -15,7 +15,7 @@ using namespace std;
 
 const int MOD = 1e9 + 7;
 
-map <int,int> myMap;
+map<int, int> myMap;
 
 int main() {
     myMap['A'] = 1, myMap['C'] = 2, myMap['T'] = 3, myMap['G'] = 0;
@@ -44,7 +44,7 @@ int main() {
             for (int c2 = 0; c2 < 4; c2++) {
                 for (int c3 = 0; c3 < 4; c3++) {
                     dp[i][c1][c2][c3] = 0;
-                    if(myMap[s[i]] != c3 && s[i] != '?') {
+                    if (myMap[s[i]] != c3 && s[i] != '?') {
                         continue;
                     }
                     for (int prev = 0; prev < 4; prev++) {
@@ -59,11 +59,11 @@ int main() {
         for (int c1 = 0; c1 < 4; c1++) {
             for (int c2 = 0; c2 < 4; c2++) {
                 for (int c3 = 0; c3 < 4; c3++) {
-                    if(myMap[s[i]] != c3 && s[i] != '?') {
+                    if (myMap[s[i]] != c3 && s[i] != '?') {
                         continue;
                     }
                     for (int prev = 0; prev < 4; prev++) {
-                        if(c1 == prev) {
+                        if (c1 == prev) {
                             dp[i][c2][c3][c3] += dp[i - 1][c1][c2][prev];
                             dp[i][c1][c2][c3] %= MOD;
                         }
