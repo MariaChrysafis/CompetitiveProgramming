@@ -36,12 +36,6 @@ vector<coord> vec;
 int eq = 0;
 int solve () {
     int ans = 0;
-    set<int> yCoord;
-    map<int,int> yx;
-    for (auto c: vec) {
-        yCoord.insert(c.y);
-        yx[c.y] = c.x;
-    }
     for (int left = 0; left < vec.size(); left++) {
         for (int right = left + 1; right < vec.size(); right++) {
             int len = abs(vec[left].x - vec[right].x);
@@ -53,8 +47,7 @@ int solve () {
             set<int> s;
             s.insert(upmost);
             set<int> valid;
-            valid.insert(vec[left].y);
-            valid.insert(vec[right].y);
+            valid.insert(vec[left].y), valid.insert(vec[right].y);
             for (int i = 0; i < vec.size(); i++) {
                 coord myCoord = vec[i];
                 if (equals(myCoord, vec[left]) || equals(myCoord, vec[right])) {
@@ -67,24 +60,18 @@ int solve () {
                     continue;
                 }
                 if (myCoord.y >= downmost && myCoord.y <= min(vec[left].y, vec[right].y)) {
-                    s.insert(myCoord.y + len);
-                    valid.insert(myCoord.y);
+                    s.insert(myCoord.y + len), valid.insert(myCoord.y);
                 }
                 if (myCoord.y <= upmost && myCoord.y >= max(vec[left].y, vec[right].y)) {
-                    s.insert(myCoord.y - 1);
-                    valid.insert(myCoord.y);
+                    s.insert(myCoord.y - 1), valid.insert(myCoord.y);
                 }
             }
             for (int i: valid) {
-                if(valid.count(i + len)) {
-                    eq++;
-                }
+                eq += valid.count(i + len);
             }
             int cntr = 0;
             for (int j: s) {
-                if (j <= upmost && j >= max(vec[left].y, vec[right].y)) {
-                    cntr++;
-                }
+                cntr += (j <= upmost && j >= max(vec[left].y, vec[right].y));
             }
             ans += cntr;
         }
@@ -93,8 +80,7 @@ int solve () {
 }
 
 int main() {
-    int n;
-    cin >> n;
+    int n = read();
     for (int i = 0; i < n; i++) {
         vec.push_back((coord) {read(), read()});
     }
