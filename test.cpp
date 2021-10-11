@@ -27,14 +27,14 @@ int main() {
     int n, d;
     cin >> n >> d;
     queue<Node> q;
+    nearestRock.resize(n);
     for (int i = 0; i < n; i++) {
         string s;
         cin >> s;
         arr.push_back(s);
-    }
-    nearestRock.resize(n);
-    for (int i = 0; i < n; i++) {
         nearestRock[i].resize(n);
+    }
+    for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             nearestRock[i][j] = n + n;
             if (arr[i][j] == '#') {
@@ -68,6 +68,11 @@ int main() {
             }
         }
     }
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            hv[i][j] = false;
+        }
+    }
     queue<Node> pq;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
@@ -79,24 +84,22 @@ int main() {
         }
     }
     vector<vector<int>> nearestSource(n), mm(n);
-    bool hasVisited[n][n];
     for (int i = 0; i < n; i++) {
         nearestSource[i].resize(n), mm[i].resize(n);
         for (int j = 0; j < n; j++) {
             nearestSource[i][j] = -1;
-            hasVisited[i][j] = false;
             mm[i][j] = -1;
         }
     }
     while (!pq.empty()) {
         Node cur = pq.front();
         pq.pop();
-        if (cur.x < 0 || cur.y < 0 || cur.x >= n || cur.y >= n || hasVisited[cur.x][cur.y]) {
+        if (cur.x < 0 || cur.y < 0 || cur.x >= n || cur.y >= n || hv[cur.x][cur.y]) {
             continue;
         }
         mm[cur.x][cur.y] = cur.dist;
         nearestSource[cur.x][cur.y] = cur.dist;
-        hasVisited[cur.x][cur.y] = true;
+        hv[cur.x][cur.y] = true;
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if (abs(i) + abs(j) == 1) {
@@ -112,7 +115,7 @@ int main() {
                         mm[nxt.x][nxt.y] = nxt.dist - 1;
                         continue;
                     }
-                    if (hasVisited[nxt.x][nxt.y]) continue;
+                    if (hv[nxt.x][nxt.y]) continue;
                     pq.push(nxt);
                 }
             }
