@@ -48,14 +48,17 @@ int main(){
             }
         }
     }
-    //cout << "YES\n";
+    bool hv[n][n];
+    for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) hv[i][j] = false;
     while(!q.empty()) {
         Node cur = q.front();
+        //cout << cur.x << " " << cur.y << endl;
         q.pop();
-        if (cur.dist > nearestRock[cur.x][cur.y]) {
+        if (cur.dist > nearestRock[cur.x][cur.y] || hv[cur.x][cur.y]) {
             continue;
         }
         nearestRock[cur.x][cur.y] = cur.dist;
+        hv[cur.x][cur.y] = true;
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if(abs(i) + abs(j) == 1) {
@@ -101,6 +104,7 @@ int main(){
         if (cur.x < 0 || cur.y < 0 || cur.x >= n || cur.y >= n || hasVisited[cur.x][cur.y]) {
             continue;
         }
+        //cout << cur.x << " " << cur.y << endl;
         mm[cur.x][cur.y] = cur.dist;
         nearestSource[cur.x][cur.y] = cur.dist;
         hasVisited[cur.x][cur.y] = true;
@@ -112,7 +116,6 @@ int main(){
                     if (nearestSource[nxt.x][nxt.y] != -1) {
                         continue;
                     }
-                    //cout << nxt.x << " " << nxt.y << " " << nxt.dist/d << " " << nearestRock[nxt.x][nxt.y] << endl;
                     if ((nxt.dist - 1)/d >= nearestRock[nxt.x][nxt.y]) {
                         continue;
                     }
@@ -120,6 +123,7 @@ int main(){
                         mm[nxt.x][nxt.y] = nxt.dist - 1;
                         continue;
                     }
+                    if (hasVisited[nxt.x][nxt.y]) continue;
                     mq.push(nxt);
                 }
             }
