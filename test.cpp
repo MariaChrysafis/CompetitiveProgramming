@@ -45,7 +45,11 @@ int main() {
         }
     }
     bool hv[n][n];
-    for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) hv[i][j] = false;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            hv[i][j] = false;
+        }
+    }
     while (!q.empty()) {
         Node cur = q.front();
         q.pop();
@@ -73,13 +77,12 @@ int main() {
             hv[i][j] = false;
         }
     }
-    queue<Node> pq;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             Node b;
             b.x = i, b.y = j, b.dist = 0;
             if (arr[i][j] == 'S') {
-                pq.push(b);
+                q.push(b);
             }
         }
     }
@@ -91,9 +94,9 @@ int main() {
             mm[i][j] = -1;
         }
     }
-    while (!pq.empty()) {
-        Node cur = pq.front();
-        pq.pop();
+    while (!q.empty()) {
+        Node cur = q.front();
+        q.pop();
         if (cur.x < 0 || cur.y < 0 || cur.x >= n || cur.y >= n || hv[cur.x][cur.y]) {
             continue;
         }
@@ -105,17 +108,14 @@ int main() {
                 if (abs(i) + abs(j) == 1) {
                     Node nxt = cur;
                     nxt.dist++, nxt.x += i, nxt.y += j;
-                    if (nearestSource[nxt.x][nxt.y] != -1 || hv[nxt.x][nxt.y]) {
-                        continue;
-                    }
-                    if ((nxt.dist - 1) / d >= nearestRock[nxt.x][nxt.y]) {
+                    if (nearestSource[nxt.x][nxt.y] != -1 || hv[nxt.x][nxt.y] || (nxt.dist - 1) / d >= nearestRock[nxt.x][nxt.y]) {
                         continue;
                     }
                     if (nxt.dist / d >= nearestRock[nxt.x][nxt.y]) {
                         mm[nxt.x][nxt.y] = nxt.dist - 1;
                         continue;
                     }
-                    pq.push(nxt);
+                    q.push(nxt);
                 }
             }
         }
@@ -154,8 +154,7 @@ int main() {
             for (int dy = -1; dy <= 1; dy++) {
                 if (abs(dx) + abs(dy) == 1) {
                     Node n1 = cur;
-                    n1.x += dx, n1.y += dy;
-                    n1.dist--;
+                    n1.x += dx, n1.y += dy, n1.dist--;
                     mq.push(n1);
                 }
             }
