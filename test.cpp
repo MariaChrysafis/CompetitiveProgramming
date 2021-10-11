@@ -61,10 +61,8 @@ int main() {
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if (abs(i) + abs(j) == 1) {
-                    Node nxt;
-                    nxt.dist = cur.dist + 1;
-                    nxt.x = i + cur.x;
-                    nxt.y = j + cur.y;
+                    Node nxt = cur;
+                    nxt.dist++, nxt.x += i, nxt.y += j;
                     if (nxt.x >= 0 && nxt.y >= 0 && nxt.y < n && nxt.x < n) {
                         q.push(nxt);
                     }
