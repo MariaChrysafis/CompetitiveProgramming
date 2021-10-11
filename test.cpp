@@ -105,7 +105,7 @@ int main() {
                 if (abs(i) + abs(j) == 1) {
                     Node nxt = cur;
                     nxt.dist++, nxt.x += i, nxt.y += j;
-                    if (nearestSource[nxt.x][nxt.y] != -1) {
+                    if (nearestSource[nxt.x][nxt.y] != -1 || hv[nxt.x][nxt.y]) {
                         continue;
                     }
                     if ((nxt.dist - 1) / d >= nearestRock[nxt.x][nxt.y]) {
@@ -115,7 +115,6 @@ int main() {
                         mm[nxt.x][nxt.y] = nxt.dist - 1;
                         continue;
                     }
-                    if (hv[nxt.x][nxt.y]) continue;
                     pq.push(nxt);
                 }
             }
