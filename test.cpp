@@ -12,16 +12,6 @@ struct Node {
     int y;
     int dist;
 };
-struct Block {
-    int x; //center (x, y)
-    int y;
-    int time;
-    int size;
-};
-bool Compare(Node a1, Node a2)
-{
-    return (a1.dist < a2.dist);
-}
 vector<string> arr;
 vector<vector<int>> nearestRock;
 int main(){
@@ -104,7 +94,6 @@ int main(){
         if (cur.x < 0 || cur.y < 0 || cur.x >= n || cur.y >= n || hasVisited[cur.x][cur.y]) {
             continue;
         }
-        //cout << cur.x << " " << cur.y << endl;
         mm[cur.x][cur.y] = cur.dist;
         nearestSource[cur.x][cur.y] = cur.dist;
         hasVisited[cur.x][cur.y] = true;
@@ -132,19 +121,41 @@ int main(){
     bool valid[n][n];
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            valid[i][j] = false;
+            if (mm[i][j] != -1) {
+                mm[i][j] /= d;
+            }
         }
     }
+    mq = {};
+    vector<pair<int, pair<int,int>>> vec;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            if (mm[i][j] != -1) {
-                valid[i][j] = true;
-                for (int x = 0; x < n; x++) {
-                    for (int y = 0; y < n; y++) {
-                        if (abs(i - x) + abs(j - y) <= (mm[i][j])/d) {
-                            valid[x][y] = true;
-                        }
-                    }
+            valid[i][j] = false;
+            if(mm[i][j] != -1) {
+                Node n1;
+                n1.x = i, n1.y = j, n1.dist = mm[i][j];
+                mq.push(n1);
+            }
+        }
+        //cout << endl;
+    }
+    while(!mq.empty()) {
+        Node cur = mq.front();
+        mq.pop();
+        valid[cur.x][cur.y] = true;
+        if (cur.dist == 0) {
+            continue;
+        }
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                if(abs(dx) + abs(dy) == 1) {
+                    //cout << dx << " " << dy << endl;
+                    Node n1 = cur;
+                    n1.x += dx, n1.y += dy;
+                    n1.dist--;
+                    mq.push(n1);
+                    //cout << n1.x << " " << n1.y << " " << n1.dist << endl;
+                    //valid[n1.x][n1.y] = true;
                 }
             }
         }
@@ -152,8 +163,10 @@ int main(){
     int cntr = 0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
+            //cout << valid[i][j] << " ";
             cntr += valid[i][j];
         }
+        //cout << endl;
     }
     cout << cntr << endl;
 
