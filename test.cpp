@@ -22,34 +22,33 @@ bool Compare(Node a1, Node a2)
 {
     return (a1.dist < a2.dist);
 }
-string read() {
-    string s;
-    cin >> s;
-    return s;
-}
 vector<string> arr;
 vector<vector<int>> nearestRock;
 int main(){
     //freopen("hamming.in", "r", stdin);
     int n, d;
     cin >> n >> d;
-    d = min(d, 2 * n + 4);
-    nearestRock.resize(n);
     queue<Node> q;
+    //cout << "YES\n";
+    for (int i = 0; i < n; i++) {
+        string s;
+        cin >> s;
+        arr.push_back(s);
+    }
+    //cout << "YES\n";
+    nearestRock.resize(n);
     for (int i = 0; i < n; i++) {
         nearestRock[i].resize(n);
         for (int j = 0; j < n; j++) {
             nearestRock[i][j] = n + n;
-        }
-        arr.push_back(read());
-        for (int j = 0; j < n; j++) {
-            if(arr[i][j] == '#') {
+            if (arr[i][j] == '#') {
                 Node cur;
                 cur.x = i, cur.y = j, cur.dist = 0;
                 q.push(cur);
             }
         }
     }
+    //cout << "YES\n";
     while(!q.empty()) {
         Node cur = q.front();
         q.pop();
@@ -71,6 +70,7 @@ int main(){
             }
         }
     }
+    //return 0;
     queue <Node> mq;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
@@ -98,7 +98,7 @@ int main(){
     while(!mq.empty()) {
         Node cur = mq.front();
         mq.pop();
-        if (cur.x < 0 || cur.y < 0 || cur.x >= n || cur.y >= n) {
+        if (cur.x < 0 || cur.y < 0 || cur.x >= n || cur.y >= n || hasVisited[cur.x][cur.y]) {
             continue;
         }
         mm[cur.x][cur.y] = cur.dist;
@@ -125,16 +125,6 @@ int main(){
             }
         }
     }
-    /*
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            cout << mm[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << endl;
-     */
-    //return 0;
     bool valid[n][n];
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
@@ -154,15 +144,12 @@ int main(){
                 }
             }
         }
-        //cout << endl;
     }
     int cntr = 0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            //cout << valid[i][j] << " ";
             cntr += valid[i][j];
         }
-        //cout << endl;
     }
     cout << cntr << endl;
 
