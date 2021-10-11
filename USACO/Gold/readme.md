@@ -54,6 +54,7 @@
 | 2019-2020 | US Open | [fcolor](http://usaco.org/index.php?page=viewproblem2&cpid=1042) | March 4th, 2021 |
 | 2019-2020 | US Open | [exercise](http://www.usaco.org/index.php?page=viewproblem2&cpid=1043) | February 2nd, 2021|
 | 2020-2021 | December | [Square Pasture](http://usaco.org/index.php?page=viewproblem2&cpid=1067) | October 9th, 2021 |
+| 2020-2021 | December | [replication](http://usaco.org/index.php?page=viewproblem2&cpid=1065) | October 10th, 2021 |
 | 2020-2021 | December | [Bovine Genetics](http://usaco.org/index.php?page=viewproblem2&cpid=1066) | February 2nd, 2021|
 | 2020-2021 | January | [Uddered But Not Herd](http://usaco.org/index.php?page=viewproblem2&cpid=1089) | February 28th, 2021 |
 | 2020-2021 | January | [Telephone](http://usaco.org/index.php?page=viewproblem2&cpid=1090#) | October 7th, 2021 |
