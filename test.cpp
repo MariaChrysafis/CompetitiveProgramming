@@ -16,6 +16,7 @@ struct Node {
     map<int,int> oc;
     int sum3;
 };
+//set<int> s;
 Node merge(Node a, Node b) {
     Node ans;
     ans.sum3 = 0;
@@ -23,10 +24,8 @@ Node merge(Node a, Node b) {
         ans.oc[p.first] = p.second;
     }
     for (auto p: b.oc) {
-        //cout << p.first << " " << p.second << endl;
         ans.oc[p.first] += p.second;
     }
-    //cout << endl;
     for (auto p: a.dp) {
         ans.dp[p.first] += p.second;
     }
@@ -34,8 +33,8 @@ Node merge(Node a, Node b) {
         ans.dp[p.first] += p.second;
     }
     for (auto p1: a.oc) {
-        for (auto p2: b.oc) {
-            ans.dp[p1.first + p2.first] += p1.second * p2.second;
+        for (int i: s) {
+            ans.dp[i] += a.oc[p1.first] * b.oc[i - p1.first];
         }
     }
     ans.sum3 = a.sum3 + b.sum3;
@@ -111,6 +110,7 @@ int main() {
         int x;
         cin >> x;
         st.update(i, x);
+        s.insert(x), s.insert(-x);
     }
     while (q--) {
         int a, b;
