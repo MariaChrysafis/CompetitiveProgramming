@@ -23,7 +23,6 @@ int memoize(int i, int j) {
     marked[i][j] = true;
     return (dp[i][j] = ans);
 }
-//const int INF = (int)2e6 + 3;
 int main() {
     freopen("threesum.in", "r", stdin);
     freopen("threesum.out", "w", stdout);
@@ -31,8 +30,9 @@ int main() {
     cin >> n >> q;
     vector<int> v(n);
     int oc[n][n + 1];
-    int rev[(int)2e6 + 10];
-    for (int i = 0; i < (int)2e6 + 10; i++) {
+    vector<int> rev(2e6 + 10);
+    //return 0;
+    for (int i = 0; i < rev.size(); i++) {
         rev[i] = 0;
     }
     for (int i = 0; i < n; i++) {
@@ -54,14 +54,19 @@ int main() {
             marked[i][j] = false;
         }
     }
+    //return 0;
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n; j++) {
+            if (-v[i] - v[j] + (int)1e6 < 0 || -v[i] - v[j] + (int)1e6 >= rev.size()) {
+                continue;
+            }
             int fnd = rev[-v[i] - v[j] + (int)1e6];
             if (fnd == 0) continue;
             fnd--;
             nums[i][j] = oc[fnd][j] - oc[fnd][i + 1];
         }
     }
+    //return 0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             dp[i][j] = memoize(i, j);
