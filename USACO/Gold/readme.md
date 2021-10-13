@@ -51,6 +51,7 @@
 | 2019-2020 | January | [time](http://usaco.org/index.php?page=viewproblem2&cpid=993) | December 1st, 2020 |
 | 2019-2020 | February | [timeline](http://usaco.org/index.php?page=viewproblem2&cpid=1017) | December 1st, 2020 |
 | 2019-2020 | February | [help](http://usaco.org/index.php?page=viewproblem2&cpid=1018#) | February 8th, 2021 | 
+| 2019-2020 | February | [deleg](http://www.usaco.org/index.php?page=viewproblem2&cpid=1019) | October 12th,m 2021 |
 | 2019-2020 | US Open | [haircut](http://www.usaco.org/index.php?page=viewproblem2&cpid=1041) | February 10th, 2021|
 | 2019-2020 | US Open | [fcolor](http://usaco.org/index.php?page=viewproblem2&cpid=1042) | March 4th, 2021 |
 | 2019-2020 | US Open | [exercise](http://www.usaco.org/index.php?page=viewproblem2&cpid=1043) | February 2nd, 2021|
