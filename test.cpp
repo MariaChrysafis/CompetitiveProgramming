@@ -31,8 +31,10 @@ int main() {
     cin >> n >> q;
     vector<int> v(n);
     int oc[n][n + 1];
+    map<int,int> rev;
     for (int i = 0; i < n; i++) {
         cin >> v[i];
+        rev[v[i]] = i + 1;
         //oc[v[i]]++;
     }
     for (int i = 0; i < n; i++) {
@@ -40,7 +42,9 @@ int main() {
         oc[i][0] = 0;
         for (int j = 1; j <= n; j++) {
             oc[i][j] = oc[i][j - 1] + (v[j - 1] == v[i]);
+            //cout << oc[i][j] << " ";
         }
+        //cout << endl;
     }
     dp.resize(n), nums.resize(n), marked.resize(n);
     for (int i = 0; i < n; i++) {
@@ -52,17 +56,14 @@ int main() {
     }
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n; j++) {
-            int fnd = -1;
-            for (int k = i + 1; k <= j - 1; k++) {
-                if (v[i] + v[k] + v[j] == 0) {
-                    //nums[i][j]++;
-                    fnd = k;
-                    break;
-                }
-            }
-            if (fnd == -1) continue;
+            int fnd = rev[-v[i] - v[j]];
+            if (fnd == 0) continue;
+            fnd--;
+            //cout << fnd << endl;
             nums[i][j] = oc[fnd][j] - oc[fnd][i + 1];
+            //cout << nums[i][j] << " ";
         }
+        //cout << endl;
     }
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
