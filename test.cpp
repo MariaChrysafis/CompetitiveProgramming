@@ -5,10 +5,11 @@
 #include <set>
 #include <climits>
 #include <cmath>
+#include <cassert>
 #include <algorithm>
-#pragma GCC target ("avx2")
-#pragma GCC optimization ("O3")
-#pragma GCC optimization ("unroll-loops")
+//#pragma GCC target ("avx2")
+//#pragma GCC optimization ("O3")
+//#pragma GCC optimization ("unroll-loops")
 using namespace std;
 vector<vector<int>> dp, nums;
 vector<vector<bool>> marked;
@@ -29,18 +30,20 @@ int main() {
     int n, q;
     cin >> n >> q;
     vector<int> v(n);
-    int oc[n][n + 1];
-    vector<int> rev(2e6 + 10);
-    //return 0;
+    vector<vector<int>> oc;
+    vector<int> rev(3e6 + 10);
     for (int i = 0; i < rev.size(); i++) {
-        rev[i] = 0;
+        rev[i] = -1;
     }
     for (int i = 0; i < n; i++) {
         cin >> v[i];
-        rev[v[i] + (int)1e6] = i + 1;
+        assert(v[i] <= (int)1e6);
+        rev[v[i] + (int)1e6] = i;
         //oc[v[i]]++;
     }
+    oc.resize(n);
     for (int i = 0; i < n; i++) {
+        oc[i].resize(n + 1);
         oc[i][0] = 0;
         for (int j = 1; j <= n; j++) {
             oc[i][j] = oc[i][j - 1] + (v[j - 1] == v[i]);
@@ -55,15 +58,21 @@ int main() {
         }
     }
     //return 0;
-    for (int i = 0; i < n - 1; i++) {
+    for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             if (-v[i] - v[j] + (int)1e6 < 0 || -v[i] - v[j] + (int)1e6 >= rev.size()) {
                 continue;
             }
             int fnd = rev[-v[i] - v[j] + (int)1e6];
-            if (fnd == 0) continue;
-            fnd--;
+            if (fnd == -1) continue;
+            assert(fnd < n && fnd >= 0 && i + 1 <= n && i + 1 >= 0 && i < n && j < n);
+            //cout << oc[fnd][i + 1] << endl;
+            //return 0;
+            //return 0;
+            nums[i][j] = oc[fnd][i + 1];
+            //return 0;
             nums[i][j] = oc[fnd][j] - oc[fnd][i + 1];
+            //return 0;
         }
     }
     //return 0;
