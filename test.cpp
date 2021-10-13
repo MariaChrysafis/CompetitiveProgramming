@@ -14,45 +14,43 @@ set<int> s;
 struct Node {
     map<int,int> dp;
     map<int,int> oc;
+    int sum3;
 };
 Node merge(Node a, Node b) {
     Node ans;
+    ans.sum3 = 0;
     for (auto p: a.oc) {
         ans.oc[p.first] = p.second;
     }
     for (auto p: b.oc) {
+        //cout << p.first << " " << p.second << endl;
         ans.oc[p.first] += p.second;
+    }
+    //cout << endl;
+    for (auto p: a.dp) {
+        ans.dp[p.first] += p.second;
+    }
+    for (auto p: b.dp) {
+        ans.dp[p.first] += p.second;
     }
     for (auto p1: a.oc) {
         for (auto p2: b.oc) {
-            ans.dp[p1.first + p2.first] = p1.second * p2.second;
+            ans.dp[p1.first + p2.first] += p1.second * p2.second;
         }
     }
-    return ans;
-}
-int sum3 (Node x) {
-    vector<int> v;
-    for (auto p: x.oc) {
-        int dum = p.second;
-        while (dum--) {
-            v.push_back(p.first);
-        }
+    ans.sum3 = a.sum3 + b.sum3;
+    for (auto p1: a.dp) {
+        ans.sum3 += p1.second * b.oc[-p1.first];
     }
-    int ans = 0;
-    for (int i = 0; i < v.size(); i++) {
-        for (int j = i + 1; j < v.size(); j++) {
-            for (int k = j + 1; k < v.size(); k++) {
-                if (v[i] + v[j] + v[k] == 0) {
-                    ans++;
-                }
-            }
-        }
+    for (auto p1: b.dp) {
+        ans.sum3 += p1.second * a.oc[-p1.first];
     }
     return ans;
 }
 Node construct(int x) {
     Node ans;
     ans.oc[x] = 1;
+    ans.sum3 = 0;
     return ans;
 }
 map<int,int> empty_map;
@@ -118,9 +116,10 @@ int main() {
         int a, b;
         cin >> a >> b;
         a--, b--;
-        cout << sum3(st.query(a, b)) << endl;
+        cout << st.query(a, b).sum3 << endl;
     }
     //cout << sum3(construct(3)) << endl;
     return 0;
 }
+
 
