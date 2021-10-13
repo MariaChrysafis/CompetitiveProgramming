@@ -31,7 +31,7 @@ int main() {
     cin >> n >> q;
     vector<int> v(n);
     vector<vector<int>> oc;
-    vector<int> rev(3e6 + 10);
+    vector<int> rev(2e6 + 10);
     for (int i = 0; i < rev.size(); i++) {
         rev[i] = -1;
     }
@@ -39,7 +39,6 @@ int main() {
         cin >> v[i];
         assert(v[i] <= (int)1e6);
         rev[v[i] + (int)1e6] = i;
-        //oc[v[i]]++;
     }
     oc.resize(n);
     for (int i = 0; i < n; i++) {
@@ -57,7 +56,6 @@ int main() {
             marked[i][j] = false;
         }
     }
-    //return 0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             if (-v[i] - v[j] + (int)1e6 < 0 || -v[i] - v[j] + (int)1e6 >= rev.size()) {
@@ -66,16 +64,10 @@ int main() {
             int fnd = rev[-v[i] - v[j] + (int)1e6];
             if (fnd == -1) continue;
             assert(fnd < n && fnd >= 0 && i + 1 <= n && i + 1 >= 0 && i < n && j < n);
-            //cout << oc[fnd][i + 1] << endl;
-            //return 0;
-            //return 0;
             nums[i][j] = oc[fnd][i + 1];
-            //return 0;
             nums[i][j] = oc[fnd][j] - oc[fnd][i + 1];
-            //return 0;
         }
     }
-    //return 0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             dp[i][j] = memoize(i, j);
