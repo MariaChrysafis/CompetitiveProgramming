@@ -1,69 +1,126 @@
 #include <vector>
 #include <chrono>
 #include <iostream>
-#include <queue>
 #include <map>
+#include <set>
+#include <climits>
 #include <cmath>
 #include <algorithm>
-#include <unordered_map>
-#include <set>
-#pragma GCC optimize("Ofast")
-#pragma GCC optimize("O3")
-#pragma GCC target("avx,avx2,fma")
-
+#pragma GCC target ("avx2")
+#pragma GCC optimization ("O3")
+#pragma GCC optimization ("unroll-loops")
 using namespace std;
-using namespace std::chrono;
-
-struct cntBitsCmp {
-    bool operator()(vector<int> a, vector<int> b) {
-        //return cntBits(a) < cntBits(b);
-        for (int i = 0; i < a.size(); i++) {
-            if (a[i] < b[i]) {
-                return true;
-            }
-        }
-        return false;
-    }
+set<int> s;
+struct Node {
+    map<int,int> dp;
+    map<int,int> oc;
 };
-
-int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    map<vector<int>, int> myMap;
-    vector<vector<bool>> temp(32);
-    for (int i = 0; i < 32; i++) {
-        temp[i].resize(5);
-        for (int k = 0; k < 5; k++) {
-            if (i & (1 << k)) {
-                temp[i][k] = ((i & (1 << k)) > 0);
-            }
+Node merge(Node a, Node b) {
+    Node ans;
+    for (auto p: a.oc) {
+        ans.oc[p.first] = p.second;
+    }
+    for (auto p: b.oc) {
+        ans.oc[p.first] += p.second;
+    }
+    for (auto p1: a.oc) {
+        for (auto p2: b.oc) {
+            ans.dp[p1.first + p2.first] = p1.second * p2.second;
         }
     }
-    long long n;
-    cin >> n;
-    for (int i = 0; i < n; i++) {
-        vector<int> vec(5);
-        for (int j = 0; j < 5; j++) {
-            cin >> vec[j];
+    return ans;
+}
+int sum3 (Node x) {
+    vector<int> v;
+    for (auto p: x.oc) {
+        int dum = p.second;
+        while (dum--) {
+            v.push_back(p.first);
         }
-        sort(vec.begin(), vec.end());
-        for (int j = 1; j < 32; j++) {
-            vector<int> sub;
-            for (int k = 0; k < 5; k++) {
-                if (temp[j][k]) {
-                    sub.push_back(vec[k]);
+    }
+    int ans = 0;
+    for (int i = 0; i < v.size(); i++) {
+        for (int j = i + 1; j < v.size(); j++) {
+            for (int k = j + 1; k < v.size(); k++) {
+                if (v[i] + v[j] + v[k] == 0) {
+                    ans++;
                 }
             }
-            myMap[sub]++;
         }
     }
-    long long ans = 0;
-        for (auto p: myMap) {
-            if (p.first.size() % 2 == 1) {
-                ans -= p.second * (p.second - 1) / 2;
-            } else {
-                ans += p.second * (p.second - 1) / 2;
-            }
-        }
-    cout << n * (n - 1)/ 2 + ans;
+    return ans;
 }
+Node construct(int x) {
+    Node ans;
+    ans.oc[x] = 1;
+    return ans;
+}
+map<int,int> empty_map;
+struct segmentTree {
+    vector<Node> v;
+    vector<Node> val;
+
+    Node ID = {empty_map, empty_map};
+
+    Node query(int dum, int tl, int tr, int& l, int& r) {
+        if (tr < l || tl > r) {
+            return ID;
+        }
+        if (tl >= l && tr <= r) {
+            return val[dum];
+        }
+        int mid = (tl + tr) >> 1;
+        dum = dum << 1;
+        return merge(query(dum, tl, mid, l, r), query(dum + 1, mid + 1, tr, l, r));
+    }
+
+    Node query(int l, int r) {
+        return query(1, 0, (int)v.size() - 1, l, r);
+    }
+
+    void update(int x, int y) {
+        int cur = (int) v.size() + x;
+        int curX = x;
+        int curY = x;
+        while (true) {
+            val[cur] = merge(merge(query(curX, x - 1), query(x + 1, curY)), construct(y));
+            if (cur == 0) {
+                break;
+            }
+            if(cur % 2 == 0) {
+                curY = 2 * curY - curX + 1;
+            } else {
+                curX = 2 * curX - curY - 1;
+            }
+            cur /= 2;
+        }
+    }
+
+    void resz(int n) {
+        v.resize((1 << (int) ceil(log2(n))));
+        val.resize(v.size() * 2);
+    }
+
+};
+int main() {
+    freopen("threesum.in", "r", stdin);
+    freopen("threesum.out", "w", stdout);
+    int n, q;
+    cin >> n >> q;
+    segmentTree st;
+    st.resz(n + 1);
+    for (int i = 0; i < n; i++) {
+        int x;
+        cin >> x;
+        st.update(i, x);
+    }
+    while (q--) {
+        int a, b;
+        cin >> a >> b;
+        a--, b--;
+        cout << sum3(st.query(a, b)) << endl;
+    }
+    //cout << sum3(construct(3)) << endl;
+    return 0;
+}
+
