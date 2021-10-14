@@ -7,55 +7,56 @@
 #include <cmath>
 #include <cassert>
 #include <algorithm>
+//#pragma pack
 using namespace std;
-int main() {
-    freopen("threesum.in", "r", stdin);
-    freopen("threesum.out", "w", stdout);
-    int n, q;
-    cin >> n >> q;
-    int dp[n][n];
-    int v[n];
-    vector<vector<int>> oc;
-    vector<int> rev(2e6 + 10);
-    for (int i = 0; i < rev.size(); i++) {
-        rev[i] = -1;
+struct Point {
+    long long x, y;
+    long long manhattan() {
+        return abs(x) + abs(y);
     }
-    for (int i = 0; i < n; i++) {
-        cin >> v[i];
-        assert(v[i] <= (int)1e6);
-        rev[v[i] + (int)1e6] = i;
-    }
-    oc.resize(n);
-    for (int i = 0; i < n; i++) {
-        oc[i].resize(n + 1);
-        oc[i][0] = 0;
-        for (int j = 1; j <= n; j++) {
-            oc[i][j] = oc[i][j - 1] + (v[j - 1] == v[i]);
-        }
-    }
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            dp[i][j] = 0;
-        }
-    }
-    for (int i = n - 1; i >= 0; i--) {
-        for (int j = 0; j < n; j++) {
-            if (abs(j - i) <= 1 || j < i) continue;
-            int ans = 0;
-            if (-v[i] - v[j] + (int)1e6 < 0 || -v[i] - v[j] + (int)1e6 >= rev.size()) {
-                ans = 0;
-            } else {
-                int fnd = rev[-v[i] - v[j] + (int)1e6];
-                if (fnd == -1) ans = 0;
-                else ans = oc[fnd][j] - oc[fnd][i + 1];
-            }
-            dp[i][j] = dp[i + 1][j] + dp[i][j - 1] - dp[i + 1][j - 1] + ans;
-        }
-    }
-    //return 0;
-    while (q--) {
-        int x, y;
-        cin >> x >> y;
-        cout << dp[x - 1][y - 1] << '\n';
-    }
+};
+struct Board {
+    Point p1;
+    Point p2;
+	long long save() {
+		return p2.manhattan() - p1.manhattan();
+	}
+};
+bool abovePoint (Point p1, Point p2) {
+	return (p1.x >= p2.x && p1.y >= p2.y);
 }
+bool above (Board b1, Board b2) {
+	//is b1 above b2?
+	return abovePoint(b1.p1, b2.p2);
+}
+bool comp(Board b1, Board b2) {
+    return b1.p1.manhattan() < b2.p1.manhattan();
+}
+int main() {
+    freopen("boards.in", "r", stdin);
+    freopen("boards.out", "w", stdout);
+    long long N, P;
+    cin >> N >> P;
+    vector<Board> vec(P);
+    for (int i = 0; i < P; i++) {
+        cin >> vec[i].p1.x >> vec[i].p1.y >> vec[i].p2.x >> vec[i].p2.y;
+    }
+    sort(vec.begin(), vec.end(), comp);
+	long long dp[P];
+	long long myMax = 0;
+	for (int i = 0; i < P; i++) {
+		dp[i] = vec[i].save();
+		for (int j = 0; j < i; j++) {
+			if (above(vec[i], vec[j])) {
+				dp[i] = max(dp[i], dp[j] + vec[i].save());
+			}
+		}
+		myMax = max(myMax, dp[i]);
+		//cout << dp[i] << " ";
+	}
+	//cout << endl;
+	//cout << myMax << endl;
+	cout << 2 * N - myMax << endl;
+}
+
+
