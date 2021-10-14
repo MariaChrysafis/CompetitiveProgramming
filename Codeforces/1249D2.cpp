@@ -1,41 +1,72 @@
-#include <iostream>
-#include <vector>
-#include <string>
-#include <algorithm>
-#include <cmath>
-#include <map>
-#include <set>
+#include <bits/stdc++.h>
+
 using namespace std;
-const int MAX = 2e5 + 7;
-int main() {
-    int n, k;
-    cin >> n >> k;
-    map<int,vector<pair<int,int>>> myMap;
-    for(int i = 0; i < n; i++){
-        int l, r;
-        cin >> l >> r;
-        myMap[l].push_back(make_pair(r, i));
+
+vector<int> factors(int x) {
+    set<int> s;
+    for (int i = 1; i <= sqrt(x); i++) {
+        if (x % i == 0) {
+            s.insert(i), s.insert(x / i);
+        }
     }
-    set<pair<int,int>> s;
     vector<int> v;
-    for(int i = 0; i < MAX; i++){
-        while(!s.empty() && s.begin()->first < i){
-            s.erase(s.begin());
-        }
-        for(pair<int,int> q: myMap[i]){
-            s.insert(q);
-        }
-        while(s.size() > k){
-            auto it = s.end();
-            it--;
-            v.push_back((*it).second);
-            s.erase(it);
+    for (int i: s) {
+        v.push_back(i);
+    }
+    return v;
+}
+
+void solve() {
+    int n;
+    cin >> n;
+    vector<int> v(n);
+    map<int, int> myMap;
+    for (int i = 0; i < n; i++) {
+        cin >> v[i];
+        myMap[v[i]]++;
+    }
+    for (auto p: myMap) {
+        if (p.second * 2 >= n) {
+            cout << "-1\n";
+            return;
         }
     }
-    sort(v.begin(), v.end());
-    cout << v.size() << endl;
-    for(int i: v){
-        cout << i + 1 << " ";
+    int ans = 0;
+    int cnt = 1000;
+    while (cnt--) {
+        int a = rand() % n;
+        int b = rand() % n;
+        if (a == b) {
+            continue;
+        }
+        vector<int> vec = factors(abs(v[a] - v[b]));
+        for (int i: vec) {
+            map<int, int> oc;
+            for (int j = 0; j < v.size(); j++) {
+                if (v[j] >= 0) oc[v[j] % i]++;
+                else oc[(i - (-v[j]) % i) % i]++;
+            }
+            bool fine = false;
+            for (auto p: oc) {
+                if (p.second * 2 >= n) {
+                    fine = true;
+                    break;
+                }
+            }
+            if (fine) {
+                ans = max(ans, i);
+            }
+        }
     }
-    cout << endl;
+    cout << ans << endl;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    int t;
+    cin >> t;
+    while (t--) {
+        solve();
+    }
 }
