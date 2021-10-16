@@ -36,6 +36,7 @@
 | 2017-2018 | January | [spainting](http://www.usaco.org/index.php?page=viewproblem2&cpid=791) | October 14th, 2021 |
 | 2017-2018 | February | [taming](http://usaco.org/index.php?page=viewproblem2&cpid=815) | January 28th, 2021 |
 | 2017-2018 | US Open | [talent](http://usaco.org/index.php?page=viewproblem2&cpid=839) | February 1st, 2021 |
+| 2017-2018 | US Open | [milkorder](http://www.usaco.org/index.php?page=viewproblem2&cpid=838) | October 15th, 2021 |
 | 2018-2019 | December | [teamwork](http://usaco.org/index.php?page=viewproblem2&cpid=863) | December 1st, 2020 |
 | 2018-2019 | Decemebr | [cowpatability](http://usaco.org/index.php?page=viewproblem2&cpid=862) | October 11th, 2021 |
 | 2018-2019 | January | [poetry](http://usaco.org/index.php?page=viewproblem2&cpid=897) | February 2nd, 2021|
