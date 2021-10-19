@@ -27,23 +27,19 @@ long long binPow(long long x, long long y) {
     }
     return ans;
 }
-vector<string> spotty, plain;
-vector<vector<long long>> pref_spotty, pref_plain;
-long long querySpotty(int level, int x, int y) {
+vector<string> cows[2];
+vector<vector<long long>> pref[2];
+long long query(bool type, int level, int x, int y) {
     int len = (y - x + 1);
-    return (pref_spotty[level][y + 1] - (pref_spotty[level][x] * binPow(5, len)) % MOD + MOD) % MOD;
-}
-long long queryPlain (int level, int x, int y) {
-    int len = y - x + 1;
-    return (pref_plain[level][y + 1] - (pref_plain[level][x] * binPow(5, len)) % MOD + MOD) % MOD;
+    return (pref[type][level][y + 1] - (pref[type][level][x] * binPow(5, len)) % MOD + MOD) % MOD;
 }
 bool valid (int l, int r) {
     set<long long> ans;
-    for (int i = 0; i < pref_spotty.size(); i++) {
-        ans.insert(querySpotty(i, l, r));
+    for (int i = 0; i < cows[0].size(); i++) {
+        ans.insert(query(0, i, l, r));
     }
-    for (int i = 0; i < pref_plain.size(); i++) {
-        if (ans.count(queryPlain(i, l, r))) {
+    for (int i = 0; i < cows[1].size(); i++) {
+        if (ans.count(query(1, i, l, r))) {
             return false;
         }
     }
@@ -57,26 +53,21 @@ int main() {
     //cout << convert['A'] << endl;
     int n, m;
     cin >> n >> m;
-    spotty.resize(n), plain.resize(n);
-    for (int i = 0; i < n; i++) {
-        cin >> spotty[i];
-    }
-    for (int i = 0; i < n; i++) {
-        cin >> plain[i];
-    }
-    pref_spotty.resize(n), pref_plain.resize(n);
-    for (int i = 0; i < pref_spotty.size(); i++) {
-        pref_spotty[i].resize(m + 1);
-        pref_spotty[i][0] = 0;
-        for (int j = 1; j <= m; j++) {
-            pref_spotty[i][j] = (pref_spotty[i][j - 1] * 5 + convert[spotty[i][j - 1]]) % MOD;
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < n; j++) {
+            string s;
+            cin >> s;
+            cows[i].push_back(s);
         }
     }
-    for (int i = 0; i < pref_plain.size(); i++) {
-        pref_plain[i].resize(m + 1);
-        pref_plain[i][0] = 0;
-        for (int j = 1; j <= m; j++) {
-            pref_plain[i][j] = (pref_plain[i][j - 1] * 5 + convert[plain[i][j - 1]]) % MOD;
+    pref[0].resize(n), pref[1].resize(n);
+    for (int dum = 0; dum < 2; dum++) {
+        for (int i = 0; i < pref[dum].size(); i++) {
+            pref[dum][i].resize(m + 1);
+            pref[dum][i][0] = 0;
+            for (int j = 1; j <= m; j++) {
+                pref[dum][i][j] = (pref[dum][i][j - 1] * 5 + convert[cows[dum][i][j - 1]]) % MOD;
+            }
         }
     }
     int myMin = INT_MAX;
@@ -95,7 +86,6 @@ int main() {
                 l = mid + 1;
             }
         }
-        //cout << l << " " << i << endl;
         myMin = min(myMin, l - i + 1);
     }
     cout << myMin << endl;
