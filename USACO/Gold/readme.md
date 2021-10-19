@@ -29,6 +29,7 @@
 | 2016-2017 | February | [nocross](http://www.usaco.org/index.php?page=viewproblem2&cpid=718) | February 6th, 2021|
 | 2016-2017 | February | [circlecross](http://www.usaco.org/index.php?page=viewproblem2&cpid=719) | February 9th, 2021|
 | 2016-2017 | US Open | [art2](http://www.usaco.org/index.php?page=viewproblem2&cpid=743) | March 11th, 2021 |
+| 2016-2017 | US Open | [cownomics](http://usaco.org/index.php?page=viewproblem2&cpid=741) | October 19th, 2021 |
 | 2017-2018 | December | [barnpainting](http://usaco.org/index.php?page=viewproblem2&cpid=766) | December 2nd, 2020|
 | 2017-2018 | December | [hayfeast](http://usaco.org/index.php?page=viewproblem2&cpid=767) | January 26th, 2021 |
 | 2017-2018 | January | [atlarge](http://www.usaco.org/index.php?page=viewproblem2&cpid=790) | October 15th, 2021 |
