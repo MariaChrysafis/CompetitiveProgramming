@@ -13,29 +13,13 @@
 using namespace std;
 const int MOD = 1e9 + 7;
 
-long long mult(long long x, long long y) {
-    return (x * y) % MOD;
-}
-
-long long binPow(long long x, long long y) {
-    long long ans = 1;
-    long long res = x;
-    while (y > 0) {
-        if (y & 1) {
-            ans = mult(res, ans);
-        }
-        res = mult(res, res);
-        y >>= 1;
-    }
-    return ans;
-}
-
 vector<string> cows[2];
 vector<vector<long long>> pref[2];
+vector<long long> powr(505);
 
 long long query(bool type, int level, int x, int y) {
     int len = (y - x + 1);
-    return (pref[type][level][y + 1] - (pref[type][level][x] * binPow(5, len)) % MOD + MOD) % MOD;
+    return (pref[type][level][y + 1] - (pref[type][level][x] * powr[len]) % MOD + MOD) % MOD;
 }
 
 bool valid(int l, int r) {
@@ -50,10 +34,13 @@ bool valid(int l, int r) {
     }
     return true;
 }
-
 int main() {
     freopen("cownomics.in", "r", stdin);
     freopen("cownomics.out", "w", stdout);
+    powr[0] = 1;
+    for (int i = 1; i < powr.size(); i++) {
+        powr[i] = (powr[i - 1] * 5) % MOD;
+    }
     int convert[26];
     convert['A' - 'A'] = 1, convert['C' - 'A'] = 2, convert['T' - 'A'] = 3, convert['G' - 'A'] = 4;
     int n, m;
