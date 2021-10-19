@@ -12,9 +12,11 @@
 
 using namespace std;
 const int MOD = 1e9 + 7;
-long long mult (long long x, long long y) {
+
+long long mult(long long x, long long y) {
     return (x * y) % MOD;
 }
+
 long long binPow(long long x, long long y) {
     long long ans = 1;
     long long res = x;
@@ -27,13 +29,16 @@ long long binPow(long long x, long long y) {
     }
     return ans;
 }
+
 vector<string> cows[2];
 vector<vector<long long>> pref[2];
+
 long long query(bool type, int level, int x, int y) {
     int len = (y - x + 1);
     return (pref[type][level][y + 1] - (pref[type][level][x] * binPow(5, len)) % MOD + MOD) % MOD;
 }
-bool valid (int l, int r) {
+
+bool valid(int l, int r) {
     set<long long> ans;
     for (int i = 0; i < cows[0].size(); i++) {
         ans.insert(query(0, i, l, r));
@@ -45,10 +50,11 @@ bool valid (int l, int r) {
     }
     return true;
 }
+
 int main() {
     freopen("cownomics.in", "r", stdin);
     freopen("cownomics.out", "w", stdout);
-    map<char,int> convert;
+    map<char, int> convert;
     convert['A'] = 1, convert['C'] = 2, convert['T'] = 3, convert['G'] = 4;
     int n, m;
     cin >> n >> m;
@@ -77,7 +83,7 @@ int main() {
         int l = i;
         int r = m - 1;
         while (l < r) {
-            int mid = (l + r)/2;
+            int mid = (l + r) / 2;
             if (valid(i, mid)) {
                 r = mid;
             } else {
