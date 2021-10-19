@@ -18,17 +18,16 @@ vector<vector<long long>> pref[2];
 vector<long long> powr(505);
 
 long long query(bool type, int level, int x, int y) {
-    int len = (y - x + 1);
-    return (pref[type][level][y + 1] - (pref[type][level][x] * powr[len]) % MOD + MOD) % MOD;
+    return (pref[type][level][y + 1] - (pref[type][level][x] * powr[y - x + 1]) % MOD + MOD) % MOD;
 }
 
 bool valid(int l, int r) {
     set<long long> ans;
     for (int i = 0; i < cows[0].size(); i++) {
-        ans.insert(query(0, i, l, r));
+        ans.insert(query(false, i, l, r));
     }
     for (int i = 0; i < cows[1].size(); i++) {
-        if (ans.count(query(1, i, l, r))) {
+        if (ans.count(query(true, i, l, r))) {
             return false;
         }
     }
