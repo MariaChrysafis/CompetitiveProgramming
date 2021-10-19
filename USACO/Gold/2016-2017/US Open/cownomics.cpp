@@ -77,7 +77,6 @@ int main() {
         int l = i;
         int r = m - 1;
         while (l < r) {
-            //cout << l << " " << r << endl;
             int mid = (l + r)/2;
             if (valid(i, mid)) {
                 r = mid;
