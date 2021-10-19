@@ -50,7 +50,6 @@ int main() {
     freopen("cownomics.out", "w", stdout);
     map<char,int> convert;
     convert['A'] = 1, convert['C'] = 2, convert['T'] = 3, convert['G'] = 4;
-    //cout << convert['A'] << endl;
     int n, m;
     cin >> n >> m;
     for (int i = 0; i < 2; i++) {
