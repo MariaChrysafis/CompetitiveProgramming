@@ -54,8 +54,8 @@ bool valid(int l, int r) {
 int main() {
     freopen("cownomics.in", "r", stdin);
     freopen("cownomics.out", "w", stdout);
-    map<char, int> convert;
-    convert['A'] = 1, convert['C'] = 2, convert['T'] = 3, convert['G'] = 4;
+    int convert[26];
+    convert['A' - 'A'] = 1, convert['C' - 'A'] = 2, convert['T' - 'A'] = 3, convert['G' - 'A'] = 4;
     int n, m;
     cin >> n >> m;
     for (int i = 0; i < 2; i++) {
@@ -71,7 +71,7 @@ int main() {
             pref[dum][i].resize(m + 1);
             pref[dum][i][0] = 0;
             for (int j = 1; j <= m; j++) {
-                pref[dum][i][j] = (pref[dum][i][j - 1] * 5 + convert[cows[dum][i][j - 1]]) % MOD;
+                pref[dum][i][j] = (pref[dum][i][j - 1] * 5 + convert[cows[dum][i][j - 1] - 'A']) % MOD;
             }
         }
     }
