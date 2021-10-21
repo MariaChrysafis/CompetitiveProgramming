@@ -2,6 +2,7 @@
 ## Old Gold
 | Contest Year  | Contest Month | Problem Name| Date Completed|
 | ------------- | ------------- | ------------|----------|
+| 2012-2013 | January | [lineup](http://www.usaco.org/index.php?page=viewproblem2&cpid=229) | October 21st, 2021 |
 | 2013-2014 | January | [skilevel](http://www.usaco.org/index.php?page=viewproblem2&cpid=384) | March 5th, 2021 |
 | 2014-2015 | December | [guard](http://www.usaco.org/index.php?page=viewproblem2&cpid=494) | February 28th, 2021 |
 | 2014-2015 | US Open | [palpath](http://www.usaco.org/index.php?page=viewproblem2&cpid=553) | February 7th, 2021|
