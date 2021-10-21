@@ -25,7 +25,7 @@
 | 2016-2017 | December | [checklist](http://usaco.org/index.php?page=viewproblem2&cpid=670) | January 22nd, 2021|
 | 2016-2017 | December | [lasers](http://usaco.org/index.php?page=viewproblem2&cpid=671) | January 22nd, 2021|
 | 2016-2017 | January | [bphoto](http://www.usaco.org/index.php?page=viewproblem2&cpid=693) | February 8th, 2021|
-| 2016-2017 | January | [hps](http://usaco.org/index.php?page=viewproblem2&cpid=694) | January 28th, 2021|
+| 2016-2017 | January | [hps](http://usaco.org/index.php?page=viewproblem2&cpid=694) | October 21st, 2021|
 | 2016-2017 | February | [visitfj](http://usaco.org/index.php?page=viewproblem2&cpid=717) | November 28th, 2020|
 | 2016-2017 | February | [nocross](http://www.usaco.org/index.php?page=viewproblem2&cpid=718) | February 6th, 2021|
 | 2016-2017 | February | [circlecross](http://www.usaco.org/index.php?page=viewproblem2&cpid=719) | February 9th, 2021|
