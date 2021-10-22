@@ -47,7 +47,7 @@
 | 2018-2019 | February | [cowland](http://usaco.org/index.php?page=viewproblem2&cpid=921) | February 23rd, 2021|
 | 2018-2019 | February | [dishes](http://usaco.org/index.php?page=viewproblem2&cpid=922) | February 22nd, 2021 |
 | 2018-2019 | February | [paintbarn](http://usaco.org/index.php?page=viewproblem2&cpid=923) | February 23rd, 2021|
-| 2018-2019 | US Open | [snakes](http://usaco.org/index.php?page=viewproblem2&cpid=945) | January 27th, 2021 |
+| 2018-2019 | US Open | [snakes](http://usaco.org/index.php?page=viewproblem2&cpid=945) | October 22nd, 2021 |
 | 2018-2019 | US Open | [walk](http://usaco.org/index.php?page=viewproblem2&cpid=946) | February 24th, 2021 |
 | 2018-2019 | US Open | [balance](http://www.usaco.org/index.php?page=viewproblem2&cpid=947) | February 25th, 2021|
 | 2019-2020 | December | [milkvisits](http://www.usaco.org/index.php?page=viewproblem2&cpid=970) | February 25th, 2021 |
