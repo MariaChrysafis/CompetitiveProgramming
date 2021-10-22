@@ -1,4 +1,4 @@
-# Maria's Competitive-Programming
+# Maria's Competitive Programming
 
 I solve some problems. I put my solutions here.
 
