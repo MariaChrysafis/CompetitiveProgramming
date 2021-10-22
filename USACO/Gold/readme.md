@@ -16,7 +16,7 @@
 | 2015-2016 | January | [radio](http://usaco.org/index.php?page=viewproblem2&cpid=598) | February 6th, 2021 |
 | 2015-2016 | January | [lightsout](http://usaco.org/index.php?page=viewproblem2&cpid=599) | Ferbruary 18th, 2021 |
 | 2015-2016 | February | [cbarn](http://usaco.org/index.php?page=viewproblem2&cpid=621) | February 18th, 2021 |
-| 2015-2016 | February  | [cbarn2](http://usaco.org/index.php?page=viewproblem2&cpid=622) | January 28th, 2021 |
+| 2015-2016 | February  | [cbarn2](http://usaco.org/index.php?page=viewproblem2&cpid=622) | October 22nd, 2021 |
 | 2015-2016 | February | [fencedin](http://usaco.org/index.php?page=viewproblem2&cpid=623) | February 19th, 2021 |
 | 2015-2016 | US Open | [closing](http://usaco.org/index.php?page=viewproblem2&cpid=646) | February 19th, 2021 |
 | 2015-2016 | US Open | [split](http://www.usaco.org/index.php?page=viewproblem2&cpid=645) | October 11th, 2021 |
