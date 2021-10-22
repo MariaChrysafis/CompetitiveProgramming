@@ -1,62 +1,51 @@
-/* Include all headers */
-#include <iostream>
-#include <string>
-#include <vector>
-#include <algorithm>
-#include <sstream>
-#include <queue>
-#include <deque>
-#include <bitset>
-#include <iterator>
-#include <list>
-#include <stack>
-#include <map>
-#include <set>
-#include <functional>
-#include <numeric>
-#include <utility>
-#include <limits>
-#include <cstdio>
 #include <cmath>
-#define pb push_back
-#define pf push_front
-#define ll long long
-#define mp make_pair
-#define REP(i,a) for(int i = 0; i < a; i++)
-#define FOR(i,a,b) for(int i = a; i < b; i++)
-#define trav(a,x) for(auto& a: x)
-#define IO ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define input freopen("teamwork.in", "r", stdin); freopen("teamwork.out", "w", stdout);
+#include <iostream>
+#include <set>
+#include <vector>
+#include <map>
 using namespace std;
-int main(){
-  input
-  int N,K;
-  cin >> N >> K;
-  int arr[N];
-  for(int i = 0; i < N; i++){
-    cin >> arr[i];
-  }
-  int interval[N];
-  interval[0] = arr[0];
-  for(int i = 1; i < N; i++){
-    interval[i] = max(arr[i],interval[i - 1]);
-  }
-  int dp[N];
-  for(int i = 0; i < N; i++) dp[i] = -1000000;
-  int myMax = 0;
-  for(int i = 0; i < K; i++){
-    dp[i] = interval[i] * (i + 1);
-  }
-  for(int i = K; i < N; i++){
-    int d = 0;
-    for(int j = 1; j <= K; j++){
-      d = max(d,arr[i - j + 1]);
-      dp[i] = max(dp[i], dp[i - j] + d * j);
+#define ll int
+template<class T> struct Seg { // comb(ID,b) = b
+    const T ID = 0; T comb(T a, T b) { return max(a,b); }
+    int n; vector<T> seg;
+    void init(int _n) { n = _n; seg.assign(2*n,ID); }
+    void pull(int p) { seg[p] = comb(seg[2*p],seg[2*p+1]); }
+    void upd(int p, T val) { // set val at position p
+        seg[p += n] = val; for (p /= 2; p; p /= 2) pull(p); }
+    T query(int l, int r) {	// sum on interval [l, r]
+        T ra = ID, rb = ID;
+        for (l += n, r += n+1; l < r; l /= 2, r /= 2) {
+            if (l&1) ra = comb(ra,seg[l++]);
+            if (r&1) rb = comb(seg[--r],rb);
+        }
+        return comb(ra,rb);
     }
-  }
-  for(int i = 0; i < N; i++){
-    myMax = max(myMax,dp[i]);
-  }
-  cout << myMax << endl;
-  return 0;
+};
+int main() {
+    freopen("teamwork.in", "r", stdin);
+    freopen("teamwork.out", "w", stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    ll N, K;
+    cin >> N >> K;
+    Seg<int> st;
+    vector<int> teams(N);
+    st.init(N + 1);
+    for (int i = 0; i < N; i++) {
+        cin >> teams[i];
+        st.upd(i, teams[i]);
+    }
+    ll dp[N + 1];
+    dp[0] = 0;
+    for (int i = 1; i <= N; i++) {
+        if (i <= K) {
+            dp[i] = st.query(0, i - 1) * i;
+            continue;
+        }
+        dp[i] = 0;
+        for (int len = 1; len <= K; len++) {
+            dp[i] = max(dp[i - len] + st.query(i - len, i - 1) * len, dp[i]);
+        }
+    }
+    cout << dp[N] << endl;
 }
