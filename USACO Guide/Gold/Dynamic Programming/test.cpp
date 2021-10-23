@@ -114,10 +114,8 @@ int main() {
     }
     for (int i = 0; i < N; i++) {
         for (int col1 = 0; col1 < M; col1++) {
-            for (int l = K; l <= i; l++) {
-                //for (int col2 = 0; col2 < M; col2++) {
-                    dp[col1][i] = min(dp[col1][i], curMin[i - l] - cost[col1][i - l + 1] + cost[col1][i + 1]);
-                //}
+            for (int l = 0; l <= i - K; l++) {
+                dp[col1][i] = min(dp[col1][i], curMin[l] - cost[col1][l + 1] + cost[col1][i + 1]);
             }
             curMin[i] = min(curMin[i], dp[col1][i]);
         }
