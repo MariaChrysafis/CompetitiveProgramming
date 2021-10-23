@@ -15,65 +15,11 @@ vector<vector<ll>> cost;
 ll interval (int color, int l, int r) {
     return cost[color][r + 1] - cost[color][l];
 }
-struct segmentTree {
-    vector<ll> v;
-    vector<ll> val;
-
-    ll ID = INT_MAX;
-
-    ll op(ll a, ll b) {
-        return min(a,b);
-    }
-
-    ll query(int dum, int tl, int tr, int& l, int& r) {
-        if (tr < l || tl > r) {
-            return ID;
-        }
-        if (tl >= l && tr <= r) {
-            return val[dum];
-        }
-        ll mid = (tl + tr) >> 1;
-        dum = dum << 1;
-        return op(query(dum, tl, mid, l, r), query(dum + 1, mid + 1, tr, l, r));
-    }
-
-    ll query(int l, int r) {
-        return query(1, 0, (int)v.size() - 1, l, r);
-    }
-
-    void update(int x, ll y) {
-        int cur = (int) v.size() + x;
-        int curX = x;
-        int curY = x;
-        while (true) {
-            val[cur] = op(op(query(curX, x - 1), query(x + 1, curY)), y);
-            if (cur == 0) {
-                break;
-            }
-            if(cur % 2 == 0) {
-                curY = 2 * curY - curX + 1;
-            } else {
-                curX = 2 * curX - curY - 1;
-            }
-            cur /= 2;
-        }
-    }
-
-    void resz(int n) {
-        v.resize((1 << (int) ceil(log2(n))));
-        val.resize(v.size() * 2);
-    }
-
-};
 int main() {
-    //freopen("cowmbat.in", "r", stdin);
-    //freopen("cowmbat.out", "w", stdout);
-    segmentTree st[26];
+    freopen("cowmbat.in", "r", stdin);
+    freopen("cowmbat.out", "w", stdout);
     int N, M, K;
     cin >> N >> M >> K;
-    for (int i = 0; i < 26; i++) {
-        st[i].resz(N + 1);
-    }
     string s;
     cin >> s;
     vector<vector<ll>> adj(M);
@@ -110,14 +56,24 @@ int main() {
     }
     ll curMin[N];
     for (int i = 0; i < N; i++) {
-        curMin[i] = LLONG_MAX;
+        curMin[i] = INT_MAX;
     }
-    for (int i = 0; i < N; i++) {
+    ll st[M][N];
+    for (int i = 0; i < M; i++) {
+        for (int j = 0; j < N; j++) {
+            st[i][j] = INT_MAX;
+        }
+    }
+    for (int i = 1; i < N; i++) {
         for (int col1 = 0; col1 < M; col1++) {
+            dp[col1][i] = min(dp[col1][i], st[col1][i - K] + cost[col1][i + 1]);
             for (int l = 0; l <= i - K; l++) {
-                dp[col1][i] = min(dp[col1][i], curMin[l] - cost[col1][l + 1] + cost[col1][i + 1]);
+                //dp[col1][i] = min(dp[col1][i], curMin[l] - cost[col1][l + 1] + cost[col1][i + 1]);
             }
             curMin[i] = min(curMin[i], dp[col1][i]);
+        }
+        for (int col1 = 0; col1 < M; col1++) {
+            st[col1][i] = min(st[col1][i - 1], curMin[i] - cost[col1][i + 1]);
         }
     }
     ll myMin = INT_MAX;
