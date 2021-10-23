@@ -58,8 +58,7 @@ int main() {
         for (int col1 = 0; col1 < M; col1++) {
             for (int l = K; l <= i; l++) {
                 for (int col2 = 0; col2 < M; col2++) {
-                    //if (i - l < 0) continue;
-                    dp[col1][i] = min(dp[col1][i], dp[col2][i - l] + interval(col1, i - l + 1, i));
+                    dp[col1][i] = min(dp[col1][i], dp[col2][i - l] + cost[col1][i + 1] - cost[col1][i - l + 1]);
                 }
             }
         }
