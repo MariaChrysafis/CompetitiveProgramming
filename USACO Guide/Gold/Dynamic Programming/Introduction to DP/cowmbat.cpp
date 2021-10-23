@@ -68,9 +68,6 @@ int main() {
         if (i < K - 1) continue;
         for (int col1 = 0; col1 < M; col1++) {
             dp[col1][i] = min(dp[col1][i], st[col1][i - K] + cost[col1][i + 1]);
-            for (int l = 0; l <= i - K; l++) {
-                //dp[col1][i] = min(dp[col1][i], curMin[l] - cost[col1][l + 1] + cost[col1][i + 1]);
-            }
             curMin[i] = min(curMin[i], dp[col1][i]);
         }
         for (int col1 = 0; col1 < M; col1++) {
