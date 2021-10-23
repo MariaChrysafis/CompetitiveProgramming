@@ -51,7 +51,7 @@
 | 2018-2019 | US Open | [walk](http://usaco.org/index.php?page=viewproblem2&cpid=946) | February 24th, 2021 |
 | 2018-2019 | US Open | [balance](http://www.usaco.org/index.php?page=viewproblem2&cpid=947) | February 25th, 2021|
 | 2019-2020 | December | [milkvisits](http://www.usaco.org/index.php?page=viewproblem2&cpid=970) | February 25th, 2021 |
-| 2019-2020 | December | [cowmbat](http://usaco.org/index.php?page=viewproblem2&cpid=971) | January 29th, 2021 |
+| 2019-2020 | December | [cowmbat](http://usaco.org/index.php?page=viewproblem2&cpid=971) | October 22nd, 2021 |
 | 2019-2020 | January | [time](http://usaco.org/index.php?page=viewproblem2&cpid=993) | October 21st, 2021 |
 | 2019-2020 | January | [threesum](http://www.usaco.org/index.php?page=viewproblem2&cpid=994) | October 13th, 2021 |
 | 2019-2020 | February | [timeline](http://usaco.org/index.php?page=viewproblem2&cpid=1017) | December 1st, 2020 |
