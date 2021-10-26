@@ -41,7 +41,7 @@
 | 2017-2018 | US Open | [milkorder](http://www.usaco.org/index.php?page=viewproblem2&cpid=838) | October 15th, 2021 |
 | 2018-2019 | December | [teamwork](http://usaco.org/index.php?page=viewproblem2&cpid=863) | December 1st, 2020 |
 | 2018-2019 | December | [cowpatability](http://usaco.org/index.php?page=viewproblem2&cpid=862) | October 11th, 2021 |
-| 2018-2019 | January | [poetry](http://usaco.org/index.php?page=viewproblem2&cpid=897) | February 2nd, 2021|
+| 2018-2019 | January | [poetry](http://usaco.org/index.php?page=viewproblem2&cpid=897) | October 25th, 2021 |
 | 2018-2019 | January | [sleepy](http://www.usaco.org/index.php?page=viewproblem2&cpid=898) | February 10th, 2021|
 | 2018-2019 | January | [shortcut](http://usaco.org/index.php?page=viewproblem2&cpid=899) | March 10th, 2021 |
 | 2018-2019 | February | [cowland](http://usaco.org/index.php?page=viewproblem2&cpid=921) | February 23rd, 2021|
@@ -59,7 +59,7 @@
 | 2019-2020 | February | [deleg](http://www.usaco.org/index.php?page=viewproblem2&cpid=1019) | October 12th,m 2021 |
 | 2019-2020 | US Open | [haircut](http://www.usaco.org/index.php?page=viewproblem2&cpid=1041) | February 10th, 2021|
 | 2019-2020 | US Open | [fcolor](http://usaco.org/index.php?page=viewproblem2&cpid=1042) | March 4th, 2021 |
-| 2019-2020 | US Open | [exercise](http://www.usaco.org/index.php?page=viewproblem2&cpid=1043) | February 2nd, 2021|
+| 2019-2020 | US Open | [exercise](http://www.usaco.org/index.php?page=viewproblem2&cpid=1043) | October 25th, 2021 |
 | 2020-2021 | December | [Square Pasture](http://usaco.org/index.php?page=viewproblem2&cpid=1067) | October 9th, 2021 |
 | 2020-2021 | December | [replication](http://usaco.org/index.php?page=viewproblem2&cpid=1065) | October 10th, 2021 |
 | 2020-2021 | December | [Bovine Genetics](http://usaco.org/index.php?page=viewproblem2&cpid=1066) | February 2nd, 2021|
