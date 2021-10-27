@@ -14,21 +14,19 @@ using namespace std;
 #define ll long long
 const int MOD = 1e9 + 7;
 ll mult (ll x, ll y) {
-    return (x % MOD * y % MOD) % MOD;
+    return ((x % MOD) * (y % MOD)) % MOD;
 }
 ll add (ll x, ll y) {
-    return (x % MOD + y % MOD) % MOD;
+    return ((x % MOD) + (y % MOD)) % MOD;
 }
 long long binPow (long long x, long long y) {
     long long ans = 1;
     long long res = x;
     while (y > 0) {
         if (y & 1) {
-            ans *= res;
-            ans %= MOD;
+            ans = mult(ans, res);
         }
-        res *= res;
-        res %= MOD;
+        res = mult(res, res);
         y /= 2;
     }
     return ans;
@@ -79,7 +77,7 @@ struct Tree {
             int val = pq.top().second;
             pq.pop();
             if (hasVisited[val]) {
-                assert(distance > d[val]);
+                assert(distance >= d[val]);
                 continue;
             }
             d[val] = distance;
@@ -177,16 +175,13 @@ int main() {
     ll ans = 0;
     for (int y = 0; y < Y - X * (int)vec.size(); y++) {
         ans = add(ans, mult(cur[y], add(y, mult(X, vec.size()))));
-        ans %= MOD;
     }
     ll tot = 0;
     for (int i = 0; i < vec.size(); i++) {
-        ll ch2 = (((ll)vec[i].dist.size() - 1) * (ll)vec[i].dist.size())/2;
+        ll ch2 = mult(mult((int)vec[i].dist.size() - 1, vec[i].dist.size()), inv(2));
         tot = add(tot, mult(sum[i], mult(c2, inv(ch2))));
     }
-    ans = (tot + (c2 * X * (ll)vec.size()) % MOD - ans + MOD) % MOD * binPow(2, vec.size() - 1);
-    ans %= MOD;
-    ans *= fact(vec.size() - 1) % MOD;
-    ans %= MOD;
-    cout << ans << endl;
+    ans = mult(add(add(tot, mult(c2, mult(X, (ll)vec.size()))), MOD - ans), binPow(2, vec.size() - 1));
+    ans = mult(ans, fact(vec.size() - 1));
+    cout << ans;
 }
