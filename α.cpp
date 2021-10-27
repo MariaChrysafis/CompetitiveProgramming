@@ -138,43 +138,45 @@ int main() {
     for (int i = 0; i < vec.size(); i++) {
         vec[i].read();
     }
-    ll cnt[vec.size()][Y + 1];
     ll c2 = 1;
     for (int i = 0; i < vec.size(); i++) {
         c2 = mult(mult(c2, mult(vec[i].dist.size(), vec[i].dist.size() - 1)), inv(2));
-        for (int j = 0; j <= Y; j++) {
-            cnt[i][j] = 0;
-        }
     }
     //--------------------------------VERIFFIED------------------
     ll sum[vec.size()];
     sum[0] = 0;
+    ll prev[Y + 1];
+    ll cur[Y + 1];
+    for (int i = 0; i <= Y; i++) prev[i] = cur[i] = 0;
     for (int j = 0; j < vec[0].dist.size(); j++) {
         for (int k = j + 1; k < vec[0].dist.size(); k++) {
             if(vec[0].dist[j][k] <= Y) {
-                cnt[0][vec[0].dist[j][k]]++;
+                prev[vec[0].dist[j][k]]++;
             }
             sum[0] = add(sum[0], vec[0].dist[j][k]);
         }
     }
     for (int i = 1; i < vec.size(); i++) {
         for (int y = 0; y <= Y; y++) {
-            cnt[i][y] = 0;
+            cur[y] = 0;
             sum[i] = 0;
             for (int j = 0; j < vec[i].dist.size(); j++) {
                 for (int k = j + 1; k < vec[i].dist.size(); k++) {
                     long long distance = vec[i].dist[j][k];
                     if (y - distance >= 0) {
-                        cnt[i][y] = add(cnt[i][y], cnt[i - 1][y - distance]);
+                        cur[y] = add(cur[y], prev[y - distance]);
                     }
                     sum[i] = add(sum[i], distance);
                 }
             }
         }
+        for (int y = 0; y <= Y; y++) {
+            prev[y] = cur[y];
+        }
     }
     ll ans = 0;
     for (int y = 0; y < Y - X * (int)vec.size(); y++) {
-        ans = add(ans, mult(cnt[vec.size() - 1][y], add(y, mult(X, vec.size()))));
+        ans = add(ans, mult(cur[y], add(y, mult(X, vec.size()))));
         ans %= MOD;
     }
     ll tot = 0;
@@ -182,7 +184,6 @@ int main() {
         ll ch2 = (((ll)vec[i].dist.size() - 1) * (ll)vec[i].dist.size())/2;
         tot = add(tot, mult(sum[i], mult(c2, inv(ch2))));
     }
-    //cout << tot << endl;
     ans = (tot + (c2 * X * (ll)vec.size()) % MOD - ans + MOD) % MOD * binPow(2, vec.size() - 1);
     ans %= MOD;
     ans *= fact(vec.size() - 1) % MOD;
