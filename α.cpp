@@ -13,6 +13,12 @@
 using namespace std;
 #define ll long long
 const int MOD = 1e9 + 7;
+ll mult (ll x, ll y) {
+    return (x % MOD * y % MOD) % MOD;
+}
+ll add (ll x, ll y) {
+    return (x % MOD + y % MOD) % MOD;
+}
 long long binPow (long long x, long long y) {
     long long ans = 1;
     long long res = x;
@@ -38,8 +44,7 @@ struct Graph {
         if (hasVisited[curNode]) {
             return;
         }
-        components.back().push_back(curNode);
-        hasVisited[curNode] = true;
+        components.back().push_back(curNode), hasVisited[curNode] = true;
         for (auto p: adj[curNode]) {
             dfs(p.first);
         }
@@ -52,8 +57,7 @@ struct Graph {
         }
         for (int i = 0; i < n; i++) {
             if (!hasVisited[i]) {
-                components.emplace_back();
-                dfs(i);
+                components.emplace_back(), dfs(i);
             }
         }
     }
@@ -128,8 +132,7 @@ int main() {
     }
     for (int i = 0; i < g.adj.size(); i++) {
         for (auto p: g.adj[i]) {
-            int j = p.first;
-            vec[component[i]].adj[new_node[i]].push_back({p.second, new_node[j]});
+            vec[component[i]].adj[new_node[i]].push_back({p.second, new_node[p.first]});
         }
     }
     for (int i = 0; i < vec.size(); i++) {
@@ -138,7 +141,7 @@ int main() {
     ll cnt[vec.size()][Y + 1];
     ll c2 = 1;
     for (int i = 0; i < vec.size(); i++) {
-        c2 *= ((int)vec[i].dist.size() * ((int)vec[i].dist.size() - 1)/2) % MOD;
+        c2 = mult(mult(c2, mult(vec[i].dist.size(), vec[i].dist.size() - 1)), inv(2));
         for (int j = 0; j <= Y; j++) {
             cnt[i][j] = 0;
         }
@@ -148,8 +151,10 @@ int main() {
     sum[0] = 0;
     for (int j = 0; j < vec[0].dist.size(); j++) {
         for (int k = j + 1; k < vec[0].dist.size(); k++) {
-            if(vec[0].dist[j][k] <= Y) cnt[0][vec[0].dist[j][k]]++;
-            sum[0] += vec[0].dist[j][k];
+            if(vec[0].dist[j][k] <= Y) {
+                cnt[0][vec[0].dist[j][k]]++;
+            }
+            sum[0] = add(sum[0], vec[0].dist[j][k]);
         }
     }
     for (int i = 1; i < vec.size(); i++) {
@@ -160,28 +165,27 @@ int main() {
                 for (int k = j + 1; k < vec[i].dist.size(); k++) {
                     long long distance = vec[i].dist[j][k];
                     if (y - distance >= 0) {
-                        cnt[i][y] += cnt[i - 1][y - distance] % MOD, cnt[i][y] %= MOD;
+                        cnt[i][y] = add(cnt[i][y], cnt[i - 1][y - distance]);
                     }
-                    sum[i] += distance;
+                    sum[i] = add(sum[i], distance);
                 }
             }
         }
     }
     ll ans = 0;
     for (int y = 0; y < Y - X * (int)vec.size(); y++) {
-        ans += (cnt[vec.size() - 1][y] * (y + X * (int)vec.size())) % MOD;
+        ans = add(ans, mult(cnt[vec.size() - 1][y], add(y, mult(X, vec.size()))));
         ans %= MOD;
     }
     ll tot = 0;
     for (int i = 0; i < vec.size(); i++) {
-        ll ch2 = (((int)vec[i].dist.size() - 1) * (int)vec[i].dist.size())/2;
-        tot += sum[i] * (c2 * inv(ch2));
-        tot %= MOD;
+        ll ch2 = (((ll)vec[i].dist.size() - 1) * (ll)vec[i].dist.size())/2;
+        tot = add(tot, mult(sum[i], mult(c2, inv(ch2))));
     }
     //cout << tot << endl;
-    ans = (tot + c2 * X * (int)vec.size() - ans + MOD) % MOD * binPow(2, vec.size() - 1);
+    ans = (tot + (c2 * X * (ll)vec.size()) % MOD - ans + MOD) % MOD * binPow(2, vec.size() - 1);
     ans %= MOD;
-    ans *= fact(vec.size() - 1);
+    ans *= fact(vec.size() - 1) % MOD;
     ans %= MOD;
     cout << ans << endl;
 }
