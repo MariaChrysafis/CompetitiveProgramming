@@ -8,7 +8,7 @@
 | 2016-2017 | January | [mincross](http://usaco.org/index.php?page=viewproblem2&cpid=720) | February 9th, 2021 |
 | 2016-2017 | January | [promotion](http://www.usaco.org/index.php?page=viewproblem2&cpid=696) | October 20th, 2021 |
 | 2018-2019 | January | [redistricting](http://www.usaco.org/index.php?page=viewproblem2&cpid=900) | August 2nd, 2021 |
-| 2018-2019 | February  | [mooriokart](http://www.usaco.org/index.php?page=viewproblem2&cpid=925) | February 4th, 2021 |
+| 2018-2019 | February  | [mooriokart](http://www.usaco.org/index.php?page=viewproblem2&cpid=925) |October 27th, 2021 |
 | 2018-2019 | February  | [cowdate](http://www.usaco.org/index.php?page=viewproblem2&cpid=924) | August 2nd, 2021 |
 | 2019-2020 | January | [snowcow](http://www.usaco.org/index.php?page=viewproblem2&cpid=973) | August 3rd, 2021 |
 | 2019-2020 | US Open | [exercise](http://usaco.org/index.php?page=viewproblem2&cpid=1045) | February 12th, 2021 |
