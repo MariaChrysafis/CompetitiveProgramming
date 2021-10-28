@@ -1,190 +1,110 @@
-#include <algorithm>
 #include <cmath>
 #include <iostream>
-#include <map>
+#include <set>
+#include <climits>
+#include <algorithm>
+#include <cassert>
 #include <vector>
+#include <iomanip>
+#include <type_traits>
+#include <string>
+#include <queue>
+#include <map>
 using namespace std;
-const int MAX = 10003;
-vector<int> primes = {
-    1,
-    2,
-    3,
-    5,
-    7,
-    11,
-    13,
-    17,
-    19,
-    23,
-    29,
-    31,
-    37,
-    41,
-    43,
-    47,
-    53,
-    59,
-    61,
-    67,
-    71,
-    73,
-    79,
-    83,
-    89,
-    97,
-    101,
-    103,
-    107,
-    109,
-    113,
-    127,
-    131,
-    137,
-    139,
-    149,
-    151,
-    157,
-    163,
-    167,
-    173,
-    179,
-    181,
-    191,
-    193,
-    197,
-    199,
-    211,
-    223,
-    227,
-    229,
-    233,
-    239,
-    241,
-    251,
-    257,
-    263,
-    269,
-    271,
-    277,
-    281,
-    283,
-    293,
-    307,
-    311,
-    313,
-    317,
-    331,
-    337,
-    347,
-    349,
-    353,
-    359,
-    367,
-    373,
-    379,
-    383,
-    389,
-    397,
-};
-double dp[200][MAX + 1];
-long long inv[200][MAX + 1];
-map<int, int> myMap;
-int rt(int p){
-  for(int i = 1; i < primes.size(); i++){
-    if(p % primes[i] == 0){
-      return primes[i];
-    }
-  }
-  return -1;
-}
-vector<int> ans(int a) {
-  int sum = 0;
-  vector<int> v;
-  int x = primes.size() - 1;
-  while (x > 0) {
-    int b = inv[x][a - sum];
-    if (b == 0) {
-      break;
-    }
-    v.push_back(b);
-    x = myMap[rt(b)] - 1;
-    //cout << x << " " << b << endl;
-    sum += b;
-  }
-  //cout << endl;
-  return v;
-}
-
-vector<int> convert(vector<int> v, int n) {
-  vector<int> myVec;
-  for (int i = 0; i < n; i++) {
-    myVec.push_back(i + 1);
-  }
-  vector<vector<int>> vec;
-  vec.resize(v.size());
-  int cntr = 1;
-  for (int i = 0; i < v.size(); i++) {
-    for (int j = 0; j < v[i]; j++) {
-      vec[i].push_back(cntr);
-      cntr++;
-    }
-  }
-  myVec.clear();
-  for (int i = 0; i < vec.size(); i++) {
-    for (int j = 0; j < vec[i].size() - 1; j++) {
-      myVec.push_back(vec[i][j] + 1);
-    }
-    myVec.push_back(vec[i][0]);
-  }
-  return myVec;
-}
+#define ll long long
+const int MAX = 1e4 + 5;
+vector<int> primes;
 int main() {
-  for (int i = 0; i < primes.size(); i++) {
-    for (int j = 0; j < MAX; j++) {
-      dp[i][j] = 0;
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    vector<bool> isPrime(350);
+    for (int i = 0; i < isPrime.size(); i++) {
+        isPrime[i] = true;
     }
-  }
-  for (int i = 1; i < primes.size(); i++) {
-    for (int j = 0; j < MAX; j++) {
-      dp[i][j] = dp[i - 1][j];
-      inv[i][j] = inv[i - 1][j];
-      long long pwr = primes[i];
-      while (pwr <= j) {
-        double pos1 = dp[i - 1][j - pwr] + log(1.0 * pwr);
-        if (dp[i][j] < pos1) {
-          inv[i][j] = pwr;
-          dp[i][j] = pos1;
+    isPrime[0] = isPrime[1] = false;
+    for (int i = 2; i < isPrime.size(); i++) {
+        if (isPrime[i]) {
+            primes.push_back(i);
+            for (int j = 2 * i; j < isPrime.size(); j += i) {
+                isPrime[j] = false;
+            }
         }
-        pwr *= primes[i];
-      }
     }
-  }
-  for (int i = 0; i < primes.size(); i++) {
-    myMap[primes[i]] = i;
-  }
-  int t;
-  cin >> t;
-  while (t--) {
-    int a;
-    cin >> a;
-    if (a == 1) {
-      cout << 1 << endl;
-      continue;
+    vector<vector<double>> dp(primes.size() + 1);
+    for (int i = 0; i < dp.size(); i++) {
+        dp[i].resize(MAX);
+        for (int j = 0; j < dp[i].size(); j++) {
+            dp[i][j] = -10000;
+        }
+        dp[i][0] = 0;
     }
-    vector<int> v = ans(a);
-    int sum = 0;
-    for (int i : v) {
-      sum += i;
+    vector<vector<int>> prev(dp.size());
+    for (int i = 0; i < dp.size(); i++) {
+        prev[i].resize(MAX);
     }
-    while (sum != a) {
-      v.push_back(1);
-      sum++;
+    for (int i = 1; i < dp.size(); i++) {
+        for (int j = 1; j < dp[i].size(); j++) {
+            dp[i][j] = dp[i - 1][j];
+            prev[i][j] = prev[i - 1][j];
+            if (dp[i][j - 1] > dp[i][j]) {
+                prev[i][j] = prev[i][j - 1];
+                dp[i][j] = dp[i][j - 1];
+            }
+            ll powr = primes[i - 1];
+            while (j >= powr) {
+                if (dp[i][j] < dp[i - 1][j - powr] + log2(powr)) {
+                    dp[i][j] = dp[i - 1][j - powr] + log2(powr);
+                    prev[i][j] = powr;
+                }
+                powr *= primes[i - 1];
+            }
+        }
     }
-    sort(v.begin(), v.end());
-    vector<int> vec = convert(v, a);
-    for (int i : vec) {
-      cout << i << " ";
+    map<int,int> myMap;
+    for (int i = 0; i < primes.size(); i++) {
+        long long powr = primes[i];
+        while (powr < (int)1e4) {
+            myMap[powr] = i;
+            powr *= primes[i];
+        }
     }
-    cout << endl;
-  }
+    int t;
+    cin >> t;
+    while (t--) {
+        int n;
+        cin >> n;
+        int cur = n;
+        vector<int> a;
+        int sz = dp.size() - 1;
+        while (cur != 0 && sz > 0) {
+            int val = prev[sz][cur];
+            sz = myMap[val];
+            cur -= val;
+            a.push_back(val);
+        }
+        int ans = n;
+        for (int i: a) {
+            ans -= i;
+        }
+        while(ans != 0) {
+            a.push_back(1);
+            ans--;
+        }
+        sort(a.begin(), a.end());
+        vector<vector<int>> v;
+        int cntr = 1;
+        for (int i = 0; i < a.size(); i++) {
+            v.emplace_back();
+            for (int j = 0; j < a[i]; j++) {
+                v.back().push_back(cntr);
+                cntr++;
+            }
+        }
+        for (int i = 0; i < v.size(); i++) {
+            for (int j = 0; j < v[i].size(); j++) {
+                cout << v[i][(j + 1) % v[i].size()] << " ";
+            }
+        }
+        cout << endl;
+    }
 }
