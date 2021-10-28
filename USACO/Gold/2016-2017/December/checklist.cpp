@@ -1,93 +1,68 @@
+#include <cmath>
 #include <iostream>
-#include <algorithm>
-#include <vector>
-#include <map>
 #include <set>
+#include <climits>
+#include <algorithm>
+#include <cassert>
+#include <vector>
+#include <iomanip>
+#include <type_traits>
+#include <string>
 #include <queue>
-#include <unordered_map>
-#include <unordered_set>
-#include <fstream>
+#include <map>
 using namespace std;
-class Problem2CowChecklist {
-public:
-  int H,G;
-  struct coord{
-    long long x;
-    long long y;
-  };
-  long long distance(coord a, coord b){
-    return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
-  }
-  vector<coord> v[2];
-  long long dp[2][1002][1002];
-  long long INF = 1000000000;
-  long long fill(int i, int h, int g){
-    /*
-     * H H H H H H
-     * G G G
-     * H --> 0
-     * G --> 1
-     */
-    if(h == v[0].size() - 1 && g == v[1].size() - 1){
-      return 0;
-    }
-    if(h == v[0].size() - 1){
-      return INF;
-    }
-    if(g == v[1].size() - 1){
-      if(i == 0) {
-        dp[i][h + 1][g + 1] = fill(0,h + 1,g) + distance(v[0][h],v[0][h + 1]);
-      }else{
-        dp[i][h + 1][g + 1] = fill(0,h + 1, g) + distance(v[1][g], v[0][h + 1]);
-      }
-      return dp[i][h + 1][g + 1];
-    }
-    if(dp[i][h + 1][g + 1] != -1){
-      return dp[i][h + 1][g + 1];
-    }
-    if(i == 0){
-      //the last one we took is v[0][h]
-      int pos1 = fill(1, h,g + 1) + distance(v[1][g + 1],v[0][h]);
-      int pos2 = fill(0,h + 1, g) + distance(v[0][h],v[0][h + 1]);
-      dp[i][h + 1][g + 1] = min(pos1,pos2);
-      return dp[i][h + 1][g + 1];
-    }else{
-      //the last one we took is v[1][g]
-      int pos1 = fill(1,h,g + 1) + distance(v[1][g],v[1][g + 1]);
-      int pos2 = fill(0,h + 1, g) + distance(v[1][g],v[0][h + 1]);
-      dp[i][h + 1][g + 1] = min(pos1,pos2);
-      return dp[i][h + 1][g + 1];
-    }
-  }
-  void solve(std::istream& in, std::ostream& out) {
+#define ll long long
+struct coord {
+    ll x, y;
+};
+ll dist (coord a, coord b) {
+    int d = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+    return d;
+}
+ll INF = 2e12;
+int main() {
+    freopen("checklist.in", "r", stdin);
+    freopen("checklist.out", "w", stdout);
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    in >> H >> G;
-    while(H--){
-      int x,y;
-      in >> x >> y;
-      v[0].push_back({x,y});
-
+    int H, G;
+    cin >> H >> G;
+    vector<coord> holstein, guernsey;
+    holstein.resize(H), guernsey.resize(G);
+    for (int i = 0; i < H; i++) {
+        cin >> holstein[i].x >> holstein[i].y;
     }
-    while(G--){
-      int x,y;
-      in >> x >> y;
-      v[1].push_back({x,y});
+    for (int i = 0; i < G; i++) {
+        cin >> guernsey[i].x >> guernsey[i].y;
     }
-    for(int i = 0; i < 2; i++){
-      for(int j = 0; j < 1001; j++){
-        for(int k = 0; k < 1001; k++){
-          dp[i][j][k] = -1;
+    ll dp[H + 1][G + 1][2]; //dp[i][j] --> we include i holsteins and j guernseys
+    for (int i = 0; i <= H; i++) {
+        for (int j = 0; j <= G; j++) {
+            if (i == 0 && j == 0) {
+                dp[i][j][0] = dp[i][j][1] = 0;
+                continue;
+            }
+            if (i == 0) {
+                dp[i][j][0] = dp[i][j][1] = INF;
+                continue;
+            }
+            if (i == 1 && j == 0) {
+                dp[i][j][0] = 0;
+                dp[i][j][1] = INF;
+                continue;
+            }
+            if (j == 0) {
+                dp[i][j][0] = dp[i - 1][j][0] + dist(holstein[i - 1], holstein[i - 2]);
+                dp[i][j][1] = INF;
+                continue;
+            }
+            dp[i][j][0] = INF;
+            dp[i][j][0] = min(dp[i][j][0], dp[i - 1][j][1] + dist(holstein[i - 1], guernsey[j - 1]));
+            if (i >= 2) dp[i][j][0] = min(dp[i][j][0], dp[i - 1][j][0] + dist(holstein[i - 1], holstein[i - 2]));
+            dp[i][j][1] = INF;
+            if (j >= 2) dp[i][j][1] = min(dp[i][j][1], dp[i][j - 1][1] + dist(guernsey[j - 1], guernsey[j - 2]));
+            dp[i][j][1] = min(dp[i][j][1], dp[i][j - 1][0] + dist(holstein[i - 1], guernsey[j - 1]));
         }
-      }
     }
-    int x = fill(0,0,-1);
-    out << x << endl;
-  }
-};
-int main(){
-   Problem2CowChecklist solver;
-   ifstream in("checklist.in");
-   ofstream out("checklist.out");
-   solver.solve(in,out);
+    cout << dp[H][G][0] << '\n';
 }
