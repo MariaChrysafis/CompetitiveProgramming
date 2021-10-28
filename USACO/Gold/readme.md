@@ -6,7 +6,7 @@
 | 2013-2014 | February | [roadblock](http://usaco.org/index.php?page=viewproblem2&cpid=400) | October 26th, 2021 |
 | 2013-2014 | January | [skilevel](http://www.usaco.org/index.php?page=viewproblem2&cpid=384) | March 5th, 2021 |
 | 2014-2015 | December | [guard](http://www.usaco.org/index.php?page=viewproblem2&cpid=494) | February 28th, 2021 |
-| 2014-2015 | US Open | [palpath](http://www.usaco.org/index.php?page=viewproblem2&cpid=553) | February 7th, 2021|
+| 2014-2015 | US Open | [palpath](http://www.usaco.org/index.php?page=viewproblem2&cpid=553) | October 27th, 2021 |
 ## New Gold
 | Contest Year  | Contest Month | Problem Name| Date Completed|
 | ------------- | ------------- | ------------|----------|
