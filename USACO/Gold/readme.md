@@ -3,6 +3,7 @@
 | Contest Year  | Contest Month | Problem Name| Date Completed|
 | ------------- | ------------- | ------------|----------|
 | 2012-2013 | January | [lineup](http://www.usaco.org/index.php?page=viewproblem2&cpid=229) | October 21st, 2021 |
+| 2012-2013 | March | [cowrun](http://usaco.org/index.php?page=viewproblem2&cpid=265) | October 28th, 2021 |
 | 2013-2014 | February | [roadblock](http://usaco.org/index.php?page=viewproblem2&cpid=400) | October 26th, 2021 |
 | 2013-2014 | January | [skilevel](http://www.usaco.org/index.php?page=viewproblem2&cpid=384) | March 5th, 2021 |
 | 2014-2015 | December | [cowjog](http://www.usaco.org/index.php?page=viewproblem2&cpid=496) | October 28th, 2021 |
