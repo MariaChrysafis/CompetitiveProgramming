@@ -23,7 +23,7 @@
 | 2015-2016 | February | [fencedin](http://usaco.org/index.php?page=viewproblem2&cpid=623) | February 19th, 2021 |
 | 2015-2016 | US Open | [closing](http://usaco.org/index.php?page=viewproblem2&cpid=646) | February 19th, 2021 |
 | 2015-2016 | US Open | [split](http://www.usaco.org/index.php?page=viewproblem2&cpid=645) | October 11th, 2021 |
-| 2015-2016 | US Open | [248](http://www.usaco.org/index.php?page=viewproblem2&cpid=647) | February 19th, 2021 |
+| 2015-2016 | US Open | [248](http://www.usaco.org/index.php?page=viewproblem2&cpid=647) | October 28th, 2021 |
 | 2016-2017 | December | [moocast](http://usaco.org/index.php?page=viewproblem2&cpid=669) | December 22nd, 2020|
 | 2016-2017 | December | [checklist](http://usaco.org/index.php?page=viewproblem2&cpid=670) | October 27th, 2021|
 | 2016-2017 | December | [lasers](http://usaco.org/index.php?page=viewproblem2&cpid=671) | January 22nd, 2021|
