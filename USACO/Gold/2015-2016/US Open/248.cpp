@@ -1,41 +1,59 @@
+#include <cmath>
 #include <iostream>
-#define maxN 248
-
-int dp[maxN][maxN];
-int arr[maxN];
-int N;
-
+#include <set>
+#include <climits>
+#include <algorithm>
+#include <cassert>
+#include <vector>
+#include <iomanip>
+#include <type_traits>
+#include <string>
+#include <queue>
+#include <map>
 using namespace std;
-int main(){
+#define ll long long
+vector<int> v;
+vector<vector<int>> dp;
+int memoize (int x, int y) {
+    if (dp[x][y] != -1) {
+        return dp[x][y];
+    }
+    if (x == y) {
+        return v[x];
+    }
+    if (x > y) {
+        return 0;
+    }
+    dp[x][y] = 0;
+    for (int i = x; i <= y - 1; i++) {
+        int a = memoize(x, i);
+        int b = memoize(i + 1, y);
+        if (a == b && a != 0) {
+            dp[x][y] = max(dp[x][y], a + 1);
+        }
+    }
+    return dp[x][y];
+}
+int main() {
     freopen("248.in", "r", stdin);
     freopen("248.out", "w", stdout);
-    cin >> N;
-    for(int i = 0; i < N; i++){
-        cin >> arr[i];
-    }
-    for(int i = 0; i < N; i++){
-        for(int j = 0; j < N; j++){
+    int n;
+    cin >> n;
+    v.resize(n);
+    dp.resize(n);
+    for (int i = 0; i < n; i++) {
+        cin >> v[i];
+        dp[i].resize(n);
+        for (int j = 0; j < n; j++) {
             dp[i][j] = -1;
         }
     }
-    for(int l = 1; l <= N; l++){
-        for(int i = 0; l + i - 1 < N; i++){
-            int j = l + i - 1;
-            dp[i][j] = -1;
-            if(l == 1){ dp[i][j] = arr[i]; continue;}
-            for(int k = 0; k < N; k++){
-                if(dp[i][k] == -1) continue;
-                if(dp[i][k] == dp[k + 1][j]){
-                    dp[i][j] = max(dp[i][j],dp[i][k] + 1);
-                }
-            }
+    int myMax = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            dp[i][j] = memoize(i, j);
+            myMax = max(myMax, dp[i][j]);
         }
     }
-    int ans = 0;
-    for(int i = 0; i < N; i++){
-        for(int j = 0; j < N; j++){
-            ans = max(ans,dp[i][j]);
-        }
-    }
-    cout << ans << endl;
+    cout << myMax;
 }
