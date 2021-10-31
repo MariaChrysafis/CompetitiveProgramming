@@ -16,7 +16,7 @@ I solve some problems. I put my solutions here.
 ```*``` signifies in-contest promotion
 
 ## Codeforces Contests Scores
-See [here](https://codeforces.com/contests/with/olympia). As of the time of writing, I am Codeforces Expert rank.
+See [here](https://codeforces.com/contests/with/olympia). As of the time of writing, I am Codeforces Candidate Master rank.
 
 ## LeetCode Contest Scores
 See [here](https://leetcode.com/passionFruitFlower/) for my LeetCode profile. As of the time of writing, I am LeetCode Guardian.
