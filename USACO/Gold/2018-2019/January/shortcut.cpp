@@ -1,119 +1,120 @@
-#include <iostream>
+#include <cmath>
+#include <cstdio>
 #include <vector>
-#include <queue>
+#include <iostream>
 #include <algorithm>
-#include <fstream>
-#define endl '\n'
-const long long INFTY = 1000000000;
+#include <unordered_set>
+#include <set>
+#include <unordered_map>
+#include <queue>
+#include <map>
+#define ll signed long long
+const ll INF = 1e18;
 using namespace std;
-struct edge{
-  long long u, weight;
-};
-//vector<int> DIST;
-struct compareEdge{
-  bool operator()(edge const& p1, edge const& p2)
-    {
-        // return "true" if "p1" is ordered
-        // before "p2", for example:
-        return p1.weight > p2.weight;
-    }
-};
-long long max(long long a, long long b){
-  if(a > b){
-    return a;
-  }
-  return b;
-}
 struct graph{
-  vector<vector<edge>> adj;
-  vector<long long> parent;
-  vector<long long> cow;
-  vector<long long> c;
-  int N, M, T;
-  void init(){
-    adj.resize(N);
-    parent.resize(N);
-    cow.resize(N);
-    for(int i = 0; i < N; i++){
-      cow[i] = 0, parent[i] = INFTY;
-    }
-  }
-  vector<long long> dijk() {
-    int n = N;
-    bool mark[N + 1];
-    priority_queue<edge, vector<edge>, compareEdge> pq;
-    for(int i = 0; i < n; i++){
-      mark[i] = false;
-    }
-    vector<long long> dist(N + 1);
-    for(int i = 0; i < N; i++){
-      dist[i] = INFTY;
-    }
-    dist[0] = 0;
-    pq.push({0,0});
-    while(!pq.empty()){
-      int x = pq.top().u;
-      pq.pop();
-      if(mark[x]){
-        continue;
-      }
-      mark[x] = true;
-      for(int j = 0; j < adj[x].size(); j++){
-        int a = adj[x][j].u;
-        int b = adj[x][j].weight;
-        //if(dist[x] = INF) continue;
-        if(dist[a] > dist[x] + b || (dist[a] == dist[x] + b && x < parent[a])){
-          dist[a] = dist[x] + b;
-          edge c = {a,dist[x] + b};
-          pq.push(c);
-          parent[a] = x;
+    vector<vector<pair<ll,ll>>> adj; //{weight, node}
+    vector<ll> parent;
+    vector<ll> dijk(ll src){
+        vector<ll> dist;
+        vector<bool> mark;
+        parent.resize(adj.size());
+        dist.resize(adj.size()), mark.resize(adj.size());
+        for(int i = 0; i < adj.size(); i++){
+            dist[i] = INF;
+            mark[i] = false;
         }
-      }
+        dist[src] = 0;
+        parent[src] = -1;
+        priority_queue<pair<ll,ll>> pq;
+        pq.push({0,src});
+        while(!pq.empty()){
+            ll u = -pq.top().second; //node
+            pq.pop();
+            if(mark[u]){
+                continue;
+            }
+            mark[u] = true;
+            for(auto p: adj[u]){
+                ll v = p.second;
+                ll w = p.first;
+                if(dist[v] > dist[u] + w){
+                    dist[v] = dist[u] + w;
+                    pq.push({-dist[v], -v});
+                    parent[v] = u;
+                }
+                if (dist[v] == dist[u] + w && parent[v] > u) {
+                    dist[v] = dist[u] + w;
+                    pq.push({-dist[v], -v});
+                    parent[v] = u;
+                }
+            }
+        }
+        return dist;
     }
-    return dist;
-  }
-  void path(int strt, int cur){
-    cow[cur] += c[strt];
-    if(cur == 0){
-      return;
-    }else{
-      //curPath.push_back(parent[curPath.back()]);
-      path(strt, parent[cur]);
+    vector<ll> path (ll a) {
+        //from a to 1
+        vector<ll> v = {a};
+        while (v.back() != 0) {
+            v.push_back(parent[v.back()]);
+        }
+        return v;
     }
-  }
 };
-int main(){
-  freopen("shortcut.in", "r", stdin);
-  freopen("shortcut.out", "w", stdout);
-  //ifstream in("shortcut.in");
-	//ofstream out("shortcut.out");
-  int N, M, T;
-  cin >> N >> M >> T;
-  graph g;
-  g.N = N, g.M = M, g.T = T, g.init();
-  vector<long long> c;
-  for(int i = 0; i < N; i++){
-    int a; cin >> a;
-    c.push_back(a);
-  }
-  g.c = c;
-  for(int i = 0; i < M; i++){
-    int a, b, t;
-    cin >> a >> b >> t, a--, b--;
-    g.adj[a].push_back({b,t});
-    g.adj[b].push_back({a,t});
-  }
-  vector<long long> dist = g.dijk();
-  long long myMax = 0;
-  for(int i = 0; i < N; i++){
-    g.path(i, i);
-  }
-  for(int i = 1; i < N; i++){
-    if(dist[i] == INFTY){
-      //cout << "YES" << endl;
-        //continue;
+int main() {
+    freopen("shortcut.in", "r", stdin);
+    freopen("shortcut.out", "w", stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int N, M, T;
+    cin >> N >> M >> T;
+    graph g;
+    vector<ll> v(N);
+    for (int i = 0; i < v.size(); i++) {
+        cin >> v[i];
     }
-    myMax = max(g.cow[i] * (dist[i] - T), myMax);
-  }
-  cout << myMax << endl;
+    g.adj.resize(N);
+    set<pair<int,int>> myMap[N];
+    for (int i = 0; i < M; i++) {
+        int a, b, t;
+        cin >> a >> b >> t;
+        a--, b--;
+        g.adj[a].emplace_back(t, b);
+        g.adj[b].emplace_back(t, a);
+        //myMap[{a, b}] = t;
+        //myMap[{b, a}] = t;
+        myMap[a].insert({b, t});
+        myMap[b].insert({a, t});
+    }
+    vector<ll> dist = g.dijk(0);
+    ll cur = 0;
+    for (int i = 0; i < dist.size(); i++) {
+        cur += dist[i] * v[i];
+    }
+    vector<ll> cost(N);
+    for (int i = 0; i < N; i++) {
+        cost[i] = 0;
+    }
+    for (int i = 1; i < N; i++) {
+        vector<ll> vec = g.path(i);
+        ll dist_i_j = 0;
+        for (int j = 0; j < vec.size(); j++) {
+            // we try having a time travel ticket position j
+            // we are currently at i
+            if (dist_i_j + T < dist[i]) {
+                cost[vec[j]] += (dist[i] - (dist_i_j + T)) * v[i];
+            }
+            if (j + 1 != vec.size()) {
+                auto it = myMap[vec[j]].upper_bound({vec[j + 1], 0});
+                pair<int,int> p = *it;
+                dist_i_j += p.second;
+            }
+        }
+    }
+    ll myMax = 0;
+    for (int i = 0; i < cost.size(); i++) {
+        //cout << cost[i] << " ";
+        myMax = max(myMax, cost[i]);
+    }
+    //cout << '\n';
+    cout << myMax;
 }
