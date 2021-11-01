@@ -1,75 +1,63 @@
-#include <iostream>
 #include <cmath>
+#include <cstdio>
 #include <vector>
+#include <iostream>
+#include <algorithm>
+#include <unordered_set>
+#include <set>
+#include <unordered_map>
+#include <queue>
+#include <map>
+#define ll signed long long
 using namespace std;
 const int MOD = 1e9 + 7;
-struct tree{
-    vector<vector<int>> adj;
-    vector<int> parent;
-    void dfs(int cur, int prev){
-        if(prev != -1){
-            parent[cur] = prev;
-        }
-        for(int i: adj[cur]){
-            if(i != prev){
-                dfs(i, cur);
+vector<vector<ll>> adj;
+vector<ll> color[2];
+ll dfs1 (int curNode, int prevNode, int col) {
+    if (color[col][curNode] != -1) {
+        return color[col][curNode];
+    }
+    //col = 0 -> white
+    //col = 1 -> black
+    ll ans = 1;
+    for (int i: adj[curNode]) {
+        if (i != prevNode) {
+            ll c1 = dfs1(i, curNode, 0);
+            ll c2 = dfs1(i, curNode, 1);
+            if (col == 0) {
+                //white
+                ans *= (c1 + c2);
+                ans %= MOD;
+            }
+            if (col == 1) {
+                //black
+                ans *= c1;
+                ans %= MOD;
             }
         }
     }
-    vector<int> find_parent(){
-        parent.resize(adj.size());
-        dfs(0, -1);
-        parent[0] = -1;
-        return parent;
-    }
-};
-vector<int> p;
-tree t;
-vector<long long> dp[2];
-long long memoize(int curNode, bool color){
-    //color = 1 -> black
-    //color = 0 -> white
-    if(dp[color][curNode] != -1){
-        return dp[color][curNode];
-    }
-    if(!color) {
-        long long ans = 1;
-        for (int i: t.adj[curNode]) {
-            if (i == p[curNode]) continue;
-            ans *= (memoize(i, 0) + memoize(i, 1));
-            if(ans > MOD) ans %= MOD;
-        }
-        dp[color][curNode] = ans;
-        return ans;
-    }else{
-        long long ans = 1;
-        for (int i: t.adj[curNode]) {
-            if (i == p[curNode]) continue;
-            ans *= (memoize(i, 0));
-            if(ans > MOD) ans %= MOD;
-        }
-        dp[color][curNode] = ans;
-        return ans;
-    }
+    color[col][curNode] = ans;
+    return ans;
 }
-int main(){
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
+int main() {
     int n;
     cin >> n;
-    t.adj.resize(n);
-    for(int i = 0; i < n - 1; i++){
+    adj.resize(n);
+    color[0].resize(n);
+    color[1].resize(n);
+    for (int i = 0; i < n; i++) {
+        color[0][i] = color[1][i] = -1;
+    }
+    for (int i = 0; i < n - 1; i++) {
         int u, v;
         cin >> u >> v;
-        t.adj[u - 1].push_back(v - 1);
-        t.adj[v - 1].push_back(u - 1);
+        u--, v--;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
     }
-    p = t.find_parent();
-    for(int i = 0; i < 2; i++){
-        dp[i].resize(n);
-        for(int j = 0; j < dp[i].size(); j++){
-            dp[i][j] = -1;
-        }
+    for (int i = 0; i < n; i++) {
+        dfs1(i, -1, 0);
+        dfs1(i, -1, 1);
     }
-    cout << (memoize(0, 0) + memoize(0, 1)) % MOD;
+    cout << (color[0][0] + color[1][0]) % MOD;
 }
