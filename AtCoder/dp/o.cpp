@@ -1,47 +1,51 @@
-#include <iostream>
 #include <cmath>
+#include <cstdio>
 #include <vector>
+#include <iostream>
+#include <algorithm>
+#include <unordered_set>
+#include <set>
+#include <unordered_map>
+#include <queue>
+#include <map>
+#define ll signed long long
 using namespace std;
 const int MOD = 1e9 + 7;
-vector<vector<long long>> dp; //first i men, some subset of the women
-vector<vector<short int>> arr;
-int n;
-bool bitSet(int val, int bitNum){
-    return (val >> bitNum) & 1;
-}
-long long memoize(int x, int y){
-    if(x < 0){
-        return 1;
-    }
-    if(dp[x][y] != -1){
-        return dp[x][y];
-    }
-    long long ans = 0;
-    for(int i = 0; i < n; i++){
-        if(bitSet(y,i) && arr[x][i]){
-            ans += memoize(x - 1, y - (1 << i));
-        }
-    }
-    dp[x][y] = ans % MOD;
-    return dp[x][y];
-}
-int main(){
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
+int main() {
+    int n;
     cin >> n;
-    dp.resize(n);
-    for(int i = 0; i < n; i++){
-        dp[i].resize((int)pow(2,n + 1));
-        for(int j = 0; j < dp[i].size(); j++){
-            dp[i][j] = -1;
+    bool adj[n][n];
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> adj[i][j];
         }
     }
-    arr.resize(n);
-    for(int i = 0; i < n; i++){
-        arr[i].resize(n);
-        for(int j = 0; j < n; j++){
-            cin >> arr[i][j];
+    long long prev[(1 << n)];
+    long long cur[(1 << n)];
+    for (int j = 0; j < (1 << n); j++) {
+        prev[j] = cur[j] = 0;
+    }
+    for (int i = 0; i < n; i++) {
+        if (adj[0][i]) {
+            prev[(1 << i)] = 1;
         }
     }
-    cout << memoize(n - 1, pow(2, n + 1) - 1);
+    for (int i = 1; i < n; i++) {
+        for (int j = 0; j < (1 << n); j++) {
+            if (!prev[j]) {
+                continue;
+            }
+            for (int k = 0; k < n; k++) {
+                if (!(j & (1 << k)) && adj[i][k]) {
+                    cur[j + (1 << k)] += prev[j];
+                    cur[j + (1 << k)] %= MOD;
+                }
+            }
+        }
+        for (int j = 0; j < (1 << n); j++) {
+            prev[j] = cur[j];
+            cur[j] = 0;
+        }
+    }
+    cout << prev[(1 << n) - 1] << '\n';
 }
