@@ -1,73 +1,53 @@
-/* Include all headers */
-#include <iostream>
-#include <string>
 #include <vector>
-#include <algorithm>
-#include <sstream>
-#include <queue>
-#include <deque>
-#include <bitset>
-#include <iterator>
-#include <list>
-#include <stack>
-#include <map>
-#include <set>
-#include <functional>
-#include <numeric>
-#include <utility>
-#include <limits>
-#include <cstdio>
+#include <iostream>
+#include <cassert>
 #include <cmath>
-#define pb push_back
-#define pf push_front
+#include <set>
+#include <map>
+#include <stack>
+#include <queue>
+#include <ctime>
+#include <set>
+#include <algorithm>
+#include <iomanip>
 #define ll long long
-#define mp make_pair
-#define vi vector<int>
-#define vpii vector<pair<int,int>>
-#define REP(i,a) for(int i = 0; i < a; i++)
-#define FOR(i,a,b) for(int i = a; i < b; i++)
-#define trav(a,x) for(auto& a: x)
-#define IO ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define input freopen("timeline.in", "r", stdin); freopen("timeline.out", "w", stdout);
 using namespace std;
-map<int,vpii> adj;
-int main(){
-  IO
-  input
-  int N,M,C;
-  cin >> N >> M >> C;
-  int S[N];
-  REP(i,N) cin >> S[i];
-  int in_degree[N];
-  REP(i,N) in_degree[i] = 0;
-  REP(i,C){
-    int x,y,z;
-    cin >> x >> y >> z;
-    x--;
-    y--;
-    in_degree[y]++;
-    adj[x].pb(mp(y,z));
-  }
-  queue<int> q;
-  REP(i,N){
-    if(in_degree[i] == 0){
-      q.push(i);
+struct Edge {
+    int weight;
+    int neighbor;
+};
+vector<vector<Edge>> adj, inv_adj;
+vector<bool> hasVisited;
+vector<int> dp;
+int memoize (int curNode) {
+    if (hasVisited[curNode]) {
+        return dp[curNode];
     }
-  }
-  while(!q.empty()){
-    int x = q.front();
-    q.pop();
-    trav(i,adj[x]){
-      S[i.first] = max(S[i.first],S[x] + i.second);
-      in_degree[i.first]--;
-      if(in_degree[i.first] == 0){
-        q.push(i.first);
-      }
+    for (Edge e: inv_adj[curNode]) {
+        dp[curNode] = max(dp[curNode], memoize(e.neighbor) + e.weight);
     }
-  }
-  REP(i,N){
-    cout << S[i] << endl;
-  }
-  return 0;
+    hasVisited[curNode] = true;
+    return dp[curNode];
 }
-
+int main() {
+    freopen("timeline.in", "r", stdin);
+    freopen("timeline.out", "w", stdout);
+    int N, M, C;
+    cin >> N >> M >> C;
+    inv_adj.resize(N), adj.resize(N), dp.resize(N);
+    hasVisited.assign(N, false);
+    for (int i = 0; i < N; i++) {
+        cin >> dp[i];
+    }
+    for (int i = 0; i < C; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        u--, v--;
+        adj[u].push_back({w, v});
+        inv_adj[v].push_back({w, u});
+    }
+    for (int i = 0; i < N; i++) {
+        dp[i] = memoize(i);
+        cout << dp[i] << '\n';
+    }
+}
