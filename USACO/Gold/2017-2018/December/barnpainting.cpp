@@ -1,92 +1,61 @@
-#include <iostream>
-#include <string>
 #include <vector>
-#include <algorithm>
-#include <sstream>
-#include <queue>
-#include <deque>
-#include <bitset>
-#include <iterator>
-#include <list>
-#include <stack>
-#include <map>
-#include <set>
-#include <functional>
-#include <numeric>
-#include <utility>
-#include <limits>
-#include <cstdio>
+#include <iostream>
+#include <cassert>
 #include <cmath>
-#define pb push_back
-#define pf push_front
+#include <set>
+#include <map>
+#include <stack>
+#include <queue>
+#include <ctime>
+#include <set>
+#include <algorithm>
+#include <iomanip>
 #define ll long long
-#define mp make_pair
-#define REP(i,a) for(int i = 0; i < a; i++)
-#define FOR(i,a,b) for(int i = a; i < b; i++)
-#define trav(a,x) for(auto& a: x)
-#define IO ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define input freopen("barnpainting.in", "r", stdin); freopen("barnpainting.out", "w", stdout);
-const long long MOD = pow(10,9) + 7;
 using namespace std;
-map<int,vector<int>> adj;
-vector<int> fix;
-vector<int> clear(vector<int> v){
-  REP(i,v.size()){
-    v[i] = -1;
-  }
-  return v;
-}
-vector<vector<int>> dp;
-long long dfs(int cur, int prev, int col){
-  if(fix[cur] != col && fix[cur] != -1){
-    return 0;
-  }
-  if(dp[cur][col] != -1){
-    return dp[cur][col];
-  }
-  long long prod = 1;
-  trav(i,adj[cur]){
-    if(i == prev) continue;
-    long long sum = 0;
-    REP(c,3){
-      if(c == col) continue;
-      sum += dfs(i,cur,c);
-      sum %= MOD;
+vector<vector<ll>> dp;
+vector<vector<ll>> adj;
+const int MOD = 1e9 + 7;
+ll memoize (int curNode, int prevNode, int color) {
+    if (dp[curNode][color] != -1) {
+        return dp[curNode][color];
     }
-    prod *= sum;
-    prod %= MOD;
-  }
-  dp[cur][col] = prod;
-  return prod;
+    dp[curNode][color] = 1;
+    for (int i: adj[curNode]) {
+        if (i == prevNode) {
+            continue;
+        }
+        ll sub = 0;
+        for (int j = 0; j < 3; j++) {
+            sub += memoize(i, curNode, j);
+        }
+        sub -= memoize(i, curNode, color);
+        dp[curNode][color] *= sub % MOD;
+        dp[curNode][color] %= MOD;
+    }
+    return dp[curNode][color];
 }
-int main(){
-  IO
-  input
-  long long N,K;
-  cin >> N >> K;
-  fix.resize(N);
-  REP(i,N - 1){
-    long long u,v;
-    cin >> u >> v;
-    u--;
-    v--;
-    adj[u].pb(v);
-    adj[v].pb(u);
-  }
-  fix = clear(fix);
-  REP(i,K){
-    long long a,b;
-    cin >> a >> b;
-    a--;
-    b--;
-    fix[a] = b;
-  }
-  dp.resize(N);
-  REP(i,N){
-    dp[i].resize(3);
-    dp[i] = clear(dp[i]);
-  }
-  long long x = dfs(0,-1,0) + dfs(0,-1,1) + dfs(0,-1,2);
-  x %= MOD;
-  cout << x << endl;
+int main() {
+    freopen("barnpainting.in", "r", stdin);
+    freopen("barnpainting.out", "w", stdout);
+    int n, k;
+    cin >> n >> k;
+    vector<int> inDegree;
+    inDegree.assign(n, 0);
+    adj.resize(n);
+    dp.assign(n, {-1, -1, -1});
+    for (int i = 0; i < n - 1; i++) {
+        int u, v;
+        cin >> u >> v;
+        adj[--u].push_back(--v);
+        adj[v].push_back(u);
+        inDegree[v]++;
+    }
+    for (int i = 0; i < k; i++) {
+        int u, v;
+        cin >> u >> v;
+        u--, v--;
+        dp[u].assign({0, 0, 0});
+        dp[u][v] = -1;
+    }
+    cout << (memoize(0, -1, 0) + memoize(0, -1, 1) + memoize(0, -1, 2)) % MOD;
 }
