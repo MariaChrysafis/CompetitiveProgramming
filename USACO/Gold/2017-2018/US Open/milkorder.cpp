@@ -1,102 +1,96 @@
-#include <iostream>
 #include <vector>
-#include <algorithm>
+#include <iostream>
 #include <cassert>
 #include <cmath>
-#include <queue>
+#include <set>
 #include <map>
+#include <stack>
+#include <queue>
+#include <ctime>
+#include <set>
+#include <algorithm>
 #include <iomanip>
+#define ll long long
 using namespace std;
-void printvii(vector<vector<int>> v) {
-	for (int i = 0; i < v.size(); i++) {
-		for (int j: v[i]) {
-			cout << j << " ";
-		}
-		cout << endl;
-	}
-	cout << endl;
-}
-int n;
-struct Graph {
-	vector<vector<int>> adj;
-	vector<int> toposort() {
-		vector<vector<int>> inv_adj(adj.size());
-		for (int i = 0; i < adj.size(); i++) {
-			for (int j: adj[i]) {
-				inv_adj[j].push_back(i);
-			}
-		}
-		vector<int> inDegree(n);
-		priority_queue<int, vector<int>, greater<int>> q;
-		for (int i = 0; i < adj.size(); i++) {
-			inDegree[i] = inv_adj[i].size();
-			if (inDegree[i] == 0) {
-				q.push(i);
-			}
-		}
-		vector<int> v;
-		while (!q.empty()) {
-			int x = q.top();
-			v.push_back(x);
-			q.pop();
-			for (int i: adj[x]) {
-				inDegree[i]--;
-				if (inDegree[i] == 0) {
-					q.push(i);
-				}
-			}
-		}
-		//reverse(v.begin(), v.end());
-		return v;
-	}
+struct Graph{
+    vector<vector<int>> adj;
+    int n;
+    vector<int> solve(){
+        vector<int> inDeg(n);
+        for (int i = 0; i < n; i++) {
+            for (int j: adj[i]) {
+                inDeg[j]++;
+            }
+        }
+        priority_queue<int> q;
+        for (int i = 0; i < n; i++) {
+            if (!inDeg[i]) {
+                q.push(-i);
+            }
+        }
+        vector<int> label;
+        while (!q.empty()) {
+            int x = -q.top();
+            q.pop();
+            for (int i: adj[x]) {
+                inDeg[i]--;
+                if (!inDeg[i]) {
+                    q.push(-i);
+                }
+            }
+            label.push_back(x);
+        }
+        if (label.size() != n) {
+            return {};
+        }
+        return label;
+    }
 };
-vector<vector<int>> inp;
-vector<int> ts (int x) {
-	Graph g;
-	g.adj.resize(n);
-	for (int i = 0; i < x; i++) {
-		for (int j = 1; j < inp[i].size(); j++) {
-			g.adj[inp[i][j - 1]].push_back(inp[i][j]);
-		}
-	}
-	return g.toposort();
+vector<vector<int>> observations;
+vector<int> valid(int X, int n) {
+    Graph g;
+    g.n = n;
+    g.adj.resize(n);
+    for (int i = 0; i < X; i++) {
+        for (int j = 0; j < observations[i].size() - 1; j++) {
+            g.adj[observations[i][j + 1]].push_back(observations[i][j]);
+        }
+    }
+    return g.solve();
 }
-bool valid (int x) {
-	return (ts(x).size() == n);
-}
-int binSearch (int l, int r) {
-	int m = (l + r + 1)/2;
-	if (l == r) {
-		assert(valid(l));
-		return l;
-	}
-	if (valid(m)) {
-		return binSearch(m, r);
-	} else {
-		return binSearch(l, m - 1);
-	}
+int binSearch (int l, int r, int n) {
+    int m = (l + r + 1)/2;
+    if (l == r) {
+        return l;
+    }
+    if (!valid(m, n).empty()) {
+        return binSearch(m, r, n);
+    } else {
+        return binSearch(l, m -1 , n);
+    }
 }
 int main() {
-	freopen("milkorder.in", "r", stdin);
-	freopen("milkorder.out", "w", stdout);
-	int m;
-	cin >> n >> m;
-	for (int tc = 0; tc < m; tc++) {
-		inp.push_back({});
-		int x;
-		cin >> x;
-		for (int i = 0; i < x; i++) {
-			int y;
-			cin >> y;
-			y--;
-			inp.back().push_back(y);
-		}
-	}
-	int x = binSearch(0, m);
-	vector<int> v = ts(x);
-	for (int i = 0; i < v.size(); i++) {
-		cout << v[i] + 1;
-		if (i != v.size() - 1) cout << ' ';
-	}
+    freopen("milkorder.in", "r", stdin);
+    freopen("milkorder.out", "w", stdout);
+    int n, m;
+    cin >> n >> m;
+    observations.resize(m);
+    for (int i = 0; i < m; i++) {
+        int sz;
+        cin >> sz;
+        observations[i].resize(sz);
+        for (int j = 0; j < sz; j++) {
+            cin >> observations[i][j];
+            observations[i][j]--;
+        }
+        reverse(observations[i].begin(), observations[i].end());
+    }
+    int x = binSearch(0, m, n);
+    vector<int> v = valid(x, n);
+    for (int i = 0; i < v.size(); i++) {
+        cout << v[i] + 1;
+        if (i != v.size() - 1) {
+            cout << " ";
+        }
+    }
 }
-
