@@ -1,62 +1,93 @@
-#include <iostream>
 #include <vector>
+#include <iostream>
+#include <cassert>
 #include <cmath>
+#include <set>
 #include <map>
+#include <stack>
+#include <queue>
+#include <climits>
+#include <unordered_map>
+#include <set>
 #include <algorithm>
+#include <iomanip>
 using namespace std;
-int N;
-vector<pair<int,int>> cows;
-vector<vector<long long>> adj;
-vector<int> vec;
-map<int,bool> hv;
-void dfs(int i, int min_dist){
-  hv[i] = 1;
-  for(int j = 0; j < N; j++){
-    if(!hv[j] && adj[i][j] <= min_dist){
-      dfs(j,min_dist);
+struct dsu{
+    vector<int> parent;
+    vector<int> compSize;
+    int cc;
+    int n;
+    void fill(){
+        parent.resize(n), compSize.resize(n);
+        cc = n;
+        for(int i = 0; i < n; i++){
+            parent[i] = i, compSize[i] = 1;
+        }
     }
-  }
+    int find_head(int x){
+        if(x == parent[x]){
+            return x;
+        }
+        return find_head(parent[x]);
+    }
+    void join(int x, int y){
+        x = find_head(x);
+        y = find_head(y);
+        if(x == y){
+            return;
+        }
+        if(compSize[x] > compSize[y]){
+            swap(x,y);
+        }
+        parent[x] = y;
+        compSize[y] += compSize[x];
+        cc--;
+    }
+};
+int dist (pair<int,int> p1, pair<int,int> p2) {
+    return abs(p1.first - p2.first) * abs(p1.first - p2.first) + abs(p1.second - p2.second) * abs(p1.second - p2.second);
 }
-bool pos(int min_dist){
-  hv.clear();
-  dfs(0,min_dist);
-  for(int i = 0; i < N; i++){
-    if(!hv[i]){
-      return false;
+int main() {
+    freopen("moocast.in", "r", stdin);
+    freopen("moocast.out", "w", stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    dsu d;
+    int N;
+    cin >> N;
+    d.n = N;
+    d.fill();
+    vector<pair<int,int>> vec(N);
+    vector<vector<pair<int,int>>> v;
+    for (int i = 0; i < N; i++) {
+        cin >> vec[i].first >> vec[i].second;
     }
-  }
-  return true;
-}
-int binSearch(int l, int r){
-  int m;
-  while(r - l > 1){
-    m = l + (r - l)/2;
-    if(pos(vec[m])){
-      r = m;
-    }else{
-      l = m;
+    set<int> s;
+    for (int i = 0; i < N; i++) {
+        for (int j = i + 1; j < N; j++) {
+            s.insert(dist(vec[i], vec[j]));
+        }
     }
-  }
-  return r;
-}
-int main(){
-  freopen("moocast.in", "r", stdin);
-  freopen("moocast.out", "w", stdout);
-  cin >> N;
-  for(int i = 0; i < N; i++){
-    int a,b;
-    cin >> a >> b;
-    cows.push_back({a,b});
-  }
-  adj.resize(N);
-  for(int i = 0; i < N; i++){
-    adj[i].resize(N);
-    for(int j = 0; j < N; j++){
-      adj[i][j] = pow(cows[i].first - cows[j].first,2) + pow(cows[i].second - cows[j].second,2);
-      if(i < j) vec.push_back(adj[i][j]);
+    int cntr = 0;
+    map<int,int> myMap;
+    vector<int> rev;
+    for (int i: s) {
+        myMap[i] = cntr++;
+        rev.push_back(i);
     }
-  }
-  sort(vec.begin(),vec.end());
-  int a = binSearch(0,vec.size());
-  cout << vec[a] << endl;
+    v.resize(cntr);
+    for (int i = 0; i < N; i++) {
+        for (int j = i + 1; j < N; j++) {
+            v[myMap[dist(vec[i], vec[j])]].push_back({i, j});
+        }
+    }
+    for (int i = 0; i < v.size(); i++) {
+        for (pair<int,int> pr: v[i]) {
+            d.join(pr.first, pr.second);
+        }
+        if (d.cc == 1) {
+            cout << rev[i] << '\n';
+            return 0;
+        }
+    }
 }
