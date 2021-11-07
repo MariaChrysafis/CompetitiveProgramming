@@ -1,101 +1,96 @@
-#include <iostream>
 #include <vector>
+#include <iostream>
+#include <cassert>
+#include <cmath>
+#include <set>
+#include <map>
+#include <stack>
+#include <queue>
+#include <climits>
+#include <unordered_map>
 #include <set>
 #include <algorithm>
-#include <map>
-#include <fstream>
+#include <iomanip>
 using namespace std;
-vector<bool> marked;
-struct edge{
-  int u, v, weight;  
-};
-bool comp(edge e1, edge e2){
-    return (e1.weight > e2.weight);
-}
-struct DSU {
+struct dsu{
     vector<int> parent;
-    vector<int> rank;
-    vector<int> connectedComponent;
-    int n;
-    void init() {
-        parent.resize(n);
-        rank.resize(n);
-        marked.resize(n);
-        connectedComponent.resize(n);
-        for (int i = 0; i < n; i++) {
-            parent[i] = i;
-            rank[i] = 0;
-            marked[i] = false;
-            connectedComponent[i] = 1;
+    vector<int> compSize;
+    int N;
+    void fill(){
+        parent.resize(N), compSize.resize(N);
+        for(int i = 0; i < N; i++){
+            parent[i] = i, compSize[i] = 1;
         }
-        //marked.resize(n);
     }
-    int find_set(int v) {
-        if (v == parent[v]) {
-            return v;
+    int find_head(int x){
+        if(x == parent[x]){
+            return x;
         }
-        return find_set(parent[v]);
+        return find_head(parent[x]);
     }
-    void unite(int a, int b) {
-        a = find_set(a);
-        b = find_set(b);
-        if (a != b) {
-            if (rank[a] < rank[b]) {
-                swap(a, b);
-            }
-            parent[b] = a;
-            //connectedComponent[b] = 0;
-            connectedComponent[a] += connectedComponent[b];
-            connectedComponent[b] = 0;
-            if (rank[a] == rank[b]) {
-                rank[a]++;
-            }
+    void join(int x, int y){
+        x = find_head(x);
+        y = find_head(y);
+        if(x == y){
+            return;
         }
+        if(compSize[x] > compSize[y]){
+            swap(x,y);
+            //ensures that compSize[x1] <= compSize[y1]
+        }
+        parent[x] = y;
+        compSize[y] += compSize[x];
+    }
+    bool comp(int x, int y){
+        return (find_head(x) == find_head(y));
     }
 };
 int main() {
-    std::ifstream in("mootube.in");
-	std::ofstream out("mootube.out");
-    int n, q;
-    in >> n >> q;
-    vector<vector<int>> adj(n);
-    vector<edge> edges;
-    for(int i = 0; i < n - 1; i++){
-        int u, v, w;
-        in >> u >> v >> w;
-        u--;
-        v--;
-        edges.push_back({u,v,w});
-        adj[u].push_back(v);
-        adj[v].push_back(u);
+    freopen("mootube.in", "r", stdin);
+    freopen("mootube.out", "w", stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    dsu g;
+    cin >> g.N;
+    g.fill();
+    int Q;
+    cin >> Q;
+    map<int,vector<pair<int,int>>> myMap;
+    set<int> mySet;
+    for (int i = 0; i < g.N - 1; i++) {
+        int a, b, s;
+        cin >> a >> b >> s;
+        a--, b--;
+        myMap[-s].push_back({a, b});
+        mySet.insert(s);
     }
-    DSU dsu;
-    dsu.n = n, dsu.init();
-    vector<pair<int,int>> queries;
-    vector<pair<int,int>> sortedQueries;
-    for(int i = 0; i < q; i++){
-        int k, v;
-        in >> k >> v;
-        v--;
-        queries.push_back(make_pair(k, v));
-        sortedQueries.push_back(make_pair(k, v));
-    }
-    sort(sortedQueries.begin(), sortedQueries.end());
-    reverse(sortedQueries.begin(), sortedQueries.end());
-    sort(edges.begin(), edges.end(), comp);
-    map<pair<int,int>,int> myMap;
-    int ind = 0;
-    for(int i = 0; i < sortedQueries.size(); i++){
-        int k = sortedQueries[i].first;
-        int v = sortedQueries[i].second;
-        while(ind < n && edges[ind].weight >= k){
-            dsu.unite(edges[ind].u, edges[ind].v);
-            ind++;
+    vector<pair<int,int>> vec(Q);
+    map<int,vector<int>> m;
+    map<pair<int,int>,int> ans;
+    for (int i = 0; i < Q; i++) {
+        cin >> vec[i].first >> vec[i].second;
+        vec[i].first--, vec[i].second--;
+        swap(vec[i].first, vec[i].second);
+        if (mySet.upper_bound(vec[i].second) == mySet.end()) {
+            auto it = mySet.end();
+            it--;
+            vec[i].second = *it;
+        } else {
+            vec[i].second = *mySet.upper_bound(vec[i].second);
         }
-        int x = dsu.connectedComponent[dsu.find_set(v)] - 1;
-        myMap[{k,v}] = x;
+        m[vec[i].second].push_back(vec[i].first);
     }
-    for(pair<int,int> p: queries){
-        out << myMap[p] << endl;
+    for (auto p: myMap) {
+        vector<pair<int,int>> edges = p.second;
+        for (auto q: edges) {
+            g.join(q.first, q.second);
+        }
+        for (int i: m[-p.first]) {
+            ans[make_pair(i, -p.first)] = g.compSize[g.find_head(i)];
+        }
     }
+    for (auto p: vec) {
+        cout << ans[p] - 1 << endl;
+    }
+    //cout << "MISSION IMPOSSIBLE";
 }
