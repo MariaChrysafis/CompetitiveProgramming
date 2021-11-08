@@ -1,70 +1,100 @@
-#include <bits/stdc++.h>
-#include <ext/pb_ds/assoc_container.hpp>
+#include <algorithm>
+#include <vector>
+#include <iostream>
+#include <cassert>
+#include <cmath>
+#include <map>
+#include <set>
 
+#define ll long long
 using namespace std;
-using namespace __gnu_pbds;
+struct segmentTree {
+    vector<ll> v;
+    vector<ll> val;
 
-typedef tree<int, null_type, less_equal<int>, rb_tree_tag, tree_order_statistics_node_update> ordered_set;
-class Problem1BalancedPhoto {
-public:
-  set<int> s;
-  ordered_set s1;
-  vector<int> f(std::istream &in, std::ostream &out,vector<int> arr){
-    s.clear();
-    s1.clear();
-    vector<int> v;
-    map<int,int> oc;
-    for(int i = 0; i < arr.size(); i++){
-      oc[arr[i]] = i;
+    ll ID = 0;
+
+    ll op(ll a, ll b) {
+        return a + b;
     }
-    for(int i = 0; i < arr.size(); i++){
-      s.insert(arr[i]);
-      s1.insert(arr[i]);
-      auto it = s.upper_bound(arr[i]);
-      int x = s1.order_of_key(*it);
-      if(s.find(*it) == s.end()){
-        v.push_back(0);
-        continue;
-      }
-      v.push_back(i - x + 1);
+
+    ll query(int dum, int tl, int tr, int& l, int& r) {
+        if (tr < l || tl > r) {
+            return ID;
+        }
+        if (tl >= l && tr <= r) {
+            return val[dum];
+        }
+        ll mid = (tl + tr) >> 1;
+        dum = dum << 1;
+        return query(dum, tl, mid, l, r) + query(dum + 1, mid + 1, tr, l, r);
     }
-    return v;
-  }
-  void solve(std::istream &in, std::ostream &out) {
-    int n;
-    in >> n;
-    vector<int> arr(n);
-    for(int i = 0; i < n; i++){
-      in >> arr[i];
+
+    ll query(int l, int r) {
+        return query(1, 0, (int)v.size() - 1, l, r);
     }
-    vector<int> v1 = f(in, out, arr);
-    reverse(arr.begin(),arr.end());
-    vector<int> v2 = f(in, out, arr);
-    //return;
-    reverse(v2.begin(),v2.end());
-    int cntr = 0;
-    for(int i = 0; i < arr.size(); i++){
-      int myMin = min(v1[i],v2[i]);
-      int myMax = max(v1[i],v2[i]);
-      //out << v1[i] << " " << v2[i] << endl;
-      //out << myMin << " " << myMax << endl;
-      if(2 * myMin < myMax){
-        //out << arr[arr.size() - 1 - i] << endl;
-        cntr++;
-      }
+
+    void update(int x, ll y) {
+        int cur = (int) v.size() + x;
+        int curX = x;
+        int curY = x;
+        while (true) {
+            val[cur] += y;
+            if (cur == 0) {
+                break;
+            }
+            if(cur % 2 == 0) {
+                curY = 2 * curY - curX + 1;
+            } else {
+                curX = 2 * curX - curY - 1;
+            }
+            cur /= 2;
+        }
     }
-    out << cntr << endl;
-  }
+
+    void resz(int n) {
+        v.resize((1 << (int) ceil(log2(n))));
+        val.resize(v.size() * 2);
+    }
+
 };
-
-
 int main() {
-  ios_base::sync_with_stdio(false);
-        cin.tie(NULL);
-	Problem1BalancedPhoto solver;
-        ifstream in("bphoto.in");
-    ofstream out("bphoto.out");
-	solver.solve(in, out);
-	return 0;
+    freopen("bphoto.in", "r", stdin);
+    freopen("bphoto.out", "w", stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int n;
+    cin >> n;
+    vector<int> v(n);
+    set<int> s;
+    for (int i = 0; i < n; i++) {
+        cin >> v[i];
+        s.insert(v[i]);
+    }
+    map<int,int> myMap;
+    int cntr = 0;
+    for (int i: s) {
+        myMap[i] = cntr++;
+    }
+    for (int i = 0; i < n; i++) {
+        v[i] = myMap[v[i]];
+    }
+    segmentTree st1;
+    segmentTree st2;
+    st1.resz(n + 5), st2.resz(n + 5);
+    for (int i = 0; i < n; i++) {
+        st2.update(v[i], 1);
+        //cout << v[i] << " ";
+    }
+    //cout << endl;
+    cntr = 0;
+    for (int i = 0; i < n; i++) {
+        int l = st1.query(v[i] + 1, n + 1);
+        int r = st2.query(v[i] + 1, n + 1);
+        //cout << l << " " << r << endl;
+        cntr += (max(l, r) > 2 * min(l, r));
+        st1.update(v[i], 1);
+        st2.update(v[i], -1);
+    }
+    cout << cntr;
 }
-
