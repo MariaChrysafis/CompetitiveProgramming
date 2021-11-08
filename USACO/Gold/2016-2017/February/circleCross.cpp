@@ -1,108 +1,91 @@
-#include <iostream>
-#include <cmath>
-#include <fstream>
+#include <algorithm>
 #include <vector>
+#include <iostream>
+#include <cassert>
+#include <cmath>
 #include <map>
+#include <set>
+
+#define ll long long
 using namespace std;
-vector<pair<int,int>> vec;
-int cl(int x){
-  int pwr = 1;
-  while(pwr < x){
-    pwr *= 2;
-  }
-  return pwr;
-}
 struct segmentTree {
-  vector<int> v;
-  vector<long long> arr;
-  pair<int, int> merge(pair<int, int> p1, pair<int, int> p2) {
-    return make_pair(p1.first, p2.second);
-  }
-  long long build(int ind) {
-    if (ind >= v.size() - 1) {
-      arr[ind] = v[ind - (v.size() - 1)];
-      return arr[ind];
+    vector<ll> v;
+    vector<ll> val;
+
+    ll ID = 0;
+
+    ll op(ll a, ll b) {
+        return a + b;
     }
-    arr[ind] = build(2 * ind + 1) + build(2 * ind + 2);
-    return arr[ind];
-  }
-  pair<int, int> build2(int ind) {
-    if (ind >= v.size() - 1) {
-      int x = ind - (v.size() - 1);
-      vec[ind] = make_pair(x, x);
-      return vec[ind];
+
+    ll query(int dum, int tl, int tr, int& l, int& r) {
+        if (tr < l || tl > r) {
+            return ID;
+        }
+        if (tl >= l && tr <= r) {
+            return val[dum];
+        }
+        ll mid = (tl + tr) >> 1;
+        dum = dum << 1;
+        return query(dum, tl, mid, l, r) + query(dum + 1, mid + 1, tr, l, r);
     }
-    vec[ind] = merge(build2(2 * ind + 1), build2(2 * ind + 2));
-    return vec[ind];
-  }
-  long long interval(int i, int L, int R) {
-    if (vec[i].first > R || vec[i].second < L) {
-      return 0;
+
+    ll query(int l, int r) {
+        return query(1, 0, (int)v.size() - 1, l, r);
     }
-    if (vec[i].first >= L && vec[i].second <= R) {
-      return arr[i];
+
+    void update(int x, ll y) {
+        int cur = (int) v.size() + x;
+        int curX = x;
+        int curY = x;
+        while (true) {
+            val[cur] += y;
+            if (cur == 0) {
+                break;
+            }
+            if(cur % 2 == 0) {
+                curY = 2 * curY - curX + 1;
+            } else {
+                curX = 2 * curX - curY - 1;
+            }
+            cur /= 2;
+        }
     }
-    long long a = interval(2 * i + 1, L, R);
-    long long b = interval(2 * i + 2, L, R);
-    return a + b;
-  }
-  void update(int k, int u){
-    int ind = (v.size() - 1) + k;
-    arr[ind] = u;
-    while(ind != 0){
-      int parent = (ind - 1)/2;
-      arr[parent] = (arr[2 * parent + 1] + arr[2 * parent + 2]);
-      ind = parent;
+
+    void resz(int n) {
+        v.resize((1 << (int) ceil(log2(n))));
+        val.resize(v.size() * 2);
     }
-  }
+
 };
-int main(){
-  freopen("circlecross.in", "r", stdin);
-  freopen("circlecross.out", "w", stdout);
-  int n;
-  cin >> n;
-  n *= 2;
-  int x = cl(n);
-  vector<int> v; vector<long long> arr;
-  v.resize(x);
-  for(int i = 0; i < n; i++){
-    v[i] = 0;
-  }
-  for(int i = n + 1; i < x; i++){
-    v[i] = 0;
-  }
-  segmentTree segTree;
-  arr.resize(2 * x);
-  vec.resize(2 * x);
-  segTree.v = v;
-  segTree.arr = arr;
-  segTree.build(0);
-  segTree.build2(0);
-  int inp[n];
-  int arr1[n];
-  bool hasVisited[n];
-  for(int i = 0; i < n; i++){
-    cin >> inp[i];
-    inp[i]--;
-    hasVisited[inp[i]] = 0;
-  }
-  for(int i = 0; i < n; i++){
-    arr1[i] = 0;
-  }
-  map<int,int> answer;
-  for(int i = 0; i < n; i++){
-    if(hasVisited[inp[i]]){
-      int ans = segTree.interval(0,arr1[inp[i]],i);
-      answer[inp[i]] = i - arr1[inp[i]] - 2 * ans - 1;
-      segTree.update(arr1[inp[i]],1);
+int main() {
+    freopen("circlecross.in", "r", stdin);
+    freopen("circlecross.out", "w", stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int n;
+    cin >> n;
+    vector<int> v(2 * n);
+    vector<vector<int>> vec(n);
+    for (int i = 0; i < 2 * n; i++) {
+        int x;
+        cin >> x;
+        x--;
+        vec[x].push_back(i);
     }
-    hasVisited[inp[i]] = 1;
-    arr1[inp[i]] = i;
-  }
-  int ans = 0;
-  for(int i = 0; i < n/2; i++){
-    ans += answer[i];
-  }
-  cout << ans/2 << endl;
-  return 0;
+    vector<pair<int,int>> intervals(n);
+    for (int i = 0; i < n; i++) {
+        intervals[i] = {vec[i][0], vec[i][1]};
+    }
+    sort(intervals.begin(), intervals.end());
+    segmentTree st;
+    ll ans = 0;
+    st.resz(2 * n + 2);
+    for (auto& p: intervals) {
+        //cout << p.first << " " << p.second << '\n';
+        ans += st.query(p.second + 1, 2 * n) + st.query(0, p.first - 1);
+        st.update(p.first, 1);
+        st.update(p.second, -1);
+    }
+    cout << ans;
 }
