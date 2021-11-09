@@ -16,7 +16,7 @@
 #include <map>
 
 using namespace std;
-const ll MAX = 30001;
+const ll MAX = 400001;
 struct Query {
     ll l;
     ll r;
@@ -50,11 +50,10 @@ struct Solver {
     vector<Query> queries;
     vector<pair<ll,ll>> arr;
     vector<ll> read() {
-        //memset(Tree, 0, sizeof(ll) * (1 << 15));
-        for (ll i = 0; i < (1 << 15); i++) {
+        for (ll i = 0; i < (1 << 18); i++) {
             tree[i] = 0;
         }
-        std::sort(arr.rbegin(), arr.rend());
+        sort(arr.rbegin(), arr.rend());
         vector<ll> result(q);
         sort(queries.begin(), queries.end(), [](const Query &a, const Query &b) { return a.k > b.k; });
         ll pos = 0;
@@ -72,19 +71,35 @@ struct Solver {
 };
 struct Tree{
     vector<vector<pair<ll,ll>>> adj;
+    map<pair<int,int>,ll> myMap;
     vector<ll> first, last;
     vector<ll> dist;
     vector<ll> sub;
+    vector<ll> parent;
     ll counter = 0;
     void pre_euler(){
+        for (int i = 0; i < adj.size(); i++) {
+            for (auto p: adj[i]) {
+                myMap[{(int)p.first, (int)i}] = p.second;
+            }
+        }
         first.resize(adj.size());
         last.resize(adj.size());
-        dist.assign(adj.size(), 0);
+        dist.assign(adj.size(), -1);
         sub.resize(adj.size());
-        dfs(0, -1);
+        parent.resize(adj.size());
         subt(0, -1);
+        dfs(0, -1);
+        for (int i = 0; i < adj.size(); i++) {
+            dist[i] = memoize(i);
+        }
+    }
+    ll memoize (ll curNode) {
+        if (dist[curNode] != -1) return dist[curNode];
+        return (dist[curNode] = dist[parent[curNode]] + myMap[{curNode, parent[curNode]}]);
     }
     ll subt (ll curNode, ll prevNode) {
+        parent[curNode] = prevNode;
         sub[curNode] = 1;
         for (pair<ll,ll> p: adj[curNode]) {
             if (p.first != prevNode) {
@@ -97,7 +112,6 @@ struct Tree{
         first[node] = counter++;
         for(pair<ll,ll> p: adj[node]){
             if(p.first != parent){
-                dist[p.first] = dist[node] + p.second;
                 dfs(p.first, node);
             }
         }
