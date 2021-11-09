@@ -4,6 +4,7 @@
 | ------------- | ------------- | ------------|----------|
 | 2012-2013 | November | [bbreeds](http://usaco.org/index.php?page=viewproblem2&cpid=193) | November 8th, 2021 |
 | 2012-2013 | November | [cbs](http://usaco.org/index.php?page=viewproblem2&cpid=194) | November 9th, 2021 |
+| 2012-2013 | December | [runaway](http://usaco.org/index.php?page=viewproblem2&cpid=213) | November 9th, 2021 |
 | 2012-2013 | January | [lineup](http://www.usaco.org/index.php?page=viewproblem2&cpid=229) | October 21st, 2021 |
 | 2012-2013 | February | [partition](http://usaco.org/index.php?page=viewproblem2&cpid=247) | November 8th, 2021 |
 | 2012-2013 | February | [route](http://usaco.org/index.php?page=viewproblem2&cpid=249) | November 8th, 2021 |
