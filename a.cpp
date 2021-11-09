@@ -12,9 +12,6 @@
 #include <queue>
 #include <map>
 
-#pragma GCC optimize("Ofast")
-#pragma GCC optimize("O3")
-
 using namespace std;
 #define ll long long
 
@@ -104,9 +101,13 @@ int main() {
             myMap[depths].push_back(i);
             continue;
         }
+        vector<int> v;
+        for (int j = 0; j < K; j++) {
+            v.push_back(st[j].query(i + 1, i + 1));
+        }
         bool ok = true;
         for (int k = 0; k < K; k++) {
-            if (st[k].query(i + 2, myMap[depths].back() + 1) < st[k].query(i + 1, i + 1)) {
+            if (st[k].query(i + 2, myMap[depths].back() + 1) < v[k]) {
                 myMap[depths].push_back(i);
                 ok = false;
                 break;
@@ -121,7 +122,7 @@ int main() {
             int m = (l + r) / 2;
             bool fine = true;
             for (int k = 0; k < K; k++) {
-                if (st[k].query(i + 2, myMap[depths][m] + 1) < st[k].query(i + 1, i + 1)) {
+                if (st[k].query(i + 2, myMap[depths][m] + 1) < v[k]) {
                     fine = false;
                 }
             }
@@ -131,7 +132,6 @@ int main() {
                 l = m + 1;
             }
         }
-        assert(l == r);
         cntr += myMap[depths].size() - l;
         myMap[depths].push_back(i);
     }
