@@ -6,6 +6,7 @@
 | 2012-2013 | January | [lineup](http://www.usaco.org/index.php?page=viewproblem2&cpid=229) | October 21st, 2021 |
 | 2012-2013 | February | [partition](http://usaco.org/index.php?page=viewproblem2&cpid=247) | November 8th, 2021 |
 | 2012-2013 | February | [route](http://usaco.org/index.php?page=viewproblem2&cpid=249) | November 8th, 2021 |
+| 2012-2013 | February | [taxi](http://usaco.org/index.php?page=viewproblem2&cpid=248) | November 8th, 2021 |
 | 2012-2013 | March | [cowrun](http://usaco.org/index.php?page=viewproblem2&cpid=265) | October 28th, 2021 |
 | 2013-2014 | November | [nochange](http://www.usaco.org/index.php?page=viewproblem2&cpid=348#) | November 8th, 2021 |
 | 2013-2014 | January | [skilevel](http://www.usaco.org/index.php?page=viewproblem2&cpid=384) | March 5th, 2021 |
