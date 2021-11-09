@@ -1,3 +1,5 @@
+//See KQuery: https://github.com/phoemur/competitive-programming/blob/master/SPOJ/KQUERY%20-%20K-query.cpp
+
 #include <cmath>
 #include <iostream>
 #include <set>
