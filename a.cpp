@@ -17,17 +17,18 @@
 
 using namespace std;
 #define ll long long
+
 struct segmentTree {
     vector<ll> v;
     vector<ll> val;
 
-    ll ID = (int)1e8;
+    ll ID = (int) 1e8;
 
     ll op(ll a, ll b) {
-        return min(a,b);
+        return min(a, b);
     }
 
-    ll query(int dum, int tl, int tr, int& l, int& r) {
+    ll query(int dum, int tl, int tr, int &l, int &r) {
         if (tr < l || tl > r) {
             return ID;
         }
@@ -40,7 +41,7 @@ struct segmentTree {
     }
 
     ll query(int l, int r) {
-        return query(1, 0, (int)v.size() - 1, l, r);
+        return query(1, 0, (int) v.size() - 1, l, r);
     }
 
     void update(int x, ll y) {
@@ -52,7 +53,7 @@ struct segmentTree {
             if (cur == 0) {
                 break;
             }
-            if(cur % 2 == 0) {
+            if (cur % 2 == 0) {
                 curY = 2 * curY - curX + 1;
             } else {
                 curX = 2 * curX - curY - 1;
@@ -67,10 +68,12 @@ struct segmentTree {
     }
 
 };
-int conv (char c) {
+
+int conv(char c) {
     if (c == '(') return 1;
     else return -1;
 }
+
 int main() {
     freopen("cbs.in", "r", stdin);
     freopen("cbs.out", "w", stdout);
@@ -90,29 +93,46 @@ int main() {
             st[i].update(j + 1, depth.back());
         }
     }
-    //cout << st[0].query(11, 14) << endl;
-    //cout << st[0].query(10, 10) << endl;
-    map<vector<int>,vector<int>> myMap;
+    map<vector<int>, vector<int>> myMap;
     long long cntr = 0;
     for (int i = N - 1; i >= 0; i--) {
-        //first element
-        //starting point is at depth[i + 1], at point i
         vector<int> depths;
         for (int k = 0; k < K; k++) {
-            depths.push_back(st[k].query(i + 1, i + 1)); //at point i
+            depths.push_back(st[k].query(i + 1, i + 1));
         }
-        for (int ind: myMap[depths]) {
-            //cout << i + 1 << " " << ind << endl;
+        if (myMap[depths].empty()) {
+            myMap[depths].push_back(i);
+            continue;
+        }
+        bool ok = true;
+        for (int k = 0; k < K; k++) {
+            if (st[k].query(i + 2, myMap[depths].back() + 1) < st[k].query(i + 1, i + 1)) {
+                myMap[depths].push_back(i);
+                ok = false;
+                break;
+            }
+        }
+        if (!ok) {
+            continue;
+        }
+        int l = 0;
+        int r = (int)myMap[depths].size() - 1;
+        while (l != r) {
+            int m = (l + r) / 2;
             bool fine = true;
-            for (int j = 0; j < K; j++) {
-                if (st[j].query(i + 2, ind + 1) != st[j].query(i + 1, i + 1)) {
+            for (int k = 0; k < K; k++) {
+                if (st[k].query(i + 2, myMap[depths][m] + 1) < st[k].query(i + 1, i + 1)) {
                     fine = false;
                 }
             }
             if (fine) {
-                cntr++;
+                r = m;
+            } else {
+                l = m + 1;
             }
         }
+        assert(l == r);
+        cntr += myMap[depths].size() - l;
         myMap[depths].push_back(i);
     }
     cout << cntr << endl;
