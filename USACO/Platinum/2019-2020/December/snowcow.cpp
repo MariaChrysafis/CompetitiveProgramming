@@ -1,118 +1,129 @@
+#include <cmath>
 #include <iostream>
-#include <vector>
 #include <set>
-#include <fstream>
+#include <climits>
+#include <cstdio>
+#include <algorithm>
+#include <cassert>
+#include <string>
+#include <vector>
+#include <iomanip>
+#include <unordered_map>
+#include <type_traits>
+#include <string>
+#include <queue>
+#define ll int
+#include <map>
+
 using namespace std;
-void setIO(string s) { // the argument is the filename without the extension
-    freopen((s+".in").c_str(),"r",stdin);
-    freopen((s+".out").c_str(),"w",stdout);
-}
-void print(vector<int> v){
-    for(int i: v) cout << i << ' ';
-    cout << endl;
-}
-template<class T>
-struct Seg {
-    const T ID = 0;
-
-    T comb(T a, T b) { return a + b; }
-
-    int n;
-    vector<T> seg;
-
-    void init(int _n) {
-        n = _n;
-        seg.assign(2 * n, ID);
-    }
-
-    void pull(int p) { seg[p] = comb(seg[2 * p], seg[2 * p + 1]); }
-
-    void upd(int p, T val) {
-        seg[p += n] += val;
-        for (p /= 2; p; p /= 2) pull(p);
-    }
-
-    T query(int l, int r) {
-        T ra = ID, rb = ID;
-        for (l += n, r += n + 1; l < r; l /= 2, r /= 2) {
-            if (l & 1) ra = comb(ra, seg[l++]);
-            if (r & 1) rb = comb(seg[--r], rb);
+const int VAL = 2e5;
+struct BIT {
+    long long M[VAL], A[VAL];
+    BIT() {
+        for (int i = 0; i < VAL; i++) {
+            M[i] = A[i] = 0;
         }
-        return comb(ra, rb);
     }
-};
-
+    void update(int i, long long mul, long long add) {
+        while (i < VAL) {
+            M[i] += mul;
+            A[i] += add;
+            i |= (i + 1);
+        }
+    }
+    void upd(int l, int r, long long x) {
+        update(l, x, -x * (l - 1));
+        update(r, -x, x * r);
+    }
+    long long query(int i) {
+        long long mul = 0, add = 0;
+        int st = i;
+        while (i >= 0) {
+            mul += M[i];
+            add += A[i];
+            i = (i & (i + 1)) - 1;
+        }
+        return (mul * st + add);
+    }
+    long long query(int l, int r) {
+        return query(r) - query(l - 1);
+    }
+} t;
 struct Tree{
     vector<vector<int>> adj;
-    vector<int> st, en, sub;
+    vector<int> last, first;
+    vector<int> euler;
     int counter = 0;
-    int dfs1(int node, int prev){
-        sub[node] = 1;
-        for(int i: adj[node]){
-            if(i != prev){
-                sub[node] += dfs1(i, node);
-            }
+    void pre_euler(){
+        euler.resize( 2 * adj.size()), first.resize(adj.size()), last.resize(adj.size());
+        dfs(0, -1, 0);
+        for (int i = 0; i < adj.size(); i++) {
+            euler[first[i]] = i;
+            euler[last[i]] = i;
         }
-        return sub[node];
     }
-    void dfs(int node, int parent) {
-        st[node] = counter, counter++;
-        for (int i : adj[node]) {
-            if (i != parent) {
-                dfs(i, node);
+    void dfs(int node, int parent, int h){
+        first[node] = counter++;
+        for(int i: adj[node]){
+            if(i != parent){
+                dfs(i, node, h + 1);
             }
         }
-        en[node] = counter;
-        counter++;
+        last[node] = counter++;
     }
 };
-const int MAX = 1e5 + 1;
-set<pair<int,int>> important[MAX];
-Seg<int> A, B;
-Tree t;
-void update(int u, int x){
-    A.upd(t.st[u], x);
-    A.upd(t.en[u], -x);
-    B.upd(t.st[u], x * t.sub[u]);
-}
+map<int,set<pair<int,int>>> myMap; //map an integer to which integers have that thing
 int main() {
-    setIO("snowcow");
+    freopen("snowcow.in", "r", stdin);
+    freopen("snowcow.out", "w", stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
     int N, Q;
     cin >> N >> Q;
-    t.adj.resize(N), t.st.resize(N), t.en.resize(N), t.sub.resize(N);
-    for(int i = 0; i < N - 1; i++){
+    Tree t;
+    t.adj.resize(N);
+    BIT st;
+    for (int i = 0; i < N - 1; i++) {
         int u, v;
         cin >> u >> v;
-        u--, v--;
-        t.adj[u].push_back(v);
+        t.adj[--u].push_back(--v);
         t.adj[v].push_back(u);
     }
-    t.dfs(0, -1);
-    t.dfs1(0, -1);
-    A.init(2 * N + 1);
-    B.init(2 * N + 1);
-    while(Q--){
+    t.pre_euler();
+    while (Q--) {
         int dum;
         cin >> dum;
-        if(dum == 2){
-            int u;
-            cin >> u;
-            u--;
-            cout << t.sub[u] * A.query(0, t.st[u]) + B.query(t.st[u] + 1, t.en[u]) << '\n';
-        }else{
-            int u, col;
-            cin >> u >> col;
-            u--, col--;
-            auto it = important[col].upper_bound({t.st[u], u});
-            if (it != important[col].begin() && t.en[prev(it)->second] >= t.en[u]) {
+        if (dum == 1) {
+            int x, c;
+            cin >> x >> c;
+            x--;
+            vector<pair<int,int>> removal;
+            bool fine = true;
+            for (pair<int,int> p: myMap[c]) {
+                if (p.first <= t.first[x] && p.second >= t.last[x]) {
+                    fine = false;
+                }
+            }
+            if (!fine) {
                 continue;
             }
-            while (it != important[col].end() && t.en[it->second] <= t.en[u]) {
-                update(it->second,-1);
-                important[col].erase(it++);
+            for (pair<int,int> p: myMap[c]) {
+                if (p.first > t.first[x] && p.second < t.last[x]) {
+                    removal.push_back(p);
+                }
             }
-            important[col].insert({t.st[u], u});
-            update(u,1);
+            for (auto p: removal) {
+                st.upd(p.first, p.second, -1);
+                myMap[c].erase(p);
+            }
+            st.upd(t.first[x], t.last[x], 1);
+            myMap[c].insert({t.first[x], t.last[x]});
+        } else {
+            int x;
+            cin >> x;
+            x--;
+            long long ans = st.query(t.first[x], t.last[x]);
+            cout << ans/2 << '\n';
         }
     }
 }
