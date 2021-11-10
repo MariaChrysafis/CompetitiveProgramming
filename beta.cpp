@@ -16,39 +16,65 @@
 #include <map>
 
 using namespace std;
-const int VAL = 2e5;
-struct BIT {
-    long long M[VAL], A[VAL];
-    BIT() {
-        for (int i = 0; i < VAL; i++) {
-            M[i] = A[i] = 0;
+struct segmentTree {
+    vector<ll> vec;
+    vector<ll> addLater;
+
+    void push(int v) {
+        addLater[2 * v + 1] += addLater[v];
+        vec[2 * v + 1] += addLater[v];
+        addLater[2 * v] += addLater[v];
+        vec[2 * v] += addLater[v];
+        addLater[v] = 0;
+    }
+
+    const ll INF = 1e8;
+
+    ll upd(int dum, int tl, int tr, int l, int r, ll val) {
+        if (tr < l || tl > r) {
+            return INF;
         }
-    }
-    void update(int i, long long mul, long long add) {
-        while (i < VAL) {
-            M[i] += mul;
-            A[i] += add;
-            i |= (i + 1);
+        if (tl >= l && tr <= r) {
+            addLater[dum] += val;
+            return (vec[dum] += val);
         }
+        push(dum);
+        int mid = (tl + tr) >> 1;
+        ll left = upd(2 * dum, tl, mid, l, r, val);
+        ll right = upd(2 * dum + 1, mid + 1, tr, l, r, val);
+        return (vec[dum] = min(vec[2 * dum], vec[2 * dum + 1]));
     }
-    void upd(int l, int r, long long x) {
-        update(l, x, -x * (l - 1));
-        update(r, -x, x * r);
+
+    void upd(int l, int r, int val) {
+        upd(1, 0, (int) vec.size() / 2 - 1, l, r, val);
     }
-    long long query(int i) {
-        long long mul = 0, add = 0;
-        int st = i;
-        while (i >= 0) {
-            mul += M[i];
-            add += A[i];
-            i = (i & (i + 1)) - 1;
+
+    ll get(int dum, int tl, int tr, int &l, int &r) {
+        if (tl > r || tr < l) {
+            return INF;
         }
-        return (mul * st + add);
+        if (tl >= l && tr <= r) {
+            return vec[dum];
+        }
+        push(dum);
+        int tm = (tl + tr) >> 1;
+        return min(get(dum * 2, tl, tm, l, r), get(dum * 2 + 1, tm + 1, tr, l, r));
     }
-    long long query(int l, int r) {
-        return query(r) - query(l - 1);
+
+    ll get(int l, int r) {
+        return get(1, 0, (int) vec.size() / 2 - 1, l, r);
     }
-} t;
+
+    void resz(int n) {
+        int sz = ((1 << (int) ceil(log2(n))));
+        vec.assign(sz * 2, 0);
+        addLater.assign(sz * 2, 0);
+    }
+
+};
+struct Edge {
+    int u, v, w;
+};
 struct Tree{
     vector<vector<int>> adj;
     vector<int> last, first;
@@ -72,58 +98,101 @@ struct Tree{
         last[node] = counter++;
     }
 };
-map<int,set<pair<int,int>>> myMap; //map an integer to which integers have that thing
 int main() {
-    freopen("snowcow.in", "r", stdin);
-    freopen("snowcow.out", "w", stdout);
+    //freopen("snowcow.in", "r", stdin);
+    //freopen("snowcow.out", "w", stdout);
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     int N, Q;
     cin >> N >> Q;
     Tree t;
     t.adj.resize(N);
-    BIT st;
+    vector<Edge> v1(N - 1);
+    vector<vector<pair<int,int>>> adj(N);
     for (int i = 0; i < N - 1; i++) {
-        int u, v;
-        cin >> u >> v;
-        t.adj[--u].push_back(--v);
-        t.adj[v].push_back(u);
+        cin >> v1[i].u >> v1[i].v >> v1[i].w;
+        v1[i].u--, v1[i].v--;
+        t.adj[v1[i].u].push_back(v1[i].v);
+        t.adj[v1[i].v].push_back(v1[i].u);
+        adj[v1[i].u].push_back({v1[i].v, v1[i].w});
     }
     t.pre_euler();
-    while (Q--) {
-        int dum;
-        cin >> dum;
-        if (dum == 1) {
-            int x, c;
-            cin >> x >> c;
-            x--;
-            vector<pair<int,int>> removal;
-            bool fine = true;
-            for (pair<int,int> p: myMap[c]) {
-                if (p.first <= t.first[x] && p.second >= t.last[x]) {
-                    fine = false;
-                }
+    vector<Edge> v2(N - 1);
+    int weight[N];
+    for (int i = 0; i < N - 1; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        u--, v--;
+        v2[i] = {u, v, w};
+        weight[u] = w;
+    }
+    queue<int> q;
+    int depth[N];
+    bool hasVisited[N];
+    for (int i = 0; i < N; i++) {
+        depth[i] = 0;
+        hasVisited[i] = false;
+    }
+    q.push(0);
+    hasVisited[0] = true;
+    weight[0] = 0;
+    while (!q.empty()) {
+        int x = q.front();
+        q.pop();
+        for (auto p: adj[x]) {
+            if (!hasVisited[p.first]) {
+                depth[p.first] = depth[x] + p.second;
+                q.push(p.first);
+                hasVisited[p.first] = true;
             }
-            if (!fine) {
-                continue;
-            }
-            for (pair<int,int> p: myMap[c]) {
-                if (p.first > t.first[x] && p.second < t.last[x]) {
-                    removal.push_back(p);
-                }
-            }
-            for (auto p: removal) {
-                st.upd(p.first, p.second, -1);
-                myMap[c].erase(p);
-            }
-            st.upd(t.first[x], t.last[x], 1);
-            myMap[c].insert({t.first[x], t.last[x]});
-        } else {
-            int x;
-            cin >> x;
-            x--;
-            long long ans = st.query(t.first[x], t.last[x]);
-            cout << ans/2 << '\n';
         }
     }
+    segmentTree st;
+    segmentTree st1;
+    st.resz(2 * N), st1.resz(2 * N);
+    for (int i = 0; i < 2 * N; i++) {
+        st.upd(i, i, depth[t.euler[i]] + weight[t.euler[i]]);
+        st1.upd(i, i, depth[t.euler[i]]);
+    }
+    for (int i = 0; i < 2 * N; i++) {
+        cout << st.get(i, i) << " ";
+    }
+    cout << endl;
+    for (int i = 0; i < 2 * N; i++) {
+        cout << st1.get(i, i) << " ";
+    }
+    cout << endl;
+    while(Q--) {
+        int tc;
+        cin >> tc;
+        if (tc == 1) {
+            int i; cin >> i;
+            int w; cin >> w;
+            i--;
+            if (i >= N - 1) {
+                i -= (N - 1);
+                //update yellow edge
+                int delta = w - v2[i].w;
+                v2[i].w += delta;
+                //cout << v2[i].u << " ? " << v2[i].v << " " << delta << endl;
+                st.upd(t.first[v2[i].u], t.first[v2[i].u], delta);
+                st.upd(t.last[v2[i].u], t.last[v2[i].u], delta);
+            } else {
+                //udpate white edge
+                int delta = w - v1[i].w;
+                v1[i].w += delta;
+                st.upd(t.first[v1[i].v], t.last[v1[i].v], delta);
+                st1.upd(t.first[v1[i].v], t.last[v1[i].v], delta);
+            }
+        } else {
+            int u;
+            cin >> u;
+            int v;
+            cin >> v;
+            u--, v--;
+            cout << st.get(t.first[u], t.last[u]) -st1.get(t.first[u], t.first[u]) + st1.get(t.first[v], t.first[v]) << endl;
+        }
+    }
+
+
 }
