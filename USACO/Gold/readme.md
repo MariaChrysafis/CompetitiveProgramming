@@ -51,6 +51,7 @@
 | 2017-2018 | US Open | [milkorder](http://www.usaco.org/index.php?page=viewproblem2&cpid=838) | November 5th, 2021 |
 | 2018-2019 | December | [teamwork](http://usaco.org/index.php?page=viewproblem2&cpid=863) | December 1st, 2020 |
 | 2018-2019 | December | [cowpatability](http://usaco.org/index.php?page=viewproblem2&cpid=862) | October 11th, 2021 |
+| 2018-2019 | December | [dining](http://www.usaco.org/index.php?page=viewproblem2&cpid=861) | November 10th, 2021 |
 | 2018-2019 | January | [poetry](http://usaco.org/index.php?page=viewproblem2&cpid=897) | October 25th, 2021 |
 | 2018-2019 | January | [sleepy](http://www.usaco.org/index.php?page=viewproblem2&cpid=898) | February 10th, 2021|
 | 2018-2019 | January | [shortcut](http://usaco.org/index.php?page=viewproblem2&cpid=899) | October 31st, 2021 |
