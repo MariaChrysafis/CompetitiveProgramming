@@ -16,6 +16,39 @@
 #include <map>
 
 using namespace std;
+const int VAL = 2e5;
+struct BIT {
+    long long M[VAL], A[VAL];
+    BIT() {
+        for (int i = 0; i < VAL; i++) {
+            M[i] = A[i] = 0;
+        }
+    }
+    void update(int i, long long mul, long long add) {
+        while (i < VAL) {
+            M[i] += mul;
+            A[i] += add;
+            i |= (i + 1);
+        }
+    }
+    void upd(int l, int r, long long x) {
+        update(l, x, -x * (l - 1));
+        update(r, -x, x * r);
+    }
+    long long query(int i) {
+        long long mul = 0, add = 0;
+        int st = i;
+        while (i >= 0) {
+            mul += M[i];
+            add += A[i];
+            i = (i & (i + 1)) - 1;
+        }
+        return (mul * st + add);
+    }
+    long long query(int l, int r) {
+        return query(r) - query(l - 1);
+    }
+} t;
 struct Tree{
     vector<vector<int>> adj;
     vector<int> last, first;
@@ -40,7 +73,6 @@ struct Tree{
     }
 };
 map<int,set<pair<int,int>>> myMap; //map an integer to which integers have that thing
-vector<int> colorfullness;
 int main() {
     freopen("snowcow.in", "r", stdin);
     freopen("snowcow.out", "w", stdout);
@@ -50,7 +82,7 @@ int main() {
     cin >> N >> Q;
     Tree t;
     t.adj.resize(N);
-    colorfullness.assign(2 * N, 0);
+    BIT st;
     for (int i = 0; i < N - 1; i++) {
         int u, v;
         cin >> u >> v;
@@ -81,23 +113,16 @@ int main() {
                 }
             }
             for (auto p: removal) {
-                for (int i = p.first; i <= p.second; i++) {
-                    colorfullness[i]--;
-                }
+                st.upd(p.first, p.second, -1);
                 myMap[c].erase(p);
             }
-            for (int i = t.first[x]; i <= t.last[x]; i++) {
-                colorfullness[i]++;
-            }
+            st.upd(t.first[x], t.last[x], 1);
             myMap[c].insert({t.first[x], t.last[x]});
         } else {
             int x;
             cin >> x;
             x--;
-            int ans = 0;
-            for (int j = t.first[x]; j <= t.last[x]; j++) {
-                ans += colorfullness[j];
-            }
+            int ans = st.query(t.first[x], t.last[x]);
             cout << ans/2 << '\n';
         }
     }
