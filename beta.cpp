@@ -122,7 +122,7 @@ int main() {
             int x;
             cin >> x;
             x--;
-            int ans = st.query(t.first[x], t.last[x]);
+            long long ans = st.query(t.first[x], t.last[x]);
             cout << ans/2 << '\n';
         }
     }
