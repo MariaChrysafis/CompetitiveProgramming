@@ -23,7 +23,7 @@ struct Coord {
 };
 int main() {
     freopen("marathon.in", "r", stdin);
-    freopen("marathon.in", "w", stdout);
+    freopen("marathon.out", "w", stdout);
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     int N, Q;
@@ -63,7 +63,6 @@ int main() {
                 for (int j = 2; j <= N; j++) {
                     dist[j] += vec[1].dist({x, y}) - dist[2];
                 }
-                vec[0] = {x, y};
             } else {
                 //update ind + 1 ... N
                 for (int i = ind + 1; i <= N; i++) {
@@ -72,11 +71,11 @@ int main() {
                 for (int i = ind + 2; i <= N; i++) {
                     dist[i] += vec[ind + 1].dist({x, y}) - vec[ind + 1].dist(vec[ind]);
                 }
-                vec[ind] = {x, y};
-                if (ind >= 2) gain[ind - 1] = vec[ind - 2].dist(vec[ind]) - vec[ind - 1].dist(vec[ind]) - vec[ind - 1].dist(vec[ind - 2]);
-                if (ind + 1 < gain.size()) gain[ind] = vec[ind - 1].dist(vec[ind + 1]) - vec[ind].dist(vec[ind - 1]) - vec[ind].dist(vec[ind + 1]);
-                if (ind + 2 < gain.size()) gain[ind + 1] = vec[ind + 2].dist(vec[ind]) - vec[ind + 1].dist(vec[ind]) - vec[ind + 2].dist(vec[ind + 1]);
             }
+            vec[ind] = {x, y};
+            if (ind >= 2) gain[ind - 1] = vec[ind - 2].dist(vec[ind]) - vec[ind - 1].dist(vec[ind]) - vec[ind - 1].dist(vec[ind - 2]);
+            if (ind + 1 < gain.size()) gain[ind] = vec[ind - 1].dist(vec[ind + 1]) - vec[ind].dist(vec[ind - 1]) - vec[ind].dist(vec[ind + 1]);
+            if (ind + 2 < gain.size()) gain[ind + 1] = vec[ind + 2].dist(vec[ind]) - vec[ind + 1].dist(vec[ind]) - vec[ind + 2].dist(vec[ind + 1]);
         }
     }
 }
