@@ -12,15 +12,21 @@
 #include <type_traits>
 #include <string>
 #include <queue>
+
 #define ll long long
+
 #include <map>
+
 using namespace std;
+
 struct Coord {
     int x, y;
-    int dist (Coord c) {
+
+    int dist(Coord c) {
         return abs(c.x - x) + abs(c.y - y);
     }
 };
+
 int main() {
     freopen("marathon.in", "r", stdin);
     freopen("marathon.out", "w", stdout);
@@ -59,23 +65,22 @@ int main() {
             int ind, x, y;
             cin >> ind >> x >> y;
             ind--;
-            if (ind == 0) {
-                for (int j = 2; j <= N; j++) {
-                    dist[j] += vec[1].dist({x, y}) - dist[2];
-                }
-            } else {
-                //update ind + 1 ... N
+            //update ind + 1 ... N
+            if (ind >= 0) {
                 for (int i = ind + 1; i <= N; i++) {
                     dist[i] += vec[ind - 1].dist({x, y}) - vec[ind - 1].dist(vec[ind]);
                 }
-                for (int i = ind + 2; i <= N; i++) {
-                    dist[i] += vec[ind + 1].dist({x, y}) - vec[ind + 1].dist(vec[ind]);
+            }
+            for (int i = ind + 2; i <= N; i++) {
+                dist[i] += vec[ind + 1].dist({x, y}) - vec[ind + 1].dist(vec[ind]);
+            }
+
+            vec[ind] = {x, y};
+            for (int i = ind - 1; i <= ind + 1; i++) {
+                if (i - 1 >= 0 && i + 1 < gain.size()) {
+                    gain[i] = vec[i - 1].dist(vec[i + 1]) - vec[i].dist(vec[i - 1]) - vec[i].dist(vec[i + 1]);
                 }
             }
-            vec[ind] = {x, y};
-            if (ind >= 2) gain[ind - 1] = vec[ind - 2].dist(vec[ind]) - vec[ind - 1].dist(vec[ind]) - vec[ind - 1].dist(vec[ind - 2]);
-            if (ind + 1 < gain.size()) gain[ind] = vec[ind - 1].dist(vec[ind + 1]) - vec[ind].dist(vec[ind - 1]) - vec[ind].dist(vec[ind + 1]);
-            if (ind + 2 < gain.size()) gain[ind + 1] = vec[ind + 2].dist(vec[ind]) - vec[ind + 1].dist(vec[ind]) - vec[ind + 2].dist(vec[ind + 1]);
         }
     }
 }
