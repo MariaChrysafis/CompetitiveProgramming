@@ -13,6 +13,7 @@
 | 2013-2014 | November | [nochange](http://www.usaco.org/index.php?page=viewproblem2&cpid=348#) | November 8th, 2021 |
 | 2013-2014 | January | [skilevel](http://www.usaco.org/index.php?page=viewproblem2&cpid=384) | March 5th, 2021 |
 | 2013-2014 | February | [roadblock](http://usaco.org/index.php?page=viewproblem2&cpid=400) | October 26th, 2021 |
+| 2013-2014 | March | [fcount](http://usaco.org/index.php?page=viewproblem2&cpid=420) | November 14th, 2021 |
 | 2014-2015 | Dcemeber | [marathon](http://www.usaco.org/index.php?page=viewproblem2&cpid=495) | November 11th, 2021 |
 | 2014-2015 | December | [cowjog](http://www.usaco.org/index.php?page=viewproblem2&cpid=496) | October 28th, 2021 |
 | 2014-2015 | December | [guard](http://www.usaco.org/index.php?page=viewproblem2&cpid=494) | February 28th, 2021 |
