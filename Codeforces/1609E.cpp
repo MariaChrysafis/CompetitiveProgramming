@@ -31,9 +31,7 @@ Node construct (char c) {
 }
 Node merge (Node x1, Node x2) {
     Node ans;
-    ans.a = x1.a + x2.a;
-    ans.b = x1.b + x2.b;
-    ans.c = x1.c + x2.c;
+    ans.a = x1.a + x2.a, ans.b = x1.b + x2.b, ans.c = x1.c + x2.c;
     ans.ab = min(x1.ab + x2.b, x1.a + x2.ab);
     ans.bc = min(x1.bc + x2.c, x1.b + x2.bc);
     ans.abc = min({x1.abc + x2.c, x1.a + x2.abc, x1.ab + x2.bc});
