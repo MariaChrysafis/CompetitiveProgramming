@@ -67,6 +67,8 @@ void solver (ll x) {
     cout << g[1] + 1 << '\n';
 }
 int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
     for (int i = 0; i < 61; i++) {
         m[i] = mobius(i);
     }
