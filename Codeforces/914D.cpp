@@ -16,13 +16,11 @@
 #define ll int
 using namespace std;
 
-int gcd (int a, int b) {
-    if (!a || !b) return max(a,b);
-    return gcd(max(a,b) % min(a,b), min(a,b));
-}
-
 template<class T> struct Seg { // comb(ID,b) = b
-    const T ID = 0; T comb(T a, T b) { return gcd(a,b); }
+    const T ID = 0; T comb(T a, T b) {
+        if (!a || !b) return max(a,b);
+        return comb(max(a,b) % min(a,b), min(a,b));
+    }
     int n; vector<T> seg;
     void init(int _n) { n = _n; seg.assign(2*n,ID); }
     void pull(int p) { seg[p] = comb(seg[2*p],seg[2*p+1]); }
