@@ -70,6 +70,16 @@ bool contiguous (set<int> s) {
     }
     return (v.size() == v.back() - v[0] + 1);
 }
+pair<int,int> range (set<int> s) {
+    if (s.empty()) {
+        return {0, 0};
+    }
+    vector<int> v;
+    for (int i: s) {
+        v.push_back(i);
+    }
+    return {v[0], v.back()};
+}
 void solve () {
     int N, M;
     cin >> N >> M;
@@ -111,6 +121,14 @@ void solve () {
             }
         }
     }
+    vector<pair<int,int>> rng (2 * N + 1);
+    for (int i = 0; i < 2 * N + 1; i++) {
+        if (!contiguous(myMap[i])) {
+            cout << "NO\n";
+            return;
+        }
+        rng[i] = range(myMap[i]);
+    }
     if (!fine) {
         cout << "NO\n";
         return;
@@ -119,6 +137,10 @@ void solve () {
     for (int i = 0; i < adj1.size(); i++) {
         for (int j: adj1[i]) {
             new_adj1[i].push_back(j);
+            if (rng[i].first < rng[j].first) {
+                cout << "NO\n";
+                return;
+            }
         }
         for (int j: adj2[i]) {
             if (adj1[i].count(j) || adj1[j].count(i)) {
@@ -139,12 +161,6 @@ void solve () {
     if (!c.find_cycle()) {
         cout << "NO\n";
         return;
-    }
-    for (int i = 0; i <= 2 * N + 1; i++) {
-        if (!contiguous(myMap[i])) {
-            cout << "NO\n";
-            return;
-        }
     }
     cout << "YES\n";
 
