@@ -74,7 +74,7 @@ void solve () {
     int N, M;
     cin >> N >> M;
     bool fine = true;
-    vector<set<int>> adj(2 * N + 1);
+    vector<set<int>> adj1(2 * N + 1);
     vector<set<int>> adj2(2 * N + 1);
     map<int,set<int>> myMap;
     for (int i = 0; i < M; i++) {
@@ -99,7 +99,7 @@ void solve () {
                     continue;
                 }
                 if (l1 > l2 && r1 < r2) {
-                    adj[p1.first].insert(p2.first);
+                    adj1[p1.first].insert(p2.first);
                 } else if (l1 < l2 && r1 > r2) {
 
                 } else if (l2 > l1 && l2 < r1) {
@@ -115,23 +115,27 @@ void solve () {
         cout << "NO\n";
         return;
     }
-    vector<vector<int>> new_adj(2 * N + 1), new_adj1(2 * N + 1);
-    for (int i = 0; i < adj.size(); i++) {
-        for (int j: adj[i]) {
-            new_adj[i].push_back(j);
+    vector<vector<int>> new_adj1(2 * N + 1), new_adj2(2 * N + 1);
+    for (int i = 0; i < adj1.size(); i++) {
+        for (int j: adj1[i]) {
+            new_adj1[i].push_back(j);
         }
         for (int j: adj2[i]) {
-            new_adj1[i].push_back(j);
+            if (adj1[i].count(j) || adj1[j].count(i)) {
+                cout << "NO\n";
+                return;
+            }
+            new_adj2[i].push_back(j);
         }
     }
     Checker c;
-    c.n = adj.size();
-    c.adj = new_adj;
+    c.n = adj1.size();
+    c.adj = new_adj1;
     if (!c.find_cycle()) {
         cout << "NO\n";
         return;
     }
-    c.adj = new_adj1;
+    c.adj = new_adj2;
     if (!c.find_cycle()) {
         cout << "NO\n";
         return;
