@@ -1,49 +1,91 @@
 #include <iostream>
-#include <cmath>
 #include <vector>
 #include <set>
 #include <chrono>
 #include <random>
 #include <queue>
-#include <cstdint>
-#include <cassert>
 #include <bitset>
 #include <map>
 #include <list>
 #include <stack>
 #include <algorithm>
 
-#define ll long long
-using namespace std;
+template<class RandomIt, class RandomFunc>
+void random_shuffle(RandomIt first, RandomIt last, RandomFunc &&r) {
+    typename std::iterator_traits<RandomIt>::difference_type i, n;
+    n = last - first;
+    for (i = n - 1; i > 0; --i) {
+        using std::swap;
+        swap(first[i], first[r(i + 1)]);
+    }
+}
+
+std::vector<int> goldenRun(std::vector<int> input);
+
+std::vector<int> betterSolution(std::vector<int> inputVector);
 
 int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
     int n;
-    cin >> n;
-    int p[n];
-    for (int i = 0; i < n; i++) {
-        cin >> p[i];
+    std::cin >> n;
+    std::vector<int> inputPermutation;
+    for (int i = 0; i < n; ++i) {
+        inputPermutation.push_back(i + 1);
     }
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(inputPermutation.begin(), inputPermutation.end(), g);
+
+    // print out content:
+    std::cout << "myvector contains:\n    ";
+    for (std::vector<int>::iterator it = inputPermutation.begin(); it != inputPermutation.end(); ++it) {
+        std::cout << *it << (*it >= 10 ? " " : "  ");
+    }
+
+    std::cout << '\n';
+    std::vector<int> golden = goldenRun(inputPermutation);
+    std::cout << "Brute force done " + std::to_string(golden.size()) << "\n";
+    std::vector<int> current = betterSolution(inputPermutation);
+    std::cout << "Faster done " + std::to_string(current.size()) << "\n";
+
+    for (int i = 0; i < golden.size(); i++) {
+        if (golden.at(i) != current.at(i)) {
+            std::cout << i << " [" << golden.at(i) << " " << current.at(i) << "]"
+                      << (golden.at(i) != current.at(i) ? "*" : "") << '\n';
+        }
+    }
+    std::cout << "done\n";
+    return 0;
+}
+
+std::vector<int> goldenRun(std::vector<int> input) {
+    int n = input.size();
+    std::vector<int> output;
     for (int i = 0; i <= n; i++) {
-        string s;
+        std::string s;
+        std::string dbg;
         int l = 0;
         int r = n;
+        bool done = false;
         for (int j = 0; j < n; j++) {
-            if (p[j] > i && r >= p[j]) {
+            if (input[j] > i && r >= input[j] && !done) {
                 s += 'H';
-                r = p[j] - 1;
-            } else if (p[j] <= i && l < p[j]){
+                dbg += "H  ";
+                r = input[j] - 1;
+            } else if (input[j] <= i && l < input[j] && !done) {
                 s += 'L';
-                l = p[j];
+                dbg += "L  ";
+                l = input[j];
             } else {
-                //if (p[j] > i) s += 'H';
-                //else s += 'L';
-                //s += '#';
+                if (input[j] > i) {
+                    dbg += "   ";
+                } else {
+                    dbg += "   ";
+                }
             }
             if (r == l) {
-                break;
-                //s += '?';
+                done = true;
             }
         }
         int cntr = 0;
@@ -52,7 +94,8 @@ int main() {
                 cntr++;
             }
         }
-        //cout << s.length() << '\n';
-        cout << cntr << '\n';
+        std::cout << ((i >= 10 ? " " : "  ")) << i << " " << dbg << " " << cntr << "\n";
+        output.push_back(cntr);
     }
+    return output;
 }
