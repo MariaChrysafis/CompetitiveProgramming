@@ -16,10 +16,12 @@
 typedef long long ll;
 const int MOD = 1e9 + 7;
 using namespace std;
-ll mult (ll x, ll y) {
+
+ll mult(ll x, ll y) {
     return (x * y) % MOD;
 }
-ll binPow (ll x, ll y) {
+
+ll binPow(ll x, ll y) {
     ll res = x;
     ll ans = 1;
     while (y > 0) {
@@ -31,9 +33,11 @@ ll binPow (ll x, ll y) {
     }
     return ans;
 }
-ll inv (ll x) {
+
+ll inv(ll x) {
     return binPow(x, MOD - 2);
 }
+
 struct segmentTree {
     vector<ll> v;
     vector<ll> val;
@@ -44,7 +48,7 @@ struct segmentTree {
         return (a * b) % MOD;
     }
 
-    ll query(int dum, int tl, int tr, int& l, int& r) {
+    ll query(int dum, int tl, int tr, int &l, int &r) {
         if (tr < l || tl > r) {
             return ID;
         }
@@ -57,7 +61,7 @@ struct segmentTree {
     }
 
     ll query(int l, int r) {
-        return query(1, 0, (int)v.size() - 1, l, r);
+        return query(1, 0, (int) v.size() - 1, l, r);
     }
 
     void update(int x, ll y) {
@@ -69,7 +73,7 @@ struct segmentTree {
             if (cur == 0) {
                 break;
             }
-            if(cur % 2 == 0) {
+            if (cur % 2 == 0) {
                 curY = 2 * curY - curX + 1;
             } else {
                 curX = 2 * curX - curY - 1;
@@ -84,12 +88,14 @@ struct segmentTree {
     }
 
 };
+
 struct Structure {
     int distance;
     int parity;
     int graph_number;
 };
-bool comp (Structure s1, Structure s2) {
+
+bool comp(Structure s1, Structure s2) {
     if (s1.distance != s2.distance) {
         return (s1.distance < s2.distance);
     }
@@ -98,9 +104,11 @@ bool comp (Structure s1, Structure s2) {
     }
     return (s1.parity < s2.parity);
 }
-vector<vector<int>> adj[(int)4e5];
-vector<vector<int>> dist[(int)4e5];
-ll compute (vector<Structure> vec, int T) {
+
+vector<vector<int>> adj[(int) 4e5];
+vector<vector<int>> dist[(int) 4e5];
+
+ll compute(vector<Structure> vec, int T) {
     sort(vec.begin(), vec.end(), comp);
     ll res = 0;
     segmentTree st;
@@ -117,6 +125,7 @@ ll compute (vector<Structure> vec, int T) {
     }
     return res;
 }
+
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -138,7 +147,7 @@ int main() {
             dist[t][i].resize(2);
             dist[t][i][0] = dist[t][i][1] = 1e9;
         }
-        queue<pair<int,int>> q;
+        queue<pair<int, int>> q;
         q.push({0, 0});
         while (!q.empty()) {
             int curNode = q.front().second;
@@ -153,14 +162,12 @@ int main() {
             }
         }
         for (int i = 0; i < n; i++) {
-            vecE.push_back((Structure){dist[t][i][0], 0, t});
+            vecE.push_back((Structure) {dist[t][i][0], 0, t});
         }
         for (int i = 0; i < n; i++) {
-            vecO.push_back((Structure){dist[t][i][1], 1, t});
-            vec.push_back((Structure){max(dist[t][i][1], dist[t][i][0]), 1, t});
+            vecO.push_back((Structure) {dist[t][i][1], 1, t});
+            vec.push_back((Structure) {max(dist[t][i][1], dist[t][i][0]), 1, t});
         }
     }
     cout << (compute(vecO, T) + compute(vecE, T) - compute(vec, T) + MOD) % MOD << '\n';
-
-
 }
