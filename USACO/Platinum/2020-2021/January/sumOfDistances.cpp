@@ -89,39 +89,23 @@ struct segmentTree {
 
 };
 
-struct Structure {
-    int distance;
-    int graph_number;
-};
-
-bool comp(Structure s1, Structure s2) {
-    if (s1.distance != s2.distance) {
-        return (s1.distance < s2.distance);
-    }
-    if (s1.graph_number != s2.graph_number) {
-        return (s1.graph_number < s2.graph_number);
-    }
-    return false;
-}
-
 vector<vector<int>> adj[(int) 4e5];
 vector<vector<int>> dist[(int) 4e5];
 
-ll compute(vector<Structure> vec, int T) {
-    sort(vec.begin(), vec.end(), comp);
+ll compute(vector<pair<int,int>> vec, int T) {
+    sort(vec.begin(), vec.end());
     ll res = 0;
     segmentTree st;
     st.resz(T);
     vector<int> cnt;
     cnt.assign(T, false);
-    for (int ind = 0; ind < vec.size(); ind++) {
-        auto q1 = vec[ind];
-        if (q1.distance == 1e9) {
+    for (auto& q1: vec) {
+        if (q1.first == 1e9) {
             continue;
         }
-        cnt[q1.graph_number]++;
-        st.update(q1.graph_number, cnt[q1.graph_number]);
-        res += mult(mult(st.query(0, T - 1), inv(cnt[q1.graph_number])), q1.distance);
+        cnt[q1.second]++;
+        st.update(q1.second, cnt[q1.second]);
+        res += mult(mult(st.query(0, T - 1), inv(cnt[q1.second])), q1.first);
         res %= MOD;
     }
     return res;
@@ -132,7 +116,7 @@ int main() {
     cin.tie(NULL);
     int T;
     cin >> T;
-    vector<Structure> vecE, vecO, vec;
+    vector<pair<int,int>> vecE, vecO, vec;
     for (int t = 0; t < T; t++) {
         int n, m;
         cin >> n >> m;
@@ -162,9 +146,9 @@ int main() {
             }
         }
         for (int i = 0; i < n; i++) {
-            vecE.push_back((Structure) {dist[t][i][0], t});
-            vecO.push_back((Structure) {dist[t][i][1], t});
-            vec.push_back((Structure) {max(dist[t][i][1], dist[t][i][0]), t});
+            vecE.push_back( {dist[t][i][0], t});
+            vecO.push_back( {dist[t][i][1], t});
+            vec.push_back( {max(dist[t][i][1], dist[t][i][0]), t});
         }
     }
     cout << (compute(vecO, T) + compute(vecE, T) - compute(vec, T) + MOD) % MOD << '\n';
