@@ -91,7 +91,6 @@ struct segmentTree {
 
 struct Structure {
     int distance;
-    int parity;
     int graph_number;
 };
 
@@ -102,7 +101,7 @@ bool comp(Structure s1, Structure s2) {
     if (s1.graph_number != s2.graph_number) {
         return (s1.graph_number < s2.graph_number);
     }
-    return (s1.parity < s2.parity);
+    return false;
 }
 
 vector<vector<int>> adj[(int) 4e5];
@@ -117,7 +116,9 @@ ll compute(vector<Structure> vec, int T) {
     cnt.assign(T, false);
     for (int ind = 0; ind < vec.size(); ind++) {
         auto q1 = vec[ind];
-        if (q1.distance == 1e9) continue;
+        if (q1.distance == 1e9) {
+            continue;
+        }
         cnt[q1.graph_number]++;
         st.update(q1.graph_number, cnt[q1.graph_number]);
         res += mult(mult(st.query(0, T - 1), inv(cnt[q1.graph_number])), q1.distance);
@@ -144,8 +145,7 @@ int main() {
         }
         dist[t].resize(n);
         for (int i = 0; i < n; i++) {
-            dist[t][i].resize(2);
-            dist[t][i][0] = dist[t][i][1] = 1e9;
+            dist[t][i].assign(2, 1e9);
         }
         queue<pair<int, int>> q;
         q.push({0, 0});
@@ -162,12 +162,12 @@ int main() {
             }
         }
         for (int i = 0; i < n; i++) {
-            vecE.push_back((Structure) {dist[t][i][0], 0, t});
-        }
-        for (int i = 0; i < n; i++) {
-            vecO.push_back((Structure) {dist[t][i][1], 1, t});
-            vec.push_back((Structure) {max(dist[t][i][1], dist[t][i][0]), 1, t});
+            vecE.push_back((Structure) {dist[t][i][0], t});
+            vecO.push_back((Structure) {dist[t][i][1], t});
+            vec.push_back((Structure) {max(dist[t][i][1], dist[t][i][0]), t});
         }
     }
     cout << (compute(vecO, T) + compute(vecE, T) - compute(vec, T) + MOD) % MOD << '\n';
+
+
 }
