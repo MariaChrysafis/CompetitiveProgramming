@@ -21,9 +21,10 @@ int main() {
   std::random_device rd;
   std::mt19937 g(rd());
   std::shuffle(inputPermutation.begin(), inputPermutation.end(), g);
+  bool debug = false;
 
   // print out content:
-  if (false) {
+  if (debug) {
     std::cout << "myvector contains:\n    ";
     for (std::vector<int>::iterator it = inputPermutation.begin(); it != inputPermutation.end(); ++it) {
       std::cout << *it << (*it >= 10 ? " " : "  ");
@@ -33,16 +34,16 @@ int main() {
   std::cout << '\n';
 
   auto start = std::chrono::high_resolution_clock::now();
-  std::vector<int> golden = goldenRun(inputPermutation, false);
+  std::vector<int> golden = goldenRun(inputPermutation, debug);
   std::uint64_t duration1 =
       std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
-  std::cout << duration1 << ", Brute force done " + std::to_string(golden.size()) << "\n";
+  std::cout << duration1 << " microseconds, Brute force evaluateResults " + std::to_string(golden.size()) << "\n";
 
   auto start2 = std::chrono::high_resolution_clock::now();
-  std::vector<int> current = treeSolution(inputPermutation, false);
+  std::vector<int> current = treeSolution(inputPermutation, debug);
   std::uint64_t duration2 =
       std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start2).count();
-  std::cout << duration2 << ", Binary Tree done " + std::to_string(current.size()) << "\n";
+  std::cout << duration2 << " microseconds, Binary Tree evaluateResults " + std::to_string(current.size()) << "\n";
   std::cout << 1.0 * duration1 / duration2 << " times faster\n";
 
   bool failed = false;
@@ -61,7 +62,7 @@ int main() {
 std::vector<int> goldenRun(std::vector<int> input, bool debug) {
   int n = input.size();
   std::vector<int> output;
-  for (int i = 0; i <= n; i++) {
+  for (int i = 1; i <= n; i++) {
     std::vector<std::string> dbg(n);
     std::string s;
     int l = 0;

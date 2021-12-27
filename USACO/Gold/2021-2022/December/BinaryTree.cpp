@@ -1,8 +1,6 @@
-#include <iostream>
 #include <vector>
 #include <algorithm>
-
-static int COUNT = 4;
+#include <map>
 using std::string;
 using std::vector;
 
@@ -11,113 +9,61 @@ class Node {
   Node *left;
   Node *right;
   const int value;
+  bool isRightLeaf;
+  int count;
  public:
-  Node(int input) : value(input), left(nullptr), right(nullptr) {
+
+  Node(int input, bool isRightLeaf0, int count0)
+      : value(input), left(nullptr), right(nullptr), isRightLeaf(isRightLeaf0), count(count0) {
   }
 
-  void cleanup() {
-    if (left != nullptr) {
-      left->cleanup();
-    }
-    if (right != nullptr) {
-      right->cleanup();
+  std::vector<int> evaluateResults() {
+    vector<std::pair<int, int>> innerMap;
+    traverse(innerMap);
+    sort(innerMap.begin(), innerMap.end());
+
+    std::vector<int> output;
+    for (auto item : innerMap) {
+      output.push_back(item.second);
     }
     delete this;
+    return output;
   }
 
-  Node *insert(Node *node) {
-    if (node->getValue() == value) {
-      return this;
-    } else if (node->getValue() < value) {
+  Node *insert(int myValue, char fromRightLeaf) {
+    if (myValue < value) {
       if (left != nullptr) {
-        return left->insert(node);
+        return left->insert(myValue, true);
       } else {
-        return left = new Node(node->getValue());
+        return left = new Node(myValue, true, this->count);
       }
     } else {
       if (right != nullptr) {
-        return right->insert(node);
+        return right->insert(myValue, false);
       } else {
-        return right = new Node(node->getValue());
+        return right = new Node(myValue, false, this->count + (fromRightLeaf ? 1 : 0));
       }
     }
   }
 
-  Node *getLeft() const {
-    return left;
-  }
-
-  int getValue() const {
-    return value;
-  }
-
-  Node *getRight() const {
-    return right;
-  }
-
-  static void printTreeInTwoDimensions(Node *root, int horizontalSpace) {
-    // Base case
-    if (root == nullptr) {
-      return;
+ private:
+  void traverse(vector<std::pair<int, int>> &innerMap) {
+    if (left != nullptr) {
+      left->traverse(innerMap);
+      delete left;
     }
-
-    horizontalSpace += COUNT;
-
-    printTreeInTwoDimensions(root->getRight(), horizontalSpace);
-
-    for (int i = COUNT; i < horizontalSpace; i++) {
-      std::cout << " ";
+    if (right != nullptr) {
+      right->traverse(innerMap);
+      delete right;
     }
-    std::cout << root->getValue() << "\n";
-
-    printTreeInTwoDimensions(root->getLeft(), horizontalSpace);
+    innerMap.push_back(std::pair<int, int>(value, count + (isRightLeaf ? 1 : 0)));
   }
 };
 
 std::vector<int> treeSolution(std::vector<int> input, bool debug) {
-  std::vector<int> output;
-  Node *root = new Node(input[0]);
-  Node *top = root;
+  Node *root = new Node(input[0], false, 0);
   for (int index = 1; index < input.size(); index++) {
-    root->insert(new Node(input[index]));
+    root->insert(input[index], false);
   }
-  if (debug) {
-    Node::printTreeInTwoDimensions(top, 0);
-  }
-  output.push_back(0);
-  for (int v = 1; v <= input.size(); v++) {
-    root = top;
-    char last = ' ';
-    int count = 0;
-    if (debug) {
-      std::cout << v << " ";
-    }
-    do {
-      char ndir;
-      bool eq = root->getValue() == v;
-      if (root->getValue() > v) {
-        root = root->getLeft();
-        ndir = 'H';
-      } else if (root->getValue() <= v) {
-        root = root->getRight();
-        ndir = 'L';
-      }
-      if (ndir == 'L' && last == 'H') {
-        count++;
-      }
-      if (debug) {
-        std::cout << ndir << " ";
-      }
-      last = ndir;
-      if (eq) {
-        break;
-      }
-    } while (true);
-    if (debug) {
-      std::cout << count << "\n";
-    }
-    output.push_back(count);
-  }
-  top->cleanup();
-  return output;
+  return root->evaluateResults();
 }
