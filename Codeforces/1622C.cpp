@@ -1,28 +1,18 @@
 #include <iostream>
-#include <cmath>
 #include <vector>
-#include <set>
 #include <chrono>
-#include <random>
-#include <queue>
 #include <cstdint>
-#include <cassert>
-#include <bitset>
-#include <map>
-#include <list>
-#include <stack>
 #include <algorithm>
 using namespace std;
 
-int64_t frac(int64_t a, int64_t b) {
-    if (a * b < 0) {
-        return -(abs(a) + abs(b) - 1) / abs(b);
+int64_t floor(int64_t a, int64_t b) {
+    if (a < 0) {
+        return -(-a + b - 1) / b;
     }
     return a / b;
 }
 
 void solve(int tc) {
-    //cout << frac(-2, 3) << '\n';
     int64_t n, k;
     cin >> n >> k;
     vector<int64_t> v(n);
@@ -47,11 +37,15 @@ void solve(int tc) {
     int64_t myMin = pref.back() - k;
 
     for (int i = 1; i < n; i++) {
-        int64_t left = pref[i] - v[0]; //0...i - 1 | i ... n - 1
-        int64_t dum = frac(k - left, n - i + 1); //set everything to be dum
-        //if (dum <= v[0]) {
-            myMin = min(myMin, max(v[0] - dum, 0ll) + (n - i));
-        //}
+        int64_t left = pref[i] - v[0]; // 0...i - 1 | i ... n - 1
+        int64_t range_set = floor(k - left, n - i + 1); // set everything to be range_set
+        int64_t cur;
+        if (range_set >= v[0]) {
+            cur = n - i;
+        } else {
+            cur = v[0] - range_set + (n - i);
+        }
+        myMin = min(myMin, cur);
     }
     cout << myMin << '\n';
 }
