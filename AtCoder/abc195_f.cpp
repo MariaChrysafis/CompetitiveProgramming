@@ -45,7 +45,7 @@ int factor (ll x) {
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    primes = sieve(10000);
+    primes = sieve(73);
     map<ll,int> primes_considered;
     ll A, B;
     cin >> A >> B;
