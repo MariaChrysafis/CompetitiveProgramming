@@ -6,6 +6,30 @@
 
 using namespace std;
 
+class Node {
+public: Node* parent;
+public: int val;
+public: int subtreeSize = 0;
+
+    Node(Node *parent, int val, int subtreeSize) : parent(parent), val(val), subtreeSize(subtreeSize) {}
+
+    bool operator < (const Node& n1) const {
+        return (n1.val < val);
+    }
+};
+
+
+vector<pair<int,int>> generate_random (int size, int max_node) {
+    vector<pair<int,int>> vec;
+    for (int i = 0; i < size; i++) {
+        int u = rand() % max_node;
+        int v = rand() % max_node;
+        vec.emplace_back(u, v);
+    }
+    return vec;
+}
+
+
 class DisjointSetUnion {
 protected:
     vector<int> parent;
@@ -53,6 +77,64 @@ public:
     }
 };
 
+class DisjointSetUnionNode : public DisjointSetUnion {
+public:
+    DisjointSetUnionNode(int sz) : DisjointSetUnion(sz), vec(sz) {
+        for (int i = 0; i < sz; i++) {
+            Node* tmp = new Node(nullptr, i, 1);
+            tmp->parent = tmp;
+            vec[i] = tmp;
+        }
+    }
+
+private:
+    vector<Node*> vec;
+public:
+
+    int find_head(int x) {
+        return find_parent(vec[x])->val;
+    }
+
+    Node* find_parent (Node* x) {
+        Node* cur = x;
+        while ((cur->parent) != nullptr) {
+            cur = cur->parent;
+        }
+        Node* par = cur;
+        cur = x;
+        while ((cur->parent) != nullptr) {
+            cur->parent = par;
+            cur = cur->parent;
+        }
+        return (x->parent = par);
+    }
+
+    void join (int a, int b) {
+        join(vec[a], vec[b]);
+    }
+
+    void join (Node* a1, Node* b1) {
+        Node* a = find_parent(a1);
+        Node* b = find_parent(b1);
+        if (a == b) {
+            return;
+        }
+        if (a->subtreeSize > b->subtreeSize) {
+            swap(a, b);
+        }
+        assert(a->subtreeSize <= b->subtreeSize);
+        a->parent = b;
+        b->subtreeSize += a->subtreeSize;
+        connectedComponents--;
+    }
+
+    int getConnectedComponents() const {
+        return connectedComponents;
+    }
+
+
+};
+
 class DisjointSetUnionwithCompression : public DisjointSetUnion {
 public: DisjointSetUnionwithCompression(int sz) : DisjointSetUnion(sz) {
     }
@@ -66,15 +148,13 @@ public: DisjointSetUnionwithCompression(int sz) : DisjointSetUnion(sz) {
     }
 };
 
-void tester(DisjointSetUnion *pDisjointSetUnion, int sz, string name) {
+void tester(vector<pair<int,int>> vec, DisjointSetUnion *pDisjointSetUnion, int sz, string name) {
     cout << name << '\n';
     int cntr = 0;
     srand(time(nullptr));
     auto start = chrono::steady_clock::now();
     while (pDisjointSetUnion->getConnectedComponents() != 1) {
-        int u = rand() % sz;
-        int v = rand() % sz;
-        pDisjointSetUnion->join(u, v);
+        pDisjointSetUnion->join(vec[cntr].first, vec[cntr].second);
         cntr++;
     }
     auto finish = chrono::steady_clock::now();
@@ -83,10 +163,18 @@ void tester(DisjointSetUnion *pDisjointSetUnion, int sz, string name) {
 }
 
 int main() {
-    int sz = 3000000;
+    int sz = 2000000;
+    vector<pair<int,int>> vec(7 * sz);
+    for (int i = 0; i < vec.size(); i++) {
+        vec[i].first = rand() % sz;
+        vec[i].second = rand() % sz;
+    }
     unique_ptr<DisjointSetUnion> pDisjointSetUnion = std::unique_ptr<DisjointSetUnion> (new DisjointSetUnion(sz));
-    tester(pDisjointSetUnion.get(), sz, "dimitri");
+    tester(vec, pDisjointSetUnion.get(), sz, "dimitri");
 
     unique_ptr<DisjointSetUnionwithCompression> disjointSetUnionwithCompression = std::unique_ptr<DisjointSetUnionwithCompression> (new DisjointSetUnionwithCompression(sz));
-    tester(disjointSetUnionwithCompression.get(), sz, "maria");
+    tester(vec, disjointSetUnionwithCompression.get(), sz, "maria");
+
+    unique_ptr<DisjointSetUnionNode> disjointSetUnionNode = std::unique_ptr<DisjointSetUnionNode> (new DisjointSetUnionNode(sz));
+    tester(vec, disjointSetUnionNode.get(), sz, "christos");
 }
