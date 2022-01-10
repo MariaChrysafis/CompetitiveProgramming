@@ -8,10 +8,12 @@ using namespace std;
 
 class Node {
 public: Node* parent;
+public: Node* next;
 public: int val;
 public: int subtreeSize = 0;
 
-    Node(Node *parent, int val, int subtreeSize) : parent(parent), val(val), subtreeSize(subtreeSize) {}
+    Node(Node *parent, Node *next, int val, int subtreeSize) : parent(parent), next(next), val(val),
+                                                               subtreeSize(subtreeSize) {}
 
     bool operator < (const Node& n1) const {
         return (n1.val < val);
@@ -81,8 +83,9 @@ class DisjointSetUnionNode : public DisjointSetUnion {
 public:
     DisjointSetUnionNode(int sz) : DisjointSetUnion(sz), vec(sz) {
         for (int i = 0; i < sz; i++) {
-            Node* tmp = new Node(nullptr, i, 1);
+            Node* tmp = new Node(nullptr, nullptr, i, 1);
             tmp->parent = tmp;
+            tmp->next = tmp;
             vec[i] = tmp;
         }
     }
@@ -125,6 +128,9 @@ public:
         assert(a->subtreeSize <= b->subtreeSize);
         a->parent = b;
         b->subtreeSize += a->subtreeSize;
+        Node* b_nxt = b->next;
+        b->next = a->next;
+        a->next = b_nxt;
         connectedComponents--;
     }
 
@@ -144,7 +150,13 @@ public: DisjointSetUnionwithCompression(int sz) : DisjointSetUnion(sz) {
         while (cur != parent[cur]) {
             cur = parent[cur];
         }
-        return parent[x] = cur;
+        int par = cur;
+        cur = x;
+        while (cur != parent[cur]) {
+            parent[cur] = par;
+            cur = parent[cur];
+        }
+        return cur;
     }
 };
 
@@ -163,8 +175,9 @@ void tester(vector<pair<int,int>> vec, DisjointSetUnion *pDisjointSetUnion, int 
 }
 
 int main() {
-    int sz = 2000000;
-    vector<pair<int,int>> vec(7 * sz);
+    int sz = 1000000;
+    srand(time(nullptr));
+    vector<pair<int,int>> vec(10 * sz);
     for (int i = 0; i < vec.size(); i++) {
         vec[i].first = rand() % sz;
         vec[i].second = rand() % sz;
