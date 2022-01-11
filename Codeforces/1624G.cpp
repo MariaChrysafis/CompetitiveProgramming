@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <algorithm>
 #include <iomanip>
 #include <cassert>
 #include <ctime>
@@ -58,6 +59,11 @@ public:
 
 struct Edge {
     int u, v, w;
+    bool operator < (const Edge& e1) const {
+        if (e1.v != this->v) return (e1.v < this->v);
+        if (e1.w != this->w) return (e1.w < this->w);
+        return (e1.u < this->u);
+    }
 };
 
 struct Graph {
@@ -85,6 +91,7 @@ bool isValid(Graph& g, int highestBit) {
     DisjointSetUnion dsu(g.adj.size());
     for (int i = 0; i < g.adj.size(); i++) {
         for (auto &e: g.adj[i]) {
+            if (e.v > i) break;
             if (e.w < (1 << (highestBit + 1))) {
                 dsu.join(e.u, e.v);
                 if (dsu.getConnectedComponents() == 1) {
@@ -111,7 +118,7 @@ int rec(Graph& g) {
         return 0;
     }
     int l = 0;
-    int r = 31;
+    int r = 30;
     while (l != r) {
         int m = (l + r) / 2;
         if (isValid(g, m)) {
@@ -139,6 +146,10 @@ int main() {
             cin >> u >> v >> w;
             u--, v--;
             g.add_edge(u, v, w);
+        }
+        for (int i = 0; i < n; i++) {
+            sort(g.adj[i].begin(), g.adj[i].end());
+            reverse(g.adj[i].begin(), g.adj[i].end());
         }
         cout << rec(g) << '\n';
     }
