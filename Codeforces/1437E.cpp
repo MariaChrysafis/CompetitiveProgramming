@@ -22,7 +22,7 @@ using namespace std;
 typedef int64_t ll;
 
 template<class T>
-struct Seg { // comb(ID,b) = b
+struct Seg { 
     const T ID = 0;
 
     T comb(T a, T b) { return max(a, b); }
