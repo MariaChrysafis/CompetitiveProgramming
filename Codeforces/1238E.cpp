@@ -8,6 +8,7 @@
 #include <queue>
 
 using namespace std;
+
 typedef long long ll;
 
 string remove_dup (string s) {
