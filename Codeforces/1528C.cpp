@@ -12,7 +12,6 @@
 #include <stack>
 #include <list>
 #include <cstring>
-
 using namespace std;
 typedef int ll;
 
