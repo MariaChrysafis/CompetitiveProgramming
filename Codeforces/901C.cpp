@@ -15,7 +15,6 @@
 #include <random>
 #include <array>
 #include <chrono>
-
 using namespace std;
 
 typedef int64_t ll;
