@@ -9,7 +9,7 @@
 | 2016-2017 | December | [team](http://www.usaco.org/index.php?page=viewproblem2&cpid=673) | October 23rd, 2021 |
 | 2016-2017 | January | [mincross](http://usaco.org/index.php?page=viewproblem2&cpid=720) | February 9th, 2021 |
 | 2016-2017 | January | [promotion](http://www.usaco.org/index.php?page=viewproblem2&cpid=696) | October 20th, 2021 |
-| 2017-2018 | US Open | [disruption](http://www.usaco.org/index.php?page=viewproblem2&cpid=842) | January 23rd, 2021 |
+| 2017-2018 | US Open | [disruption](http://www.usaco.org/index.php?page=viewproblem2&cpid=842) | January 23rd, 2022 |
 | 2018-2019 | January | [redistricting](http://www.usaco.org/index.php?page=viewproblem2&cpid=900) | August 2nd, 2021 |
 | 2018-2019 | February  | [mooriokart](http://www.usaco.org/index.php?page=viewproblem2&cpid=925) |October 27th, 2021 |
 | 2018-2019 | February  | [cowdate](http://www.usaco.org/index.php?page=viewproblem2&cpid=924) | August 2nd, 2021 |
