@@ -45,32 +45,29 @@ int l = 0;
 int r = -1;
 int sq = -1;
 int ans = 0;
-vector<set<int>> oc;
+vector<vector<int>> oc;
 vector<int> arr;
+vector<int> indices;
 bool comp (pair<pair<int,int>,int> p1, pair<pair<int,int>,int> p2) {
     assert(sq != -1);
     return ((pair<int,int>){p1.first.first/sq, p1.first.second} < (pair<int,int>){p2.first.first/sq, p2.first.second});
 }
-int prevOc (set<int>& s, int ind) {
-    assert(s.find(ind) != s.end());
-    auto it = s.lower_bound(ind);
-    if (it == s.begin()) return -1;
-    it--;
-    return *it;
+int prevOc (int ind) {
+    if (indices[ind] == 0) return -1;
+    return oc[arr[ind]][indices[ind] - 1];
 }
-int nxtOc (set<int>& s, int ind) {
-    auto it = s.upper_bound(ind);
-    if (it == s.end()) return -1;
-    return *it;
+int nxtOc (int ind) {
+    if (indices[ind] + 1 == oc[arr[ind]].size()) return -1;
+    return oc[arr[ind]][indices[ind] + 1];
 }
 void addRight (int ind) {
     assert(ind == r + 1);
     r++;
-    if (prevOc(oc[arr[ind]], ind) < l) {
+    if (prevOc(ind) < l) {
         ans++;
         return;
     }
-    int i = prevOc(oc[arr[ind]], ind);
+    int i = prevOc(ind);
     if (rmq.query(i, ind) == arr[i]) {
         return;
     }
@@ -79,11 +76,11 @@ void addRight (int ind) {
 void removeRight (int ind) {
     assert(ind == r);
     r--;
-    if (prevOc(oc[arr[ind]], ind) < l) {
+    if (prevOc(ind) < l) {
         ans--;
         return;
     }
-    int i = prevOc(oc[arr[ind]], ind);
+    int i = prevOc(ind);
     if (rmq.query(i, ind) == arr[i]) {
         return;
     }
@@ -92,11 +89,11 @@ void removeRight (int ind) {
 void removeLeft (int ind) {
     assert(ind == l);
     l++;
-    if (nxtOc(oc[arr[ind]], ind) > r || nxtOc(oc[arr[ind]], ind) == -1) {
+    if (nxtOc(ind) > r || nxtOc(ind) == -1) {
         ans--;
         return;
     }
-    int i = nxtOc(oc[arr[ind]], ind);
+    int i = nxtOc(ind);
     if (rmq.query(ind, i) == arr[i]) {
         return;
     }
@@ -105,11 +102,11 @@ void removeLeft (int ind) {
 void addLeft (int ind) {
     assert(ind == l - 1);
     l--;
-    if (nxtOc(oc[arr[ind]], ind) > r || nxtOc(oc[arr[ind]], ind) == -1) {
+    if (nxtOc(ind) > r || nxtOc(ind) == -1) {
         ans++;
         return;
     }
-    int i = nxtOc(oc[arr[ind]], ind);
+    int i = nxtOc(ind);
     if (rmq.query(ind, i) == arr[i]) {
         return;
     }
@@ -120,10 +117,11 @@ int main() {
     cin.tie(NULL);
     int N, Q;
     cin >> N >> Q;
-    oc.resize(N), arr.resize(N);
+    oc.resize(N), arr.resize(N), indices.resize(N);
     for (int i = 0; i < N; i++) {
         cin >> arr[i]; arr[i]--;
-        oc[arr[i]].insert(i);
+        indices[i] = oc[arr[i]].size();
+        oc[arr[i]].push_back(i);
     }
     rmq.update(arr);
     sq = sqrt(N);
@@ -138,7 +136,6 @@ int main() {
     res.resize(Q);
     for (auto& pr: vec) {
         pair<int,int> p = pr.first;
-//        cout << "PAIR " << p.first << " " << p.second << '\n';
         while (r < p.second) {
             addRight(r + 1);
         }
@@ -151,7 +148,6 @@ int main() {
         while (l > p.first) {
             addLeft(l - 1);
         }
-        //cout << ans << '\n';
         res[pr.second] = ans;
     }
     for (int i: res) {
