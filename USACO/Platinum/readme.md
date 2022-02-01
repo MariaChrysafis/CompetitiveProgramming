@@ -16,3 +16,4 @@
 | 2019-2020 | January | [snowcow](http://www.usaco.org/index.php?page=viewproblem2&cpid=973) | November 9th, 2021 |
 | 2019-2020 | US Open | [exercise](http://usaco.org/index.php?page=viewproblem2&cpid=1045) | February 12th, 2021 |
 | 2020-2021 | December | [Sleeping Cows](http://www.usaco.org/index.php?page=viewproblem2&cpid=1068) | October 20th, 2021 |
+| 2020-2021 | February | [No Time To Dry](http://www.usaco.org/index.php?page=viewproblem2&cpid=1116) | January 31st, 2021 |
