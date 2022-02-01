@@ -11,6 +11,9 @@
 #include <string>
 #include <queue>
 #include <map>
+#pragma GCC target ("avx2")
+#pragma GCC optimization ("O3")
+#pragma GCC optimization ("unroll-loops")
 
 using namespace std;
 class RMQ {
@@ -47,6 +50,7 @@ vector<int> arr;
 vector<int> indices;
 vector<int> bef;
 vector<int> nxt;
+vector<int> bef_val, nxt_val;
 bool comp (pair<pair<int,int>,int> p1, pair<pair<int,int>,int> p2) {
     return ((pair<int,int>){p1.first.first/sq, p1.first.second} < (pair<int,int>){p2.first.first/sq, p2.first.second});
 }
@@ -60,27 +64,27 @@ int nxtOc (int ind) {
 }
 void addRight (int ind) {
     r++;
-    if (bef[ind] < l || rmq.query(bef[ind], ind) != arr[ind]) {
+    if (bef[ind] < l || bef_val[ind] != arr[ind]) {
         ans++;
         return;
     }
 }
 void removeRight (int ind) {
     r--;
-    if (bef[ind] < l || rmq.query(bef[ind], ind) != arr[ind]) {
+    if (bef[ind] < l || bef_val[ind] != arr[ind]) {
         ans--;
         return;
     }
 }
 void removeLeft (int ind) {
     l++;
-    if (nxt[ind] > r || nxt[ind] == -1 || rmq.query(ind, nxt[ind]) != arr[ind]) {
+    if (nxt[ind] > r || nxt[ind] == -1 || nxt_val[ind] != arr[ind]) {
         ans--;
     }
 }
 void addLeft (int ind) {
     l--;
-    if (nxt[ind] > r || nxt[ind] == -1 || rmq.query(ind, nxt[ind]) != arr[ind]) {
+    if (nxt[ind] > r || nxt[ind] == -1 || nxt_val[ind] != arr[ind]) {
         ans++;
         return;
     }
@@ -98,7 +102,7 @@ int main() {
         oc[arr[i]].push_back(i);
     }
     rmq.update(arr);
-    sq = sqrt(N);
+    sq = 550;
     vector<pair<pair<int,int>,int>> vec(Q);
     for (int i = 0; i < Q; i++) {
         cin >> vec[i].first.first >> vec[i].first.second;
@@ -106,11 +110,19 @@ int main() {
         vec[i].second = i;
     }
     sort(vec.begin(), vec.end(), comp);
-    bef.resize(N);
-    nxt.resize(N);
+    bef.resize(N), bef_val.resize(N);
+    nxt.resize(N), nxt_val.resize(N);
     for (int i = 0; i < N; i++) {
         bef[i] = prevOc(i);
         nxt[i] = nxtOc(i);
+    }
+    for (int i = 0; i < N; i++) {
+        if (bef[i] < i && bef[i] != -1) {
+            bef_val[i] = rmq.query(bef[i], i);
+        }
+        if (nxt[i] > i && nxt[i] != -1) {
+            nxt_val[i] = rmq.query(i, nxt[i]);
+        }
     }
     vector<int> res;
     res.resize(Q);
