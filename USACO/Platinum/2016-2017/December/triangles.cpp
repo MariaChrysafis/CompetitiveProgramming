@@ -19,7 +19,7 @@ public:
 };
 vector<Point> vec;
 vector<vector<bitset<300>>> arr;
-int64_t sgn (int i1, int i2, int i3) {
+static int64_t sgn (int i1, int i2, int i3) {
     return vec[i1].x * vec[i2].y - vec[i2].x * vec[i1].y + vec[i2].x * vec[i3].y - vec[i3].x * vec[i2].y + vec[i3].x * vec[i1].y - vec[i1].x * vec[i3].y;
 }
 int main() {
