@@ -13,15 +13,12 @@
 #include <map>
 
 using namespace std;
-typedef int64_t ll;
 class RMQ {
 public:
     vector<vector<int>> dp;
     int query (int l, int r) {
-//        cout << l << " " << r << '\n';
         int sz = log2(r - l + 1);
         int ans = min(dp[l][sz], dp[r - (1 << sz) + 1][sz]);
-//        cout << l << " " << r << '\n';
         return ans;
     }
     void update (vector<int> arr) {
@@ -48,8 +45,9 @@ int ans = 0;
 vector<vector<int>> oc;
 vector<int> arr;
 vector<int> indices;
+vector<int> bef;
+vector<int> nxt;
 bool comp (pair<pair<int,int>,int> p1, pair<pair<int,int>,int> p2) {
-    assert(sq != -1);
     return ((pair<int,int>){p1.first.first/sq, p1.first.second} < (pair<int,int>){p2.first.first/sq, p2.first.second});
 }
 int prevOc (int ind) {
@@ -61,58 +59,34 @@ int nxtOc (int ind) {
     return oc[arr[ind]][indices[ind] + 1];
 }
 void addRight (int ind) {
-    assert(ind == r + 1);
     r++;
-    if (prevOc(ind) < l) {
+    if (bef[ind] < l || rmq.query(bef[ind], ind) != arr[ind]) {
         ans++;
         return;
     }
-    int i = prevOc(ind);
-    if (rmq.query(i, ind) == arr[i]) {
-        return;
-    }
-    ans++;
 }
 void removeRight (int ind) {
-    assert(ind == r);
     r--;
-    if (prevOc(ind) < l) {
+    if (bef[ind] < l || rmq.query(bef[ind], ind) != arr[ind]) {
         ans--;
         return;
     }
-    int i = prevOc(ind);
-    if (rmq.query(i, ind) == arr[i]) {
-        return;
-    }
-    ans--;
 }
 void removeLeft (int ind) {
-    assert(ind == l);
     l++;
-    if (nxtOc(ind) > r || nxtOc(ind) == -1) {
+    if (nxt[ind] > r || nxt[ind] == -1 || rmq.query(ind, nxt[ind]) != arr[ind]) {
         ans--;
-        return;
     }
-    int i = nxtOc(ind);
-    if (rmq.query(ind, i) == arr[i]) {
-        return;
-    }
-    ans--;
 }
 void addLeft (int ind) {
-    assert(ind == l - 1);
     l--;
-    if (nxtOc(ind) > r || nxtOc(ind) == -1) {
+    if (nxt[ind] > r || nxt[ind] == -1 || rmq.query(ind, nxt[ind]) != arr[ind]) {
         ans++;
         return;
     }
-    int i = nxtOc(ind);
-    if (rmq.query(ind, i) == arr[i]) {
-        return;
-    }
-    ans++;
 }
 int main() {
+    //freopen("output.txt", "r", stdin);
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     int N, Q;
@@ -132,6 +106,12 @@ int main() {
         vec[i].second = i;
     }
     sort(vec.begin(), vec.end(), comp);
+    bef.resize(N);
+    nxt.resize(N);
+    for (int i = 0; i < N; i++) {
+        bef[i] = prevOc(i);
+        nxt[i] = nxtOc(i);
+    }
     vector<int> res;
     res.resize(Q);
     for (auto& pr: vec) {
