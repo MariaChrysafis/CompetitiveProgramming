@@ -12,16 +12,6 @@
 #include <map>
 
 using namespace std;
-void convert (vector<string>& arr, char a, char b) {
-    for (int i = 0; i < arr.size(); i++) {
-        for (int j = 0; j < arr[i].size(); j++) {
-            if (arr[i][j] == a) {
-                arr[i][j] = b;
-            }
-        }
-    }
-}
-
 struct Grid {
     vector<vector<int>> grid;
     vector<vector<int>> sums;
@@ -44,12 +34,6 @@ struct Grid {
             for (int j = 1; j < sums[0].size(); j++) {
                 sums[i][j] = sums[i][j - 1] + sums[i - 1][j] - sums[i - 1][j - 1] + grid[i - 1][j - 1];
             }
-        }
-    }
-    void resz (int n, int m) {
-        grid.resize(n);
-        for (int i = 0; i < n; i++) {
-            grid[i].resize(m);
         }
     }
 };
