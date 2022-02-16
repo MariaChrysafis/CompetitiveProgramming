@@ -76,9 +76,7 @@ void build (vector<vector<int>> grid) {
         cout << '\n';
     }
 }
- 
 */
- 
  
  
 int construct (vector<vector<int>> grid) {
@@ -137,6 +135,7 @@ int construct (vector<vector<int>> grid) {
             for (int i = 1; i < (int)v.size(); i++) {
                 ans[v[i]][v[i - 1]] = 1;
                 ans[v[i - 1]][v[i]] = 1;
+                //cout << "JOIN " << v[i - 1] << " " << v[i] << '\n';
             }
             ans[v[0]][v.back()] = ans[v.back()][v[0]] = 1;
             for (int x: v) {
@@ -150,23 +149,58 @@ int construct (vector<vector<int>> grid) {
         build(ans);
         return 1;
     }
+    if (cnt[0] >= 0 && cnt[1] > 0 && cnt[2] > 0 && cnt[3] == 0) {
+        //cout << "YES\n";
+        for (auto& p: myMap) {
+            DisjointSetUnion dsu(grid.size());
+            map<int,vector<int>> m;
+            for (int x: p.second) {
+                for (int y: p.second) {
+                    if (grid[x][y] == 1) {
+                        dsu.join(x, y);
+                    }
+                }
+            }
+            for (int i: p.second) {
+                m[dsu.find_head(i)].push_back(i);
+            }
+            vector<int> vec;
+            for (auto& q: m) {
+                vec.push_back(q.first);
+            }
+            if (vec.size() != 1) {
+                for (int i = 0; i < vec.size(); i++) {
+                    ans[vec[i]][vec[(i + 1) % (int) vec.size()]] = ans[vec[(i + 1) % (int) vec.size()]][vec[i]] = 1;
+//                    cout << "JOIN1 " << vec[i] << " " << vec[(i + 1) % (int) vec.size()] << '\n';
+                }
+            }
+//            cout << "\n";
+            for (auto& q: m) {
+                vector<int> v = q.second;
+                for (int i = 1; i < (int)v.size(); i++) {
+                    ans[v[i]][v[0]] = 1;
+                    ans[v[0]][v[i]] = 1;
+//                    cout << "JOIN " << v[i] << " " << v[0] << '\n';
+                }
+                for (int x: v) {
+                    for (int y: v) {
+                        if (grid[x][y] != 1) return false;
+                    }
+                }
+            }
+ 
+        }
+        build(ans);
+        return 1;
+    }
+ 
 }
  
 /*
 int main () {
     const int N = 7;
-    vector<vector<int>> grid(N);
-    for (int i = 0; i < N; i++) {
-        grid[i].assign(N, 0);
-        grid[i][i] = 1;
-    }
-    grid[1][2] = grid[2][1] = 2;
-    grid[1][3] = grid[3][1] = 2;
-    grid[2][3] = grid[3][2] = 2;
- 
-    grid[3][5] = grid[5][3] = 2;
-    grid[3][6] = grid[6][3] = 2;
-    grid[5][6] = grid[6][5] = 2;
+    vector<vector<int>> grid = {{1, 2, 2, 2, 0, 0, 0, 0, 0, 2},{2, 1, 2, 2, 0, 0, 0, 0, 0, 2},{2, 2, 1, 2, 0, 0, 0, 0, 0, 2},{2, 2, 2, 1, 0, 0, 0, 0, 0, 2},{0, 0, 0, 0, 1, 1, 0, 1, 1, 0},{0, 0, 0, 0, 1, 1, 0, 1, 1, 0},{0, 0, 0, 0, 0, 0, 1, 0, 0, 0},{0, 0, 0, 0, 1, 1, 0, 1, 1, 0},{0, 0, 0, 0, 1, 1, 0, 1, 1, 0},{2, 2, 2, 2, 0, 0, 0, 0, 0, 1}};
     construct(grid);
 }
- */
+ 
+*/
