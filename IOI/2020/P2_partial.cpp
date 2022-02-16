@@ -89,6 +89,9 @@ int construct (vector<vector<int>> grid) {
     DisjointSetUnion disjointSetUnion(grid.size());
     for (int i = 0; i < grid.size(); i++) {
         for (int j = 0; j < grid.size(); j++) {
+            if (grid[i][j] == 3) {
+                return false;
+            }
             s.insert(grid[i][j]);
             cnt[grid[i][j]]++;
             if (grid[i][j] != 0) {
