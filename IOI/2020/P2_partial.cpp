@@ -96,60 +96,11 @@ int construct (vector<vector<int>> grid) {
             }
         }
     }
-    if (s.count(1) && s.size() == 1) {
-        for (int i = 1; i < grid.size(); i++) {
-            ans[i][0] = ans[0][i] = 1;
-        }
-        build(ans);
-        return 1;
-    }
     map<int,vector<int>> myMap;
     for (int i = 0; i < grid.size(); i++) {
         myMap[disjointSetUnion.find_head(i)].push_back(i);
     }
-    if (cnt[2] == 0 && cnt[3] == 0) {
-        for (auto& p: myMap) {
-            vector<int> v = p.second;
-            for (int i = 1; i < (int)v.size(); i++) {
-                ans[v[i]][v[0]] = 1;
-                ans[v[0]][v[i]] = 1;
-            }
-            for (int x: v) {
-                for (int y: v) {
-                    if (grid[x][y] != 1) return false;
-                }
-            }
-        }
-        build(ans);
-        return 1;
-    }
-    if (cnt[0] >= 0 && cnt[1] == (int)grid.size() && cnt[2] >= 0 && cnt[3] == 0) {
-        for (auto& p: myMap) {
-            vector<int> v = p.second;
-            if (v.size() == 2) {
-                return 0;
-            }
-            if (v.size() <= 1) {
-                continue;
-            }
-            for (int i = 1; i < (int)v.size(); i++) {
-                ans[v[i]][v[i - 1]] = 1;
-                ans[v[i - 1]][v[i]] = 1;
-                //cout << "JOIN " << v[i - 1] << " " << v[i] << '\n';
-            }
-            ans[v[0]][v.back()] = ans[v.back()][v[0]] = 1;
-            for (int x: v) {
-                for (int y: v) {
-                    if (grid[x][y] == 0) {
-                        return 0;
-                    }
-                }
-            }
-        }
-        build(ans);
-        return 1;
-    }
-    if (cnt[0] >= 0 && cnt[1] > 0 && cnt[2] > 0 && cnt[3] == 0) {
+    if (cnt[0] >= 0 && cnt[1] >= 0 && cnt[2] >= 0 && cnt[3] == 0) {
         //cout << "YES\n";
         for (auto& p: myMap) {
             DisjointSetUnion dsu(grid.size());
@@ -169,22 +120,38 @@ int construct (vector<vector<int>> grid) {
                 vec.push_back(q.first);
             }
             if (vec.size() != 1) {
+                if (vec.size() == 2) {
+                    return false;
+                }
                 for (int i = 0; i < vec.size(); i++) {
                     ans[vec[i]][vec[(i + 1) % (int) vec.size()]] = ans[vec[(i + 1) % (int) vec.size()]][vec[i]] = 1;
-//                    cout << "JOIN1 " << vec[i] << " " << vec[(i + 1) % (int) vec.size()] << '\n';
                 }
             }
-//            cout << "\n";
+            for (int x: vec) {
+                for (int y: vec) {
+                    if (grid[x][y] == 0) {
+                        return false;
+                    }
+                }
+            }
             for (auto& q: m) {
                 vector<int> v = q.second;
+                for (int i: v) {
+                    for (int j: v) {
+                        if (grid[i][j] == 0) {
+                            return false;
+                        }
+                    }
+                }
                 for (int i = 1; i < (int)v.size(); i++) {
                     ans[v[i]][v[0]] = 1;
                     ans[v[0]][v[i]] = 1;
-//                    cout << "JOIN " << v[i] << " " << v[0] << '\n';
                 }
                 for (int x: v) {
                     for (int y: v) {
-                        if (grid[x][y] != 1) return false;
+                        if (grid[x][y] != 1) {
+                            return 0;
+                        }
                     }
                 }
             }
