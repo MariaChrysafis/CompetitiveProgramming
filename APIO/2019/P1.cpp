@@ -10,11 +10,7 @@
 #include <string>
 #include <queue>
 #include <map>
- 
-#pragma GCC target ("avx2")
-#pragma GCC optimization ("O3")
-#pragma GCC optimization ("Ofast")
-#pragma GCC optimization ("unroll-loops")
+
 using namespace std;
 class Intervals {
 public:
@@ -25,7 +21,7 @@ public:
         }
         cout << '\n';
     }
-    pair<int64_t,int64_t> leftIntersect (pair<int64_t,int64_t> p) {
+    pair<int64_t,int64_t> leftIntersect (pair<int64_t,int64_t> &p) {
         auto it = intervals.upper_bound({p.first + 1, -1});
         if (it == intervals.begin()) {
             return {-1, -1};
@@ -44,10 +40,7 @@ public:
         }
         it--;
         pair<int64_t,int64_t> q = *it;
-        if (q.first > p.second) {
-            return {-1, -1};
-        }
-        if (q.first < p.first) {
+        if (q.first > p.second || q.first < p.first) {
             return {-1, -1};
         }
         return q;
@@ -70,7 +63,7 @@ public:
         if (q.second < p.first) {
             return p;
         }
-        if (intervals.count(q)) intervals.erase(q);
+        intervals.erase(q);
         return {q.first, p.second};
     }
     pair<int64_t,int64_t> update_right (pair<int64_t,int64_t> p) {
@@ -81,7 +74,7 @@ public:
         if (q.first > p.second) {
             return p;
         }
-        if (intervals.count(q)) intervals.erase(q);
+        intervals.erase(q);
         return {p.first, q.second};
     }
     void erase_in_between (pair<int64_t,int64_t> p) {
@@ -104,8 +97,7 @@ public:
             return;
         }
         erase_in_between(p);
-        pair<int64_t,int64_t> new_p = update_left(p);
-        pair<int64_t,int64_t> new_p1 = update_right(new_p);
+        pair<int64_t,int64_t> new_p1 = update_right(update_left(p));
         intervals.insert(new_p1);
     }
 };
@@ -114,6 +106,8 @@ int64_t gcd (int64_t a, int64_t b) {
     return gcd(max(a,b) % min(a,b), min(a,b));
 }
 int main () {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
     int N;
     int64_t A, B;
     cin >> N >> A >> B;
@@ -134,16 +128,13 @@ int main () {
         }
         x %= (prod), y %= (prod);
         if (x <= y) {
-            //cout << "T1\n";
             myInterval.add_interval({x, y});
         } else {
-            //cout << "T2\n";
             swap(x, y);
             myInterval.add_interval({0, x});
             myInterval.add_interval({y, prod - 1});
         }
     }
-//    myInterval.print();
     int64_t ans = 0;
     for (auto& p: myInterval.intervals) {
         ans += p.second - p.first + 1;
