@@ -10,7 +10,6 @@
 #include <string>
 #include <queue>
 #include <map>
-
 using namespace std;
 class Intervals {
 public:
