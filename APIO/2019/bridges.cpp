@@ -11,30 +11,25 @@
 #include <queue>
 #include <map>
 #include <stack>
-//
+
 #pragma GCC target ("avx2")
 #pragma GCC optimization ("O3")
 #pragma GCC optimization ("unroll-loops")
 #pragma GCC optimization ("Ofast")
+//
 
 using namespace std;
 
-struct Updates{
-    int parentInd;
-    int prev_parent;
-    int compInd;
-    int prev_comp;
-};
-
 class DisjointSetUnion {
 private:
-    vector<int> parent;
-    vector<int> compSize;
+    int parent[50000];
+    int compSize[50000];;
     int n;
     int connectedComponents;
-    stack<Updates> myStack;
+    stack<pair<pair<int, int>, pair<int, int>>> myStack;
 public:
     int cntr = 0;
+
     int getConnectedComponents() const {
         return connectedComponents;
     }
@@ -47,7 +42,6 @@ public:
     void resz(int sz) {
         n = sz;
         connectedComponents = sz;
-        parent.resize(sz), compSize.resize(sz);
         for (int i = 0; i < n; i++) {
             parent[i] = i, compSize[i] = 1;
         }
@@ -84,19 +78,19 @@ public:
         if (compSize[x] > compSize[y]) {
             swap(x, y);
         }
-        myStack.push({x, parent[x], y, compSize[y]}), cntr++;
+        myStack.emplace(make_pair(x, parent[x]), make_pair(y, compSize[y]));
+        cntr++;
         parent[x] = y;
         compSize[y] += compSize[x];
         connectedComponents--;
     }
 
     void revert(int x) {
+        connectedComponents += x;
         while (x--) {
-            Updates u = myStack.top();
+            parent[myStack.top().first.first] = myStack.top().first.second;
+            compSize[myStack.top().second.first] = myStack.top().second.second;
             myStack.pop();
-            parent[u.parentInd] = u.prev_parent;
-            compSize[u.compInd] = u.prev_comp;
-            connectedComponents++;
         }
     }
 
@@ -135,7 +129,7 @@ void compress(vector<pair<pair<int, int>, int>> &edges, vector<vector<Query>> &b
     sort(w.begin(), w.end());
     int prev = -1;
     int cntr = 0;
-    map<int,int> myMap;
+    map<int, int> myMap;
     for (int i = 0; i < w.size(); i++) {
         if (w[i] != prev) {
             prev = w[i];
@@ -169,7 +163,7 @@ int main() {
     vector<vector<Query>> blocks;
     blocks.emplace_back();
     for (int i = 0; i < Q; i++) {
-        if (blocks.back().size() > 1250) {
+        if (blocks.back().size() > 1235) {
             blocks.emplace_back();
         }
         int t, w, x;
@@ -179,42 +173,41 @@ int main() {
         blocks.back().emplace_back(Query(w, x, t, i));
     }
     compress(edges, blocks);
-    vector<int> default_edges(M);
+    int default_edges[M];
     for (int i = 0; i < M; i++) {
         default_edges[i] = edges[i].second;
     }
     vector<pair<int, int>> myVec;
     int total = 0;
+    bool cnt[M];
     for (auto &v: blocks) {
         DisjointSetUnion dsu;
         dsu.resz(N);
-        vector<int> uncertain;
-        int cnt[M];
         for (int i = 0; i < M; i++) {
-            cnt[i] = 0;
+            cnt[i] = false;
         }
-        for (Query& q: v) {
+        for (Query &q: v) {
             if (!q.type) {
-                uncertain.push_back(q.x);
-                cnt[q.x]++;
+                cnt[q.x] = true;
             }
         }
-        vector<pair<int,int>> myStack;
+        vector<pair<int, int>> myStack;
         vector<int> mnt[v.size()];
         for (int i = 0; i < v.size(); i++) {
             if (!v[i].type) {
                 default_edges[v[i].x] = v[i].w;
                 myStack.emplace_back(v[i].x, v[i].w);
             } else {
-                for (int j: uncertain) {
-                    if (default_edges[j] >= v[i].w) {
-                        mnt[i].push_back(j);
+                for (Query &q: v) {
+                    if (!q.type && default_edges[q.x] >= v[i].w) {
+                        mnt[i].push_back(q.x);
                     }
                 }
             }
         }
-        for (int i = myStack.size() - 1; i >= 0; i--) {
-            default_edges[myStack[i].first] = myStack[i].second;
+        while (!myStack.empty()) {
+            default_edges[myStack.back().first] = myStack.back().second;
+            myStack.pop_back();
         }
         vector<int> e[M + Q];
         for (int i = 0; i < M; i++) {
@@ -222,10 +215,9 @@ int main() {
                 e[default_edges[i]].push_back(i);
             }
         }
-        sort (v.begin(), v.end());
+        sort(v.begin(), v.end());
         int prev = M + Q;
-        for (int ind = 0; ind < v.size(); ind++) {
-            Query &q = v[ind];
+        for (Query& q: v) {
             if (!q.type) {
                 continue;
             }
@@ -236,7 +228,7 @@ int main() {
             }
             prev = q.w;
             dsu.cntr = 0;
-            for (int x: mnt[v[ind].q - total]) {
+            for (int x: mnt[q.q - total]) {
                 dsu.join1(edges[x].first.first, edges[x].first.second);
             }
             myVec.emplace_back(q.q, dsu.getNeighbors(q.x));
