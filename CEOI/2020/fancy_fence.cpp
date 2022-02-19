@@ -17,7 +17,9 @@
 #pragma GCC optimization ("unroll-loops")
 #pragma GCC optimization ("Ofast")
 using namespace std;
+
 int M = 1e9 + 7;
+
 struct modint {
     modint() : n(0) {}
 
