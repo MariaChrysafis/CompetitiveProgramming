@@ -225,7 +225,7 @@ int main() {
         sort (v.begin(), v.end());
         int prev = M + Q;
         for (int ind = 0; ind < v.size(); ind++) {
-            Query q = v[ind];
+            Query &q = v[ind];
             if (!q.type) {
                 continue;
             }
