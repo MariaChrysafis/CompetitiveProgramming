@@ -40,7 +40,6 @@ int main() {
         }
     }
     double p[N + 1];
-    //p[0] = 0;
     for (int i = 0; i <= N; i++) {
         double prev = 0;
         if (i != 0) prev = p[i - 1];
@@ -54,15 +53,13 @@ int main() {
         }
         double num = 0;
         for (int j = i; j <= N; j++) {
-            num += combo[N][j] * j;
+            num += combo[N - 1][j - 1];
         }
-        e[i] = num/tot;
+        e[i] = N * num/tot;
     }
     double myMax = 0;
     for (int x = 0; x <= N; x++) {
-        double ans = binPow(p[x - 1], K - 1) * e[0];
-        double res = (-binPow(p[x - 1], K - 1) + 1) * e[x];
-        ans += res;
+        double ans = binPow(p[x - 1], K - 1) * e[0] + (-binPow(p[x - 1], K - 1) + 1) * e[x];
         myMax = max(myMax, ans + 1);
     }
     cout << setprecision(30) << myMax;
