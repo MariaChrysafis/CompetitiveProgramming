@@ -29,11 +29,11 @@ void solve (string s, vector<int> pos) {
     for (int i = 1; i < dp.size(); i++) {
         int ind = __builtin_popcount(i) - 1;
         dp[i] = 0;
-        //int cur = pos[ind] & i;
-        for (int j = 0; j < pos.size(); j++) {
-            if ((pos[ind] & (1 << j)) && (i & (1 << j))) {
-                dp[i] += dp[i - (1 << j)];
-            }
+        int cur = pos[ind] & i;
+        while (cur != 0) {
+            int bt = log2(cur);
+            dp[i] += dp[i - (1 << bt)];
+            cur -= (1 << bt);
         }
     }
     cout << dp.back() << '\n';
