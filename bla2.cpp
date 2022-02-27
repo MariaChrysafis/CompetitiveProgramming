@@ -39,13 +39,12 @@ int main() {
             else combo[i][j] = combo[i - 1][j] + combo[i - 1][j - 1];
         }
     }
-    double p[N + 1]; //probability that we get <= i
+    double p[N + 1];
     //p[0] = 0;
     for (int i = 0; i <= N; i++) {
         double prev = 0;
         if (i != 0) prev = p[i - 1];
         p[i] = prev + combo[N][i] * binPow(0.5, N);
-        //cout << p[i] << ' ';
     }
     double e[N + 1];
     for (int i = 0; i <= N; i++) {
@@ -61,13 +60,9 @@ int main() {
     }
     double myMax = 0;
     for (int x = 0; x <= N; x++) {
-        double ans = 0;
-        for (int k = 1; k <= K; k++) {
-            double val = 0;
-            if (k != K) val += binPow(p[x - 1], k - 1) * e[x] * (1 - p[x - 1]);
-            else val += binPow(p[x - 1], k - 1) * e[0];
-            ans += val;
-        }
+        double ans = binPow(p[x - 1], K - 1) * e[0];
+        double res = (-binPow(p[x - 1], K - 1) + 1) * e[x];
+        ans += res;
         myMax = max(myMax, ans + 1);
     }
     cout << setprecision(30) << myMax;
