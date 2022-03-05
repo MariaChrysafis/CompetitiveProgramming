@@ -12,9 +12,9 @@ I solve some problems. I put my solutions here.
 | 2021 January Silver ```*``` | 1000| 1 |
 | 2021 February Gold | 394 | 178 |
 | 2021 US Open Gold | 411 | 354 |
-| 2021 December | 383 | 271 |
-| 2022 January | 350 | 214 |
-| 2022 February | 511 | 139 |
+| 2021 December Gold | 383 | 271 |
+| 2022 January Gold | 350 | 214 |
+| 2022 February Gold | 511 | 139 |
 
 ```*``` signifies in-contest promotion
 
