@@ -14,6 +14,7 @@ I solve some problems. I put my solutions here.
 | 2021 US Open Gold | 411 | 354 |
 | 2021 December | 383 | 271 |
 | 2022 January | 350 | 214 |
+| 2022 February | 511 | 139 |
 
 ```*``` signifies in-contest promotion
 
