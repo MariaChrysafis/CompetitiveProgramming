@@ -43,7 +43,6 @@ public:
 };
 const int MAXN = 2e5 + 1;
 int mob[MAXN];
-int divisors[MAXN];
 void solve () {
     int64_t n;
     cin >> n;
@@ -115,13 +114,6 @@ int main() {
     for (int j = 2; j * j < MAXN; j++) {
         for (int k = 1; j * j * k < MAXN; k++) {
             mob[j * j * k] = 0;
-        }
-    }
-    divisors[1] = 1;
-    for (int i = 2; i < MAXN; i++) {
-        divisors[i]++;
-        for (int j = i; j < MAXN; j += i) {
-            divisors[j]++;
         }
     }
     int t;
