@@ -1,88 +1,80 @@
 #include <vector>
+#include <algorithm>
 #include <iostream>
-#include <cassert>
+#include <set>
 #include <cmath>
 #include <map>
+#include <random>
+#include <cassert>
+#include <ctime>
+#include <cstdlib>
+#include <limits.h>
 
-#define ll long long
+#pragma GCC target ("avx2")
+#pragma GCC optimization ("O3")
+#pragma GCC optimization ("unroll-loops")
+
 using namespace std;
+const int MOD = 1e9;
 
-struct segmentTree {
-    vector<ll> v;
-    vector<ll> val;
+template<class T>
+class SegmentTree {
+public:
 
-    ll ID = 0;
-
-    ll op(ll a, ll b) {
-        return a + b;
+    SegmentTree (int N) {
+        N = (1 << ((int)floor(log2(N - 1)) + 1));
+        this->N = N;
+        val.assign(2 * N, ID);
     }
 
-    ll query(int dum, int tl, int tr, int& l, int& r) {
+    void update (int x, T y) {
+        x += N - 1;
+        val[x] = y;
+        while (x != 0) {
+            x = (x - 1)/2;
+            val[x] = merge(val[2 * x + 1], val[2 * x + 2]);
+        }
+    }
+
+    T query (int ind, const int l, const int r, int tl, int tr) {
+        if (tl >= l && tr <= r) {
+            return val[ind];
+        }
         if (tr < l || tl > r) {
             return ID;
         }
-        if (tl >= l && tr <= r) {
-            return val[dum];
-        }
-        ll mid = (tl + tr) >> 1;
-        dum = dum << 1;
-        return op(query(dum, tl, mid, l, r), query(dum + 1, mid + 1, tr, l, r));
+        return merge(query(2 * ind + 1, l, r, tl, (tl + tr)/2), query(2 * ind + 2, l, r, (tl + tr)/2 + 1, tr));
     }
 
-    ll query(int l, int r) {
-        return query(1, 0, (int)v.size() - 1, l, r);
+    T query (int l, int r) {
+        return query(0, l, r, 0, N - 1);
     }
-
-    void update(int x, ll y) {
-        int cur = (int) v.size() + x;
-        int curX = x;
-        int curY = x;
-        while (true) {
-            val[cur] = op(op(query(curX, x - 1), query(x + 1, curY)), y);
-            if (cur == 0) {
-                break;
-            }
-            if(cur % 2 == 0) {
-                curY = 2 * curY - curX + 1;
-            } else {
-                curX = 2 * curX - curY - 1;
-            }
-            cur /= 2;
-        }
+private:
+    vector<T> val;
+    T ID = 0;
+    T merge (T x, T y) {
+        return x + y;
     }
-
-    void resz(int n) {
-        v.resize((1 << (int) ceil(log2(n))));
-        val.resize(v.size() * 2);
-    }
-
+    int N;
 };
-
-void solve() {
-    segmentTree st;
-    int n, q;
-    cin >> n >> q;
-    st.resz(n);
-    for (int i = 0; i < n; i++) {
-        int x;
-        cin >> x;
-        st.update(i, x);
-    }
-    while (q--) {
-        int t, x, y;
-        cin >> t >> x >> y;
-        if (t == 1) {
-            st.update(x, y);
-        } else {
-            cout << st.query(x, y - 1) << '\n';
-        }
-    }
-
-}
-
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    solve();
+    int N, Q;
+    cin >> N >> Q;
+    SegmentTree<int64_t> st(N);
+    for (int i = 0; i < N; i++) {
+        int x; cin >> x;
+        st.update(i, x);
+    }
+    while (Q--) {
+        int t;
+        cin >> t;
+        int x, y; cin >> x >> y;;
+        if (t == 2) {
+            cout << st.query(x, y - 1) << '\n';
+        } else {
+            st.update(x, y);
+        }
+    }
 }
-
