@@ -15,8 +15,8 @@
 
 using namespace std;
 
-int MAXX = (int)2000;
-int MAXY = (int)2000;
+int MAXX = (int)200000 + 10;
+int MAXY = (int)200000 + 10;
 template<class T>
 class SegmentTree {
 public:
@@ -57,6 +57,23 @@ private:
     }
     int N;
 };
+void compress (vector<pair<int,int>> &vec) {
+    set<int> x, y;
+    for (auto& p: vec) x.insert(p.first), y.insert(p.second);
+    map<int,int> myMap;
+    int cnt = 1;
+    for (int x1: x) {
+        myMap[x1] = (cnt += 2);
+    }
+    cnt = 1;
+    for (int y1: y) {
+        myMap[y1] = (cnt += 2);
+    }
+    for (int i = 0; i < vec.size(); i++) {
+        vec[i].first = myMap[vec[i].first];
+        vec[i].second = myMap[vec[i].second];
+    }
+}
 int main() {
     freopen("balancing.in", "r", stdin);
     freopen("balancing.out", "w", stdout);
@@ -69,11 +86,13 @@ int main() {
     vector<vector<int>> coord2(MAXX);
     for (int i = 0; i < N; i++) {
         cin >> vec[i].first >> vec[i].second;
+    }
+    compress(vec);
+    for (int i = 0; i < N; i++) {
+        //cout << vec[i].first << " " << vec[i].second << '\n';
         coord1[vec[i].second].push_back(vec[i].first);
         coord2[vec[i].first].push_back(vec[i].second);
     }
-    //cout << MAXX << " " << MAXY << '\n';
-    assert(coord1.size() >= MAXX && coord2.size() >= MAXY);
     SegmentTree<int> stL(MAXY);
     SegmentTree<int> stR(MAXY);
     for (int i = 0; i < MAXY; i++) {
@@ -88,13 +107,26 @@ int main() {
             }
             continue;
         }
-        for (int y = 0; y < MAXY - 1; y++) {
+        for (int dum = 0; dum <= 2; dum++) {
+            int l = 0;
+            int r = MAXY - 1;
+            int tot = stL.query(0, MAXY - 1);
+            while (l != r) {
+                int m = (l + r) / 2;
+                if (stL.query(0, m) >= (tot + dum) / 2) {
+                    r = m;
+                } else {
+                    l = m + 1;
+                }
+            }
+            int y = l;
+            //for (int y = 0; y < MAXY - 1; y++) {
             int lower_left = stL.query(0, y);
             int upper_left = stL.query(y + 1, MAXY - 1);
             int lower_right = stR.query(0, y);
-            int upper_right = stR.query(y + 1, MAXY - 1);
-            //cout << x << " " << y << ": " << lower_left << " " << upper_left << " " << upper_right << " " << lower_right << '\n';
+            int upper_right = N - upper_left - lower_left - lower_right;
             myMin = min(myMin, max(max(lower_right, upper_right), max(lower_left, upper_left)));
+            //}
         }
     }
     cout << myMin;
