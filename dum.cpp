@@ -76,7 +76,7 @@ void compress (vector<pair<int,int>> &vec) {
 }
 int main() {
     freopen("balancing.in", "r", stdin);
-    //freopen("balancing.out", "w", stdout);
+    freopen("balancing.out", "w", stdout);
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     int N;
@@ -107,7 +107,7 @@ int main() {
             }
             continue;
         }
-        for (int dum = -1; dum <= 1; dum++) {
+        for (int dum = 0; dum <= 1; dum++) {
             int l = 0;
             int r = MAXY - 2;
             int tot = stL.query(0, MAXY - 1);
@@ -120,7 +120,6 @@ int main() {
                 }
             }
             int y = l;
-            //for (int y = 0; y < MAXY - 1; y++) {
             int lower_left = stL.query(0, y);
             int upper_left = stL.query(y + 1, MAXY - 1);
             int lower_right = stR.query(0, y);
