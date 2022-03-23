@@ -60,23 +60,23 @@ private:
 void compress (vector<pair<int,int>> &vec) {
     set<int> x, y;
     for (auto& p: vec) x.insert(p.first), y.insert(p.second);
-    map<int,int> myMap;
+    map<int,int> myMap1, myMap2;
     int cnt = 1;
     for (int x1: x) {
-        myMap[x1] = (cnt += 2);
+        myMap1[x1] = (cnt += 2);
     }
     cnt = 1;
     for (int y1: y) {
-        myMap[y1] = (cnt += 2);
+        myMap2[y1] = (cnt += 2);
     }
     for (int i = 0; i < vec.size(); i++) {
-        vec[i].first = myMap[vec[i].first];
-        vec[i].second = myMap[vec[i].second];
+        vec[i].first = myMap1[vec[i].first];
+        vec[i].second = myMap2[vec[i].second];
     }
 }
 int main() {
     freopen("balancing.in", "r", stdin);
-    freopen("balancing.out", "w", stdout);
+    //freopen("balancing.out", "w", stdout);
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     int N;
@@ -107,13 +107,13 @@ int main() {
             }
             continue;
         }
-        for (int dum = 0; dum <= 2; dum++) {
+        for (int dum = -1; dum <= 1; dum++) {
             int l = 0;
-            int r = MAXY - 1;
+            int r = MAXY - 2;
             int tot = stL.query(0, MAXY - 1);
             while (l != r) {
                 int m = (l + r) / 2;
-                if (stL.query(0, m) >= (tot + dum) / 2) {
+                if (stL.query(0, m) >= tot / 2 + dum) {
                     r = m;
                 } else {
                     l = m + 1;
@@ -124,9 +124,9 @@ int main() {
             int lower_left = stL.query(0, y);
             int upper_left = stL.query(y + 1, MAXY - 1);
             int lower_right = stR.query(0, y);
-            int upper_right = N - upper_left - lower_left - lower_right;
+            int upper_right = stR.query(y + 1, MAXY - 1);
+            assert(lower_left + upper_right + upper_left + lower_right == N);
             myMin = min(myMin, max(max(lower_right, upper_right), max(lower_left, upper_left)));
-            //}
         }
     }
     cout << myMin;
