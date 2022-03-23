@@ -121,7 +121,7 @@ int main() {
             }
             int y = l;
             int lower_left = stL.query(0, y);
-            int upper_left = stL.query(y + 1, MAXY - 1);
+            int upper_left = tot - lower_left;
             int lower_right = stR.query(0, y);
             int upper_right = stR.query(y + 1, MAXY - 1);
             assert(lower_left + upper_right + upper_left + lower_right == N);
