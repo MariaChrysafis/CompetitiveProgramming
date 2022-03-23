@@ -8,94 +8,95 @@
 #include <cassert>
 #include <ctime>
 #include <cstdlib>
-#include <queue>
 #include <limits.h>
+#pragma GCC target ("avx2")
+#pragma GCC optimization ("O3")
+#pragma GCC optimization ("unroll-loops")
+
 using namespace std;
-int n, k;
-vector<vector<int>> pos;
-void brute (vector<int> v) {
-    if (v.size() == (n - 1) * (n - 1)) {
-        pos.push_back(v);
-        return;
+
+int MAXX = (int)2000;
+int MAXY = (int)2000;
+template<class T>
+class SegmentTree {
+public:
+
+    SegmentTree (int N) {
+        N = (1 << ((int)floor(log2(N - 1)) + 1));
+        this->N = N;
+        val.assign(2 * N, ID);
     }
-    for (int i = 1; i <= k; i++) {
-        v.push_back(i);
-        brute(v);
-        v.pop_back();
-    }
-}
-struct dsu{
-    vector<int> parent;
-    vector<int> compSize;
-    int n;
-    void fill(){
-        parent.resize(n), compSize.resize(n);
-        for(int i = 0; i < n; i++){
-            parent[i] = i, compSize[i] = 1;
+
+    void update (int x, T y) {
+        x += N - 1;
+        val[x] += y;
+        while (x != 0) {
+            x = (x - 1)/2;
+            val[x] = merge(val[2 * x + 1], val[2 * x + 2]);
         }
     }
-    int find_head(int x){
-        if(x == parent[x]){
-            return x;
+
+    T query (int ind, const int l, const int r, int tl, int tr) {
+        if (tl >= l && tr <= r) {
+            return val[ind];
         }
-        return find_head(parent[x]);
-    }
-    void join(int x, int y){
-        x = find_head(x);
-        y = find_head(y);
-        if(x == y){
-            return;
+        if (tr < l || tl > r) {
+            return ID;
         }
-        if(compSize[x] > compSize[y]){
-            swap(x,y);
-            //ensures that compSize[x1] <= compSize[y1]
-        }
-        parent[x] = y;
-        compSize[y] += compSize[x];
+        return merge(query(2 * ind + 1, l, r, tl, (tl + tr)/2), query(2 * ind + 2, l, r, (tl + tr)/2 + 1, tr));
     }
-    bool comp(int x, int y){
-        return (find_head(x) == find_head(y));
+
+    T query (int l, int r) {
+        return query(0, l, r, 0, N - 1);
     }
+private:
+    vector<T> val;
+    T ID = 0;
+    T merge (T x, T y) {
+        return x + y;
+    }
+    int N;
 };
 int main() {
+    freopen("balancing.in", "r", stdin);
+    freopen("balancing.out", "w", stdout);
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    cin >> n >> k;
-    brute({});
-    int tot = 0;
-    for (auto& v: pos) {
-        vector<vector<int>> adj(n);
-        vector<pair<int,pair<int,int>>> edges;
-        int cntr = 0;
-        for (int i = 0; i < n; i++) {
-            adj[i].resize(n);
-            for (int j = 0; j < n; j++) {
-                if (i == j) {
-                    adj[i][j] = 0;
-                    continue;
-                }
-                adj[i][j] = v[cntr++];
-                edges.push_back({adj[i][j], {i, j}});
-            }
-        }
-        dsu d;
-        d.n = n;
-        d.fill();
-        sort(edges.begin(), edges.end());
-        int ans = 0;
-        for (auto& p: edges) {
-            if (d.comp(p.second.first, p.second.second)) {
-                continue;
-            }
-            d.join(p.second.first, p.second.second);
-            ans += p.first;
-        }
-        int sm = 0;
-        for (int i: adj[0])  {
-            sm += i;
-        }
-        //cout << sm << " " << ans << '\n';
-        if (sm == ans) tot++;
+    int N;
+    cin >> N;
+    vector<pair<int,int>> vec(N);
+    vector<vector<int>> coord1(MAXY);
+    vector<vector<int>> coord2(MAXX);
+    for (int i = 0; i < N; i++) {
+        cin >> vec[i].first >> vec[i].second;
+        coord1[vec[i].second].push_back(vec[i].first);
+        coord2[vec[i].first].push_back(vec[i].second);
     }
-    cout << tot;
+    //cout << MAXX << " " << MAXY << '\n';
+    assert(coord1.size() >= MAXX && coord2.size() >= MAXY);
+    SegmentTree<int> stL(MAXY);
+    SegmentTree<int> stR(MAXY);
+    for (int i = 0; i < MAXY; i++) {
+        stR.update(i, coord1[i].size());
+    }
+    int myMin = INT_MAX;
+    for (int x = 0; x < MAXX; x++) {
+        if (x % 2 == 1) {
+            for (int y: coord2[x]) {
+                stL.update(y, 1);
+                stR.update(y, -1);
+            }
+            continue;
+        }
+        for (int y = 0; y < MAXY - 1; y++) {
+            int lower_left = stL.query(0, y);
+            int upper_left = stL.query(y + 1, MAXY - 1);
+            int lower_right = stR.query(0, y);
+            int upper_right = stR.query(y + 1, MAXY - 1);
+            //cout << x << " " << y << ": " << lower_left << " " << upper_left << " " << upper_right << " " << lower_right << '\n';
+            myMin = min(myMin, max(max(lower_right, upper_right), max(lower_left, upper_left)));
+        }
+    }
+    cout << myMin;
+
 }
