@@ -9,9 +9,6 @@
 #include <ctime>
 #include <cstdlib>
 #include <limits.h>
-#pragma GCC target ("avx2")
-#pragma GCC optimization ("O3")
-#pragma GCC optimization ("unroll-loops")
 
 using namespace std;
 
@@ -74,20 +71,10 @@ void compress (vector<pair<int,int>> &vec) {
         vec[i].second = myMap2[vec[i].second];
     }
 }
-int main() {
-    freopen("balancing.in", "r", stdin);
-    freopen("balancing.out", "w", stdout);
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    int N;
-    cin >> N;
-    vector<pair<int,int>> vec(N);
+int solver (vector<pair<int,int>> vec, int N) {
+    compress(vec);
     vector<vector<int>> coord1(MAXY);
     vector<vector<int>> coord2(MAXX);
-    for (int i = 0; i < N; i++) {
-        cin >> vec[i].first >> vec[i].second;
-    }
-    compress(vec);
     for (int i = 0; i < N; i++) {
         //cout << vec[i].first << " " << vec[i].second << '\n';
         coord1[vec[i].second].push_back(vec[i].first);
@@ -99,21 +86,27 @@ int main() {
         stR.update(i, coord1[i].size());
     }
     int myMin = INT_MAX;
+    bool prev = true;
     for (int x = 0; x < MAXX; x++) {
         if (x % 2 == 1) {
+            prev = false;
             for (int y: coord2[x]) {
                 stL.update(y, 1);
                 stR.update(y, -1);
+                prev = true;
             }
             continue;
         }
+        if (!prev) continue;
+        int totL = stL.query(0, MAXY - 1);
+        int totR = stR.query(0, MAXY - 1);
+        int l = 0;
+        int r = MAXY - 2;
         for (int dum = 0; dum <= 1; dum++) {
-            int l = 0;
-            int r = MAXY - 2;
-            int tot = stL.query(0, MAXY - 1);
+            l = 0, r = MAXY - 2;
             while (l != r) {
                 int m = (l + r) / 2;
-                if (stL.query(0, m) >= tot / 2 + dum) {
+                if (stL.query(0, m) >= totL / 2 + dum) {
                     r = m;
                 } else {
                     l = m + 1;
@@ -121,13 +114,28 @@ int main() {
             }
             int y = l;
             int lower_left = stL.query(0, y);
-            int upper_left = tot - lower_left;
             int lower_right = stR.query(0, y);
-            int upper_right = stR.query(y + 1, MAXY - 1);
-            assert(lower_left + upper_right + upper_left + lower_right == N);
-            myMin = min(myMin, max(max(lower_right, upper_right), max(lower_left, upper_left)));
+            myMin = min(myMin, max(max(lower_right, totR - lower_right), max(lower_left, totL - lower_left)));
         }
     }
-    cout << myMin;
+    return myMin;
+}
+int main() {
+    freopen("balancing.in", "r", stdin);
+    freopen("balancing.out", "w", stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int N;
+    cin >> N;
+    vector<pair<int,int>> vec(N);
+    for (int i = 0; i < N; i++) {
+        cin >> vec[i].first >> vec[i].second;
+    }
+    int ans = solver(vec, N);
+    for (int i = 0; i < N; i++) {
+        vec[i].first = MAXX - vec[i].first;
+    }
+    ans = min(ans, solver(vec, N));
+    cout << ans << '\n';
 
 }
