@@ -1,0 +1,3 @@
+CROATIAN OPEN COMPETITION IN INFORMATICS
+
+https://hsin.hr/coci/
