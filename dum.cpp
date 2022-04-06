@@ -53,15 +53,18 @@ public:
         return curNode;
     }
 
-    map<pair<int,bool>,int> tot;
-    vector<map<pair<int,bool>,int>> v;
+    map<int,int> tot[2];
+    map<int,int> v[2];
     int64_t ans = 0;
 
     int centroid;
 
     void dfs1 (int curNode, int prevNode, int d, map<int,bool> m) {
-        tot[{d, m[d]}]++;
-        v.back()[{d, m[d]}]++;
+        tot[m[d]][d]++;
+        v[m[d]][d]++;
+        for (int x = ((d == 0) ? 0 : 1 - m[d]); x <= 1; x++) {
+            ans += (tot[x][-d] - v[x][-d]);
+        }
         m[d] = true;
         for (int i: adj[curNode]) {
             if (!hasVisited[i] && i != prevNode) {
@@ -74,29 +77,14 @@ public:
         dfs (curNode, curNode);
         centroid = get_centroid(curNode, curNode);
         hasVisited[centroid] = true;
-        tot.clear(), v.clear();
+        tot[0].clear(), v[0].clear(), tot[1].clear(), v[1].clear();
         for (int i: adj[centroid]) {
             if (!hasVisited[i]) {
-                v.emplace_back(); map<int,bool> dum;
-                dfs1 (i, centroid, weight[make_pair(i, centroid)], dum);
+                v[0].clear(), v[1].clear();
+                dfs1 (i, centroid, weight[make_pair(i, centroid)], {});
             }
         }
-        int64_t res = 0;
-        for (int i = 0; i < v.size(); i++) {
-            for (auto& p: v[i]) {
-                if (p.first.first != 0) {
-                    for (int x = 1 - p.first.second; x <= 1; x++) {
-                        res += p.second * (tot[{-p.first.first, x}] - v[i][{-p.first.first, x}]);
-                    }
-                } else {
-                    for (int x = 0; x <= 1; x++) {
-                        res += p.second * (tot[{-p.first.first, x}] - v[i][{-p.first.first, x}]);
-                    }
-                }
-            }
-        }
-        assert(res % 2 == 0);
-        ans += res/2 + tot[{0, 1}];
+        ans += tot[1][0];
         for (int i: adj[centroid]) {
             if (!hasVisited[i]) {
                 solve(i);
