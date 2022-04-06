@@ -14,6 +14,10 @@
 #include <queue>
 #include <map>
 
+#pragma GCC target ("avx2")
+#pragma GCC optimization ("Ofast")
+#pragma GCC optimization ("unroll-loops")
+
 using namespace std;
 class Tree {
     vector<vector<int>> adj;
@@ -94,7 +98,7 @@ public:
     }
 
     void solve (int curNode) {
-        dfs (curNode, curNode);
+        dfs (curNode, curNode); if (sz <= 4) return;
         centroid = get_centroid(curNode, curNode);
         hasVisited[centroid] = true;
         tot[0].clear(), v[0].clear(), tot[1].clear(), v[1].clear();
