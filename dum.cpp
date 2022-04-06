@@ -59,16 +59,19 @@ public:
 
     int centroid;
 
-    void dfs1 (int curNode, int prevNode, int d, map<int,bool> m) {
-        tot[m[d]][d]++;
-        v[m[d]][d]++;
-        for (int x = ((d == 0) ? 0 : 1 - m[d]); x <= 1; x++) {
+    void dfs1 (int curNode, int prevNode, int d, int l, int r) {
+        bool b = (d >= l && d <= r && r > l);
+        l -= (d < l);
+        r += (d > r);
+        assert(d >= l && d <= r);
+        tot[b][d]++;
+        v[b][d]++;
+        for (int x = ((d == 0) ? 0 : 1 - b); x <= 1; x++) {
             ans += (tot[x][-d] - v[x][-d]);
         }
-        m[d] = true;
         for (int i: adj[curNode]) {
             if (!hasVisited[i] && i != prevNode) {
-                dfs1 (i, curNode, d + weight[{i, curNode}], m);
+                dfs1 (i, curNode, d + weight[{i, curNode}], l, r);
             }
         }
     }
@@ -81,9 +84,10 @@ public:
         for (int i: adj[centroid]) {
             if (!hasVisited[i]) {
                 v[0].clear(), v[1].clear();
-                dfs1 (i, centroid, weight[make_pair(i, centroid)], {});
+                dfs1 (i, centroid, weight[make_pair(i, centroid)], weight[make_pair(i, centroid)], weight[make_pair(i, centroid)]);
             }
         }
+        //cout << "GET " << tot[1][0] << '\n';
         ans += tot[1][0];
         for (int i: adj[centroid]) {
             if (!hasVisited[i]) {
