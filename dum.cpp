@@ -95,6 +95,8 @@ public:
     }
 };
 int main () {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
     freopen("yinyang.in", "r", stdin);
     freopen("yinyang.out", "w", stdout);
     int n;
