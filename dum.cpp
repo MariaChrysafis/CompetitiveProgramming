@@ -63,7 +63,6 @@ public:
         bool b = (d >= l && d <= r && r > l);
         l -= (d < l);
         r += (d > r);
-        assert(d >= l && d <= r);
         tot[b][d]++;
         v[b][d]++;
         for (int x = ((d == 0) ? 0 : 1 - b); x <= 1; x++) {
@@ -87,7 +86,6 @@ public:
                 dfs1 (i, centroid, weight[make_pair(i, centroid)], weight[make_pair(i, centroid)], weight[make_pair(i, centroid)]);
             }
         }
-        //cout << "GET " << tot[1][0] << '\n';
         ans += tot[1][0];
         for (int i: adj[centroid]) {
             if (!hasVisited[i]) {
@@ -97,8 +95,6 @@ public:
     }
 };
 int main () {
-    //freopen("inp.txt", "r", stdin);
-    //freopen("inp.txt", "r", stdin);
     freopen("yinyang.in", "r", stdin);
     freopen("yinyang.out", "w", stdout);
     int n;
