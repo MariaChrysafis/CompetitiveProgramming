@@ -18,10 +18,28 @@ using namespace std;
 class Tree {
     vector<vector<int>> adj;
     vector<bool> hasVisited;
-    vector<int> sub;
+    vector<int> sub, parent;
     int sz;
     map<pair<int,int>,int> weight;
+    vector<int> wei;
 public:
+
+    int get_weight (int u1, int u2) {
+        //assert((parent[u1] != u2) ? wei[u2] : wei[u1] == weight[make_pair(u1, u2)]);
+        return ((parent[u1] != u2) ? wei[u2] : wei[u1]);
+    }
+
+    void propagate (int curNode, int prevNode) {
+        parent[curNode] = prevNode;
+        if (weight.count({curNode, prevNode})) {
+            wei[curNode] = weight[{curNode,prevNode}];
+        }
+        for (int i: adj[curNode]) {
+            if (i != prevNode) {
+                propagate(i, curNode);
+            }
+        }
+    }
 
     void add_edge (int u1, int u2, int w) {
         adj[u1].push_back(u2), adj[u2].push_back(u1);
@@ -29,7 +47,7 @@ public:
     }
 
     Tree (int n) {
-        hasVisited.assign(n, false), adj.resize(n), sub.resize(n);
+        hasVisited.assign(n, false), adj.resize(n), sub.resize(n), wei.resize(n), parent.resize(n);
     }
 
     int dfs (int curNode, int prevNode) {
@@ -70,7 +88,7 @@ public:
         }
         for (int i: adj[curNode]) {
             if (!hasVisited[i] && i != prevNode) {
-                dfs1 (i, curNode, d + weight[{i, curNode}], l, r);
+                dfs1 (i, curNode, d + get_weight(i, curNode), l, r);
             }
         }
     }
@@ -83,7 +101,7 @@ public:
         for (int i: adj[centroid]) {
             if (!hasVisited[i]) {
                 v[0].clear(), v[1].clear();
-                dfs1 (i, centroid, weight[make_pair(i, centroid)], weight[make_pair(i, centroid)], weight[make_pair(i, centroid)]);
+                dfs1 (i, centroid, get_weight(i, centroid), get_weight(i, centroid), get_weight(i, centroid));
             }
         }
         ans += tot[1][0];
@@ -108,6 +126,7 @@ int main () {
         u--, v--;
         myTree.add_edge(u, v, w - (w == 0));
     }
+    myTree.propagate(0, 0);
     myTree.solve(0);
     cout << myTree.ans << '\n';
 }
