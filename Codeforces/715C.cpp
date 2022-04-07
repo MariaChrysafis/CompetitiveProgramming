@@ -88,6 +88,9 @@ public:
     int64_t ans = 0;
     void solve (int curNode) {
         dfs1(curNode, curNode);
+        if (sz == 1) {
+            return;
+        }
         int centroid = get_centroid(curNode, curNode);
         hasVisited[centroid] = true;
         tot1.clear(), tot2.clear();
@@ -141,7 +144,7 @@ int main() {
     int N;
     cin >> N >> M;
     powr_inv = powr_base = {1};
-    phi = Phi(M); 
+    phi = Phi(M);
     inv =  binPow(10, phi - 1);
     while (powr_inv.size() != N + 10) {
         powr_inv.push_back(powr_inv.back() * inv);
@@ -155,7 +158,7 @@ int main() {
         myTree.adj[u].push_back(v), myTree.adj[v].push_back(u);
         myTree.weight[{u, v}] = myTree.weight[{v, u}] = w;
     }
-    myTree.propagate(0, -1); 
+    myTree.propagate(0, -1);
     myTree.solve(0);
     cout << myTree.ans;
 }
