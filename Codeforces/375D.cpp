@@ -14,7 +14,6 @@
 #include <queue>
 #include <map>
 
-
 using namespace std;
 
 vector<vector<int>> adj;
