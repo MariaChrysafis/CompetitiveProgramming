@@ -70,10 +70,14 @@ int main() {
         st1.update(myMap[arr[i]], st1.query(0, myMap[arr[i]] - 1) + 1);
     }
     SegmentTree<int> st2(cntr);
-    int myMax = 0;
+    vector<int> v;
     for (int i = N - 1; i >= 0; i--) {
         st1.update(myMap[arr[i]], remove[i]), st2.update(myMap[arr[i] + D], st2.query(myMap[arr[i] + D] + 1, cntr - 1) + 1);
-        myMax = max(st1.query(0, myMap[D + arr[i]] - 1) + st2.query(myMap[D + arr[i]] + 1, cntr - 1) + 1, myMax);
+        v.push_back(st1.query(0, myMap[D + arr[i]] - 1) + st2.query(myMap[D + arr[i]] + 1, cntr - 1) + 1);
+    }
+    int myMax = 0;
+    for (int i: v) {
+        myMax = max(myMax, i);
     }
     cout << myMax;
 }
