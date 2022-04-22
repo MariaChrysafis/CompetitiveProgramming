@@ -14,10 +14,9 @@
 #pragma GCC optimization ("O3")
 #pragma GCC optimization ("unroll-loops"
 using namespace std;
-int solve (vector<int>&s, vector<int>& v) {
-    if (s.empty()) return 0;
-    int64_t ending = s.back();
-    int64_t beginning = s[0];
+int solve (pair<int,int> p, vector<int>& v) {
+    int64_t ending = p.second;
+    int64_t beginning = p.first;
     int64_t myMin = INT_MAX;
     for (int i = 1; i < v.size(); i++) {
         myMin = min(myMin, abs(v[i] - beginning) + abs(ending - v[i - 1]) - abs(v[i - 1] - v[i]));
@@ -64,27 +63,17 @@ int main () {
         }
         vector<int> my;
         if (myMin > x) {
-            for (int i = 1; i <= x; i++) {
-                my.push_back(i);
-            }
-            ans += solve(my, v);
-            ans += my.back() - my[ 0];
+            ans += solve({1, x}, v);
+            ans += x - 1;
         } else {
-            for (int i = 1; i < myMin; i++) {
-                my.push_back(i);
+            if (myMin >= 2) {
+                ans += myMin - 2;
+                ans += solve({1, myMin - 1}, v);
             }
-            if (!my.empty()) {
-                ans += abs(my.back() - my[0]);
+            if (myMax + 1 <= x) {
+                ans += x - (myMax + 1);
+                ans += solve({myMax + 1, x}, v);
             }
-            ans += solve(my, v);
-            my.clear();
-            for (int i = myMax + 1; i <= x; i++) {
-                my.push_back(i);
-            }
-            if (!my.empty()) {
-                ans += abs(my.back() - my[0]);
-            }
-            ans += solve(my, v);
         }
         cout << ans << '\n';
     }
