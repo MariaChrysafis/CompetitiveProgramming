@@ -2,7 +2,7 @@
 #include <vector>
 #include <cmath>
 using namespace std;
- 
+
 bool canDo (vector<pair<int,int> > v, int x) {
     if (x == 0) {
         return true;
@@ -10,7 +10,7 @@ bool canDo (vector<pair<int,int> > v, int x) {
     for (auto& p: v) {
         while (p.first != 0 && (int)log2(p.first) == (int)log2(p.second)) {
             int bit = log2(p.first);
-            p.first -= (1 << bit), p.second -= (1 << bit);
+            p.first ^= (1 << bit), p.second ^= (1 << bit);
             if (x & (1 << bit)) {
                 x ^= (1 << bit);
             }
@@ -23,7 +23,9 @@ bool canDo (vector<pair<int,int> > v, int x) {
     }
     int cntr = 0;
     for (auto& p: v) {
-        if (p.second != 0) cntr += ((1 << (int)log2(p.second)) == (1 << (int)log2(x)));
+        if (p.second != 0) {
+            cntr += ((int)log2(p.second) == (int)log2(x));
+        }
     }
     if (cntr >= 2) {
         return true;
@@ -39,8 +41,8 @@ bool canDo (vector<pair<int,int> > v, int x) {
     }
     return false;
 }
- 
-bool canDo (vector<vector<pair<int,int>>> vec, int x) {
+
+bool canDo (vector<vector<pair<int,int>>> &vec, int x) {
     for (auto& v: vec) {
         if (!canDo(v, x)) {
             return false;
@@ -48,8 +50,8 @@ bool canDo (vector<vector<pair<int,int>>> vec, int x) {
     }
     return true;
 }
- 
-int find_best (vector<vector<pair<int,int>>> vec) {
+
+int find_best (vector<vector<pair<int,int>>> &vec) {
     int tot = 0;
     for (int i = 30; i >= 0; i--) {
         if (canDo(vec, tot + (1 << i))) {
@@ -58,7 +60,7 @@ int find_best (vector<vector<pair<int,int>>> vec) {
     }
     return tot;
 }
- 
+
 int main() {
     int n, m;
     cin >> n >> m;
@@ -67,7 +69,6 @@ int main() {
         cin >> tot[i];
     }
     vector<vector<pair<int,int>>> vec;
-    int ind = 0;
     for (int i = 0; i < m; i++) {
         vec.emplace_back();
         while (tot[i]--) {
@@ -78,10 +79,4 @@ int main() {
     }
     cout << find_best(vec) << '\n';
     return 0;
-    for (int i = 0; i < vec.size(); i++) {
-        for (auto& p: vec[i]) {
-            cout << p.first << " " << p.second << " | ";
-        }
-        cout << '\n';
-    }
 }
