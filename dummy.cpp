@@ -1,8 +1,50 @@
 #include <bits/stdc++.h>
 
-using namespace std;
+#pragma GCC optimize("O2")
+#pragma GCC optimize("avx2")
 
 using namespace std;
+
+using namespace std;template<class T>
+class SegmentTree {
+public:
+
+    SegmentTree (int N) {
+        N = (1 << ((int)floor(log2(N - 1)) + 1));
+        this->N = N;
+        val.assign(2 * N, ID);
+    }
+
+    void update (int x, T y) {
+        x += N - 1;
+        val[x] = y;
+        while (x != 0) {
+            x = (x - 1)/2;
+            val[x] = merge(val[2 * x + 1], val[2 * x + 2]);
+        }
+    }
+
+    T query (int ind, const int l, const int r, int tl, int tr) {
+        if (tl >= l && tr <= r) {
+            return val[ind];
+        }
+        if (tr < l || tl > r) {
+            return ID;
+        }
+        return merge(query(2 * ind + 1, l, r, tl, (tl + tr)/2), query(2 * ind + 2, l, r, (tl + tr)/2 + 1, tr));
+    }
+
+    T query (int l, int r) {
+        return query(0, l, r, 0, N - 1);
+    }
+private:
+    vector<T> val;
+    T ID = INT_MAX;
+    T merge (T x, T y) {
+        return min(x, y);
+    }
+    int N;
+};
 struct DisjointSetUnion {
     vector<int> parent, sz;
     void resz (int n) {
@@ -69,6 +111,7 @@ int main () {
     }
     DisjointSetUnion dsu;
     dsu.resz(N);
+    SegmentTree<int> st(N + 1);
     for (auto& p: edges) {
         if (dsu.join(p.second.first, p.second.second)) {
             adj[p.second.first].push_back(make_pair(p.first, p.second.second));
@@ -94,10 +137,9 @@ int main () {
             }
         }
     }
-    set<int> tot;
     for (int i = 0; i < N; i++) {
         if (!rgb[i].empty()) {
-            tot.insert(*rgb[i].begin());
+            st.update(i, *rgb[i].begin());
         }
     }
     while (Q--) {
@@ -106,7 +148,7 @@ int main () {
         u--;
         if (u != 0) {
             if (!rgb[parent[u]].empty()) {
-                tot.erase(*rgb[parent[u]].begin());
+                st.update(parent[u], INT_MAX);
             }
             if (colors[parent[u]] != colors[u]) {
                 rgb[parent[u]].erase(*myMap[parent[u]][colors[u]].begin());
@@ -123,11 +165,11 @@ int main () {
                 rgb[parent[u]].insert(*myMap[parent[u]][c].begin());
             }
             if (!rgb[parent[u]].empty()) {
-                tot.insert(*rgb[parent[u]].begin());
+                st.update(parent[u], *rgb[parent[u]].begin());
             }
         }
         if (!rgb[u].empty()) {
-            tot.erase(*rgb[u].begin());
+            st.update(u, INT_MAX);
         }
         if (!myMap[u][c].empty()) {
             rgb[u].erase(*myMap[u][c].begin());
@@ -136,9 +178,9 @@ int main () {
             rgb[u].insert(*myMap[u][colors[u]].begin());
         }
         if (!rgb[u].empty()) {
-            tot.insert(*rgb[u].begin());
+            st.update(u, *rgb[u].begin());
         }
         colors[u] = c;
-        cout << actual[*tot.begin()] << '\n';
+        cout << actual[st.query(0, N - 1)] << '\n';
     }
 }
