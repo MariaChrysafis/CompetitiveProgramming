@@ -5,45 +5,23 @@
 
 using namespace std;
 
-using namespace std;template<class T>
-class SegmentTree {
-public:
-
-    SegmentTree (int N) {
-        N = (1 << ((int)floor(log2(N - 1)) + 1));
-        this->N = N;
-        val.assign(2 * N, ID);
-    }
-
-    void update (int x, T y) {
-        x += N - 1;
-        val[x] = y;
-        while (x != 0) {
-            x = (x - 1)/2;
-            val[x] = merge(val[2 * x + 1], val[2 * x + 2]);
+using namespace std;
+template<class T> struct Seg { // comb(ID,b) = b
+    const T ID = INT_MAX; T comb(T a, T b) { return min(a,b); }
+    int n; vector<T> seg;
+    void init(int _n) { n = _n; seg.assign(2*n,ID); }
+    void pull(int p) { seg[p] = comb(seg[2*p],seg[2*p+1]); }
+    void update(int p, T val) { // set val at position p
+        seg[p += n] = val; for (p /= 2; p; p /= 2) pull(p); }
+    T query(int l, int r) {	// sum on interval [l, r]
+        return seg[1];
+        T ra = ID, rb = ID;
+        for (l += n, r += n+1; l < r; l /= 2, r /= 2) {
+            if (l&1) ra = comb(ra,seg[l++]);
+            if (r&1) rb = comb(seg[--r],rb);
         }
+        return comb(ra,rb);
     }
-
-    T query (int ind, const int l, const int r, int tl, int tr) {
-        if (tl >= l && tr <= r) {
-            return val[ind];
-        }
-        if (tr < l || tl > r) {
-            return ID;
-        }
-        return merge(query(2 * ind + 1, l, r, tl, (tl + tr)/2), query(2 * ind + 2, l, r, (tl + tr)/2 + 1, tr));
-    }
-
-    T query (int l, int r) {
-        return val[0];
-    }
-private:
-    vector<T> val;
-    T ID = INT_MAX;
-    T merge (T x, T y) {
-        return min(x, y);
-    }
-    int N;
 };
 struct DisjointSetUnion {
     vector<int> parent, sz;
@@ -111,7 +89,8 @@ int main () {
     }
     DisjointSetUnion dsu;
     dsu.resz(N);
-    SegmentTree<int> st(N + 1);
+    Seg<int> st;
+    st.init(N + 1);
     for (auto& p: edges) {
         if (dsu.join(p.second.first, p.second.second)) {
             adj[p.second.first].push_back(make_pair(p.first, p.second.second));
