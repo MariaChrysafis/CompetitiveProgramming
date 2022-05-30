@@ -35,7 +35,7 @@ public:
     }
 
     T query (int l, int r) {
-        return query(0, l, r, 0, N - 1);
+        return val[0];
     }
 private:
     vector<T> val;
