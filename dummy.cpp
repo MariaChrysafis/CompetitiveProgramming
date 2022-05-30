@@ -1,48 +1,8 @@
-#include <vector>
-#include <set>
-#include <cmath>
-#include <iostream>
-#pragma GCC target ("avx2")
-#pragma GCC optimization ("O3")
-//#pragma GCC optimization ("unroll-loops")
+#include <bits/stdc++.h>
+
 using namespace std;
-template<class T>
-class SegmentTree {
-public:
 
-    SegmentTree (int N) {
-        N = (1 << ((int)floor(log2(N - 1)) + 1));
-        this->N = N;
-        val.assign(2 * N, ID);
-    }
-
-    void update (int x, T y) {
-        x += N - 1;
-        val[x] = y;
-        while (x != 0) {
-            x = (x - 1)/2;
-            val[x] = min(val[2 * x + 1], val[2 * x + 2]);
-        }
-    }
-
-    T query (int ind, const int l, const int r, int tl, int tr) {
-        if (tl >= l && tr <= r) {
-            return val[ind];
-        }
-        if (tr < l || tl > r) {
-            return ID;
-        }
-        return min(query(2 * ind + 1, l, r, tl, (tl + tr)/2), query(2 * ind + 2, l, r, (tl + tr)/2 + 1, tr));
-    }
-
-    T query (int l, int r) {
-        return query(0, l, r, 0, N - 1);
-    }
-private:
-    vector<T> val;
-    T ID = INT_MAX;
-    int N;
-};
+using namespace std;
 struct DisjointSetUnion {
     vector<int> parent, sz;
     void resz (int n) {
@@ -52,10 +12,11 @@ struct DisjointSetUnion {
         }
     }
     int find_head (int u) {
+        int x = u;
         while (u != parent[u]) {
             u = parent[u];
         }
-        return u;
+        return (parent[x] = u);
     }
     bool join (int u, int v) {
         u = find_head(u), v = find_head(v);
@@ -69,9 +30,9 @@ struct DisjointSetUnion {
         return true;
     }
 };
-vector<vector<pair<int,int> > > adj; //(weight, node)
-vector<int> parent;
-vector<int> w;
+vector<pair<int,int> >adj[200000]; //(weight, node)
+int parent[200000];
+int w[200000];
 map<pair<int,int>,int> weight;
 void dfs (int curNode, int prevNode) {
     parent[curNode] = prevNode;
@@ -82,9 +43,9 @@ void dfs (int curNode, int prevNode) {
         }
     }
 }
-vector<int> colors;
-map<int,set<int> > myMap[200000];
-vector<set<int> > rgb;
+int colors[200000];
+map<int,set<int>> myMap[200000];
+set<int> rgb[200000];
 int main () {
     freopen("grass.in", "r", stdin);
     freopen("grass.out", "w", stdout);
@@ -92,7 +53,6 @@ int main () {
     cin.tie(NULL);
     int N, M, K, Q;
     cin >> N >> M >> K >> Q;
-    w.resize(N);
     vector<pair<int,pair<int,int> > > edges;
     for (int i = 0; i < M; i++) {
         int u, v, w;
@@ -108,7 +68,7 @@ int main () {
         edges[i].first = i;
     }
     DisjointSetUnion dsu;
-    dsu.resz(N), adj.resize(N), parent.resize(N);
+    dsu.resz(N);
     for (auto& p: edges) {
         if (dsu.join(p.second.first, p.second.second)) {
             adj[p.second.first].push_back(make_pair(p.first, p.second.second));
@@ -116,7 +76,6 @@ int main () {
         }
     }
     dfs (0, 0);
-    colors.resize(N), rgb.resize(N);
     for (int i = 0; i < N; i++) {
         cin >> colors[i];
     }
@@ -135,28 +94,24 @@ int main () {
             }
         }
     }
-    SegmentTree<int> st(N);
+    set<int> tot;
     for (int i = 0; i < N; i++) {
         if (!rgb[i].empty()) {
-            st.update(i, *rgb[i].begin());
+            tot.insert(*rgb[i].begin());
         }
     }
     while (Q--) {
         int u, c;
         cin >> u >> c;
         u--;
-        if (colors[u] == c) {
-            cout << actual[st.query(0, N - 1)] << '\n';
-            continue;
-        }
         if (u != 0) {
             if (!rgb[parent[u]].empty()) {
-                st.update(parent[u], INT_MAX);
+                tot.erase(*rgb[parent[u]].begin());
             }
-            if (!myMap[parent[u]][colors[u]].empty() && colors[parent[u]] != colors[u]) {
+            if (colors[parent[u]] != colors[u]) {
                 rgb[parent[u]].erase(*myMap[parent[u]][colors[u]].begin());
             }
-            if (!myMap[parent[u]][c].empty() && c != colors[parent[u]]) {
+            if (c != colors[parent[u]] && !myMap[parent[u]][c].empty()) {
                 rgb[parent[u]].erase(*myMap[parent[u]][c].begin());
             }
             myMap[parent[u]][colors[u]].erase(w[u]);
@@ -168,11 +123,11 @@ int main () {
                 rgb[parent[u]].insert(*myMap[parent[u]][c].begin());
             }
             if (!rgb[parent[u]].empty()) {
-                st.update(parent[u], *rgb[parent[u]].begin());
+                tot.insert(*rgb[parent[u]].begin());
             }
         }
         if (!rgb[u].empty()) {
-            st.update(u, INT_MAX);
+            tot.erase(*rgb[u].begin());
         }
         if (!myMap[u][c].empty()) {
             rgb[u].erase(*myMap[u][c].begin());
@@ -181,9 +136,9 @@ int main () {
             rgb[u].insert(*myMap[u][colors[u]].begin());
         }
         if (!rgb[u].empty()) {
-            st.update(u, *rgb[u].begin());
+            tot.insert(*rgb[u].begin());
         }
         colors[u] = c;
-        cout << actual[st.query(0, N - 1)] << '\n';
+        cout << actual[*tot.begin()] << '\n';
     }
 }
