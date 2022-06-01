@@ -12,125 +12,174 @@
 #include <type_traits>
 #include <string>
 #include <queue>
+#define ll long long
 #include <map>
-
-#pragma GCC target ("avx2")
-#pragma GCC optimization ("Ofast")
-#pragma GCC optimization ("unroll-loops")
 
 using namespace std;
 class Tree {
-    vector<vector<int>> adj;
-    vector<bool> hasVisited;
-    vector<int> sub, parent;
-    int sz;
-    map<pair<int,int>,int> weight;
-    vector<int> wei;
 public:
-
-    int get_weight (int u1, int u2) {
-        //assert((parent[u1] != u2) ? wei[u2] : wei[u1] == weight[make_pair(u1, u2)]);
-        return ((parent[u1] != u2) ? wei[u2] : wei[u1]);
-    }
-
-    void propagate (int curNode, int prevNode) {
-        parent[curNode] = prevNode;
-        if (weight.count({curNode, prevNode})) {
-            wei[curNode] = weight[{curNode,prevNode}];
-        }
+    vector<vector<int>> adj;
+    vector<vector<int>> dp;
+    vector<int> pre, post;
+    int cntr = 0;
+    void dfs (int curNode, int prevNode) {
+        pre[curNode] = cntr++;
+        dp[curNode][0] = prevNode;
         for (int i: adj[curNode]) {
             if (i != prevNode) {
-                propagate(i, curNode);
+                dfs(i, curNode);
             }
         }
+        post[curNode] = cntr++;
     }
-
-    void add_edge (int u1, int u2, int w) {
-        adj[u1].push_back(u2), adj[u2].push_back(u1);
-        weight[{u1, u2}] = weight[{u2, u1}] = w;
-    }
-
+public:
+    vector<int> depth;
     Tree (int n) {
-        hasVisited.assign(n, false), adj.resize(n), sub.resize(n), wei.resize(n), parent.resize(n);
+        adj.resize(n), pre.resize(n), post.resize(n), dp.resize(n, (vector<int>(log2(n) + 1)));
     }
-
-    int dfs (int curNode, int prevNode) {
-        sub[curNode] = 1;
-        for (int i: adj[curNode]) {
-            if (!hasVisited[i] && i != prevNode) {
-                sub[curNode] += dfs (i, curNode);
+    void add_edge (int u, int v) {
+        adj[u].push_back(v), adj[v].push_back(u);
+    }
+    int isAncestor (int u, int v) {
+        return (pre[u] <= pre[v] && post[u] >= post[v]);
+    }
+    int lca (int u, int v) {
+        if (isAncestor(u, v)) {
+            return u;
+        }
+        if (isAncestor(v, u)) {
+            return v;
+        }
+        for (int i = dp[u].size() - 1; i >= 0; i--) {
+            if (!isAncestor(dp[u][i], v)) {
+                u = dp[u][i];
             }
         }
-        return (sz = sub[curNode]);
+        return dp[u][0];
     }
-
-    int get_centroid (int curNode, int prevNode) {
-        for (int i: adj[curNode]) {
-            if (!hasVisited[i] && i != prevNode) {
-                if (sub[i] > sz/2) {
-                    return get_centroid(i, curNode);
+    int child (int u, int v) {
+        if (u == v) return -1;
+        assert(isAncestor(u, v));
+        for (int i = dp[0].size() - 1; i >= 0; i--) {
+            if (!isAncestor(dp[v][i], u)) {
+                v = dp[v][i];
+            }
+        }
+        return v;
+    }
+    void read() {
+        dfs(0, 0);
+        for (int j = 1; j < dp[0].size(); j++) {
+            for (int i = 0; i < dp.size(); i++) {
+                dp[i][j] = dp[dp[i][j - 1]][j - 1];
+            }
+        }
+        queue<pair<int,int>> q;
+        q.push(make_pair(0, 0));
+        depth.assign(adj.size() , -1);
+        while (!q.empty()) {
+            pair<int,int> p = q.front();
+            q.pop();
+            depth[p.first] = p.second;
+            for (int i: adj[p.first]) {
+                if (depth[i] == -1) {
+                    depth[i] = p.second + 1;
+                    q.push(make_pair(i, p.second + 1));
                 }
-            }
-        }
-        return curNode;
-    }
-
-    map<int,int> tot[2];
-    map<int,int> v[2];
-    int64_t ans = 0;
-
-    int centroid;
-
-    void dfs1 (int curNode, int prevNode, int d, int l, int r) {
-        bool b = (d >= l && d <= r && r > l);
-        l -= (d < l);
-        r += (d > r);
-        tot[b][d]++;
-        v[b][d]++;
-        for (int x = ((d == 0) ? 0 : 1 - b); x <= 1; x++) {
-            ans += (tot[x][-d] - v[x][-d]);
-        }
-        for (int i: adj[curNode]) {
-            if (!hasVisited[i] && i != prevNode) {
-                dfs1 (i, curNode, d + get_weight(i, curNode), l, r);
-            }
-        }
-    }
-
-    void solve (int curNode) {
-        dfs (curNode, curNode); if (sz <= 4) return;
-        centroid = get_centroid(curNode, curNode);
-        hasVisited[centroid] = true;
-        tot[0].clear(), v[0].clear(), tot[1].clear(), v[1].clear();
-        for (int i: adj[centroid]) {
-            if (!hasVisited[i]) {
-                v[0].clear(), v[1].clear();
-                dfs1 (i, centroid, get_weight(i, centroid), get_weight(i, centroid), get_weight(i, centroid));
-            }
-        }
-        ans += tot[1][0];
-        for (int i: adj[centroid]) {
-            if (!hasVisited[i]) {
-                solve(i);
             }
         }
     }
 };
-int main () {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    freopen("yinyang.in", "r", stdin);
-    freopen("yinyang.out", "w", stdout);
+template<class T>
+class SegmentTree {
+public:
+
+    SegmentTree (int N) {
+        N = (1 << ((int)floor(log2(N - 1)) + 1));
+        this->N = N;
+        val.assign(2 * N, ID);
+    }
+
+    void update (int x, T y) {
+        x += N - 1;
+        val[x] += y;
+        while (x != 0) {
+            x = (x - 1)/2;
+            val[x] = merge(val[2 * x + 1], val[2 * x + 2]);
+        }
+    }
+
+    T query (int ind, const int l, const int r, int tl, int tr) {
+        if (tl >= l && tr <= r) {
+            return val[ind];
+        }
+        if (tr < l || tl > r) {
+            return ID;
+        }
+        return merge(query(2 * ind + 1, l, r, tl, (tl + tr)/2), query(2 * ind + 2, l, r, (tl + tr)/2 + 1, tr));
+    }
+
+    T query (int l, int r) {
+        return query(0, l, r, 0, N - 1);
+    }
+private:
+    vector<T> val;
+    T ID = 0;
+    T merge (T x, T y) {
+        return x + y;
+    }
+    int N;
+};
+int64_t ans = 0;
+void dfs (Tree&t, vector<vector<int>>& edges, SegmentTree<int>&st, int curNode, int prevNode) {
+    map<int,int64_t> cnt;
+    for (int i: edges[curNode]) {
+        cnt[t.pre[t.child(curNode, i)]]++;
+        ans += st.query(t.pre[t.child(curNode, i)], t.post[t.child(curNode, i)]);
+    }
+    for (auto& p: cnt) {
+        ans += p.second * (p.second - 1)/2;
+    }
+    for (int i: edges[curNode]) {
+        st.update(t.pre[i], 1);
+    }
+    for (int i: t.adj[curNode]) {
+        if (i != prevNode) {
+            dfs (t, edges, st, i, curNode);
+        }
+    }
+}
+int64_t countIntersections (Tree&t, vector<vector<int>> edges) {
+    SegmentTree<int> st(2 * (int)t.adj.size());
+    dfs(t, edges, st, 0, 0);
+    return ans;
+}
+int main() {
     int n;
     cin >> n;
-    Tree myTree(n);
+    Tree t(n);
+    int m;
+    cin >> m;
     for (int i = 0; i < n - 1; i++) {
-        int u, v, w;
-        cin >> u >> v >> w;
-        u--, v--;
-        myTree.add_edge(u, v, w - (w == 0));
+        int u, v;
+        cin >> u >> v;
+        t.add_edge(--u, --v);
     }
-    myTree.propagate(0, 0);
-    myTree.solve(0);
-    cout << myTree.ans << '\n';
+    t.read();
+    vector<vector<int>> edges(n);
+    map<pair<int,pair<int,int>>,int64_t> cnt;
+    for (int i = n - 1; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        u--, v--;
+        if (t.lca(u, v) != u) edges[t.lca(u, v)].push_back(u);
+        if (t.lca(u, v) != v) edges[t.lca(u, v)].push_back(v);
+        int x = t.child(t.lca(u, v), u);
+        int y = t.child(t.lca(u, v), v);
+        cnt[make_pair(t.lca(u, v), make_pair(min(x, y), max(x, y)))]++;
+    }
+    for (auto& p: cnt) {
+        ans -= (p.second - 1) * p.second/2;
+    }
+    cout << countIntersections(t, edges) << '\n';
 }
