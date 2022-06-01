@@ -1,185 +1,135 @@
-#include <cmath>
-#include <iostream>
-#include <set>
-#include <climits>
-#include <cstdio>
-#include <algorithm>
-#include <cassert>
-#include <string>
-#include <vector>
-#include <iomanip>
-#include <unordered_map>
-#include <type_traits>
-#include <string>
-#include <queue>
-#define ll long long
-#include <map>
-
+#include <bits/stdc++.h>
+ 
 using namespace std;
-class Tree {
-public:
-    vector<vector<int>> adj;
-    vector<vector<int>> dp;
-    vector<int> pre, post;
-    int cntr = 0;
-    void dfs (int curNode, int prevNode) {
-        pre[curNode] = cntr++;
-        dp[curNode][0] = prevNode;
+
+struct dsu{
+    vector<int> parent;
+    vector<int> compSize;
+    int n;
+    int cc;
+    void fill(){
+        parent.resize(n), compSize.resize(n);
+        cc = n - 1;
+        for(int i = 0; i < n; i++){
+            parent[i] = i, compSize[i] = 1;
+        }
+    }
+    int find_head(int x){
+        if(x == parent[x]){
+            return x;
+        }
+        return find_head(parent[x]);
+    }
+    void join(int x, int y){
+        x = find_head(x);
+        y = find_head(y);
+        if(x == y){
+            return;
+        }
+        cc--;
+        if(compSize[x] > compSize[y]){
+            swap(x,y);
+            //ensures that compSize[x1] <= compSize[y1]
+        }
+        parent[x] = y;
+        compSize[y] += compSize[x]; 
+    }
+    bool comp(int x, int y){
+        return (find_head(x) == find_head(y));
+    }
+};
+
+class Graph {
+    vector<vector<int> > adj;
+    vector<vector<int> > new_adj;
+    vector<bool> hasVisited;
+    vector<pair<int,int> > edges;
+    vector<int> parent;
+    vector<int> sub;
+    vector<int> depth;
+    void dfs (int curNode) {
+        hasVisited[curNode] = true;
         for (int i: adj[curNode]) {
-            if (i != prevNode) {
-                dfs(i, curNode);
+            if (!hasVisited[i]) {
+                new_adj[i].push_back(curNode), new_adj[curNode].push_back(i);
+                parent[i] = curNode;
+                depth[i] = depth[curNode] + 1;
+                dfs (i);
             }
         }
-        post[curNode] = cntr++;
     }
 public:
-    vector<int> depth;
-    Tree (int n) {
-        adj.resize(n), pre.resize(n), post.resize(n), dp.resize(n, (vector<int>(log2(n) + 1)));
-    }
     void add_edge (int u, int v) {
+        edges.push_back(make_pair(u, v));
         adj[u].push_back(v), adj[v].push_back(u);
     }
-    int isAncestor (int u, int v) {
-        return (pre[u] <= pre[v] && post[u] >= post[v]);
+    Graph (int n) {
+        new_adj.resize(n), adj.resize(n), hasVisited.assign(n, false), parent.assign(n, -1), sub.resize(n), depth.resize(n);
     }
-    int lca (int u, int v) {
-        if (isAncestor(u, v)) {
-            return u;
-        }
-        if (isAncestor(v, u)) {
-            return v;
-        }
-        for (int i = dp[u].size() - 1; i >= 0; i--) {
-            if (!isAncestor(dp[u][i], v)) {
-                u = dp[u][i];
+    void fill (int curNode, int prevNode) {
+        for (int i: new_adj[curNode]) {
+            if (i != prevNode) {
+                fill (i, curNode);
+                sub[curNode] += sub[i];
             }
         }
-        return dp[u][0];
-    }
-    int child (int u, int v) {
-        if (u == v) return -1;
-        assert(isAncestor(u, v));
-        for (int i = dp[0].size() - 1; i >= 0; i--) {
-            if (!isAncestor(dp[v][i], u)) {
-                v = dp[v][i];
-            }
-        }
-        return v;
     }
     void read() {
-        dfs(0, 0);
-        for (int j = 1; j < dp[0].size(); j++) {
-            for (int i = 0; i < dp.size(); i++) {
-                dp[i][j] = dp[dp[i][j - 1]][j - 1];
+        depth[0] = 0;
+        dfs (0); 
+        for (auto& p: edges) {
+            if (parent[p.first] == p.second || parent[p.second] == p.first) {
+                continue;
+            }
+            if (depth[p.first] > depth[p.second]) {
+                swap(p.first, p.second);
+            }
+            sub[p.first] += -1;
+            sub[p.second] += 1;
+        }
+        fill (0, 0);
+        dsu ds;
+        ds.n = (int)adj.size();
+        ds.fill();
+        vector<pair<int,int> > roads;
+        vector<int> deg;
+        deg.assign(adj.size(), 0);
+        for (int i = 1; i < (int)adj.size(); i++) {
+            if (sub[i] == 0) {
+                roads.push_back(make_pair(i, parent[i]));
+                deg[roads.back().first]++, deg[roads.back().second]++;
             }
         }
-        queue<pair<int,int>> q;
-        q.push(make_pair(0, 0));
-        depth.assign(adj.size() , -1);
-        while (!q.empty()) {
-            pair<int,int> p = q.front();
-            q.pop();
-            depth[p.first] = p.second;
-            for (int i: adj[p.first]) {
-                if (depth[i] == -1) {
-                    depth[i] = p.second + 1;
-                    q.push(make_pair(i, p.second + 1));
-                }
+        for (auto& p: roads) {
+            ds.join(p.first, p.second);
+        }
+        vector<int> cnt; cnt.assign(adj.size(), 0);
+        for (int i = 0; i < adj.size(); i++) {
+            if (deg[i] == 1) {
+                cnt[ds.find_head(i)]++;
             }
         }
+        int ans = 0;
+        for (int i: cnt) {
+            ans += i;
+        }
+        for (int i: deg) {
+            if (i == 0) {
+                ds.cc--;
+            }
+        }
+        cout << (ans - ds.cc + 1)/2 << '\n';
     }
 };
-template<class T>
-class SegmentTree {
-public:
-
-    SegmentTree (int N) {
-        N = (1 << ((int)floor(log2(N - 1)) + 1));
-        this->N = N;
-        val.assign(2 * N, ID);
-    }
-
-    void update (int x, T y) {
-        x += N - 1;
-        val[x] += y;
-        while (x != 0) {
-            x = (x - 1)/2;
-            val[x] = merge(val[2 * x + 1], val[2 * x + 2]);
-        }
-    }
-
-    T query (int ind, const int l, const int r, int tl, int tr) {
-        if (tl >= l && tr <= r) {
-            return val[ind];
-        }
-        if (tr < l || tl > r) {
-            return ID;
-        }
-        return merge(query(2 * ind + 1, l, r, tl, (tl + tr)/2), query(2 * ind + 2, l, r, (tl + tr)/2 + 1, tr));
-    }
-
-    T query (int l, int r) {
-        return query(0, l, r, 0, N - 1);
-    }
-private:
-    vector<T> val;
-    T ID = 0;
-    T merge (T x, T y) {
-        return x + y;
-    }
-    int N;
-};
-int64_t ans = 0;
-void dfs (Tree&t, vector<vector<int>>& edges, SegmentTree<int>&st, int curNode, int prevNode) {
-    map<int,int64_t> cnt;
-    for (int i: edges[curNode]) {
-        cnt[t.pre[t.child(curNode, i)]]++;
-        ans += st.query(t.pre[t.child(curNode, i)], t.post[t.child(curNode, i)]);
-    }
-    for (auto& p: cnt) {
-        ans += p.second * (p.second - 1)/2;
-    }
-    for (int i: edges[curNode]) {
-        st.update(t.pre[i], 1);
-    }
-    for (int i: t.adj[curNode]) {
-        if (i != prevNode) {
-            dfs (t, edges, st, i, curNode);
-        }
-    }
-}
-int64_t countIntersections (Tree&t, vector<vector<int>> edges) {
-    SegmentTree<int> st(2 * (int)t.adj.size());
-    dfs(t, edges, st, 0, 0);
-    return ans;
-}
+ 
 int main() {
-    int n;
-    cin >> n;
-    Tree t(n);
-    int m;
-    cin >> m;
-    for (int i = 0; i < n - 1; i++) {
+    int n, m;
+    cin >> n >> m;
+    Graph gr(n);
+    for (int i = 0; i < m; i++) {
         int u, v;
         cin >> u >> v;
-        t.add_edge(--u, --v);
+        gr.add_edge(u - 1, v - 1);
     }
-    t.read();
-    vector<vector<int>> edges(n);
-    map<pair<int,pair<int,int>>,int64_t> cnt;
-    for (int i = n - 1; i < m; i++) {
-        int u, v;
-        cin >> u >> v;
-        u--, v--;
-        if (t.lca(u, v) != u) edges[t.lca(u, v)].push_back(u);
-        if (t.lca(u, v) != v) edges[t.lca(u, v)].push_back(v);
-        int x = t.child(t.lca(u, v), u);
-        int y = t.child(t.lca(u, v), v);
-        cnt[make_pair(t.lca(u, v), make_pair(min(x, y), max(x, y)))]++;
-    }
-    for (auto& p: cnt) {
-        ans -= (p.second - 1) * p.second/2;
-    }
-    cout << countIntersections(t, edges) << '\n';
+    gr.read();
 }
