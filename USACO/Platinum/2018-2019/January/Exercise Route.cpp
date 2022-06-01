@@ -157,6 +157,8 @@ int64_t countIntersections (Tree&t, vector<vector<int>> edges) {
     return ans;
 }
 int main() {
+    freopen("exercise.in", "r", stdin);
+    freopen("exercise.out", "w", stdout);
     int n;
     cin >> n;
     Tree t(n);
