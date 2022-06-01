@@ -1,44 +1,5 @@
 #include <bits/stdc++.h>
- 
 using namespace std;
-
-struct dsu{
-    vector<int> parent;
-    vector<int> compSize;
-    int n;
-    int cc;
-    void fill(){
-        parent.resize(n), compSize.resize(n);
-        cc = n - 1;
-        for(int i = 0; i < n; i++){
-            parent[i] = i, compSize[i] = 1;
-        }
-    }
-    int find_head(int x){
-        if(x == parent[x]){
-            return x;
-        }
-        return find_head(parent[x]);
-    }
-    void join(int x, int y){
-        x = find_head(x);
-        y = find_head(y);
-        if(x == y){
-            return;
-        }
-        cc--;
-        if(compSize[x] > compSize[y]){
-            swap(x,y);
-            //ensures that compSize[x1] <= compSize[y1]
-        }
-        parent[x] = y;
-        compSize[y] += compSize[x]; 
-    }
-    bool comp(int x, int y){
-        return (find_head(x) == find_head(y));
-    }
-};
-
 class Graph {
     vector<vector<int> > adj;
     vector<vector<int> > new_adj;
@@ -46,9 +7,11 @@ class Graph {
     vector<pair<int,int> > edges;
     vector<int> parent;
     vector<int> sub;
-    vector<int> depth;
+    vector<int> pre, post;
+    int cntr = 0;
     void dfs (int curNode) {
         hasVisited[curNode] = true;
+        pre[curNode] = cntr++;
         for (int i: adj[curNode]) {
             if (!hasVisited[i]) {
                 new_adj[i].push_back(curNode), new_adj[curNode].push_back(i);
@@ -57,8 +20,10 @@ class Graph {
                 dfs (i);
             }
         }
+        post[curNode] = cntr++;
     }
 public:
+vector<int> depth;
     void add_edge (int u, int v) {
         edges.push_back(make_pair(u, v));
         adj[u].push_back(v), adj[v].push_back(u);
@@ -74,7 +39,11 @@ public:
             }
         }
     }
-    void read() {
+    bool isAncestor (int u, int v) {
+        return (pre[u] <= pre[v] && post[u] >= post[v]);
+    }
+    vector<pair<int,int> > read() {
+        pre.resize((int)adj.size()), post.resize((int)adj.size());
         depth[0] = 0;
         dfs (0); 
         for (auto& p: edges) {
@@ -88,48 +57,83 @@ public:
             sub[p.second] += 1;
         }
         fill (0, 0);
-        dsu ds;
-        ds.n = (int)adj.size();
-        ds.fill();
         vector<pair<int,int> > roads;
-        vector<int> deg;
-        deg.assign(adj.size(), 0);
         for (int i = 1; i < (int)adj.size(); i++) {
             if (sub[i] == 0) {
                 roads.push_back(make_pair(i, parent[i]));
-                deg[roads.back().first]++, deg[roads.back().second]++;
             }
         }
-        for (auto& p: roads) {
-            ds.join(p.first, p.second);
-        }
-        vector<int> cnt; cnt.assign(adj.size(), 0);
-        for (int i = 0; i < adj.size(); i++) {
-            if (deg[i] == 1) {
-                cnt[ds.find_head(i)]++;
-            }
-        }
-        int ans = 0;
-        for (int i: cnt) {
-            ans += i;
-        }
-        for (int i: deg) {
-            if (i == 0) {
-                ds.cc--;
-            }
-        }
-        cout << (ans - ds.cc + 1)/2 << '\n';
+        return roads;
     }
 };
- 
+class DisjointSetUnion {
+    public: 
+    vector<vector<int> > nodes;
+    vector<int> parent;
+    int find_head (int u) {
+        while (u != parent[u]) {
+            u = parent[u];
+        }
+        return u;
+    }
+    void join (int u, int v) {
+        u = find_head(u), v = find_head(v);
+        if (u == v) {
+            assert(false);
+            return;
+        }
+        if (nodes[u].size() > nodes[v].size()) {
+            swap(u, v);
+        }
+        for (int i: nodes[u]) {
+            nodes[v].push_back(i);
+        }
+        nodes[u].clear();
+        parent[u] = v;
+    }
+    DisjointSetUnion (int n) {
+        nodes.resize(n);
+        parent.resize(n);
+        for (int i = 0; i < n; i++) {
+            nodes[i].push_back(i);
+            parent[i] = i;
+        }
+    }
+};
 int main() {
     int n, m;
     cin >> n >> m;
     Graph gr(n);
+    vector<int> deg;
+    deg.assign(n, 0);
     for (int i = 0; i < m; i++) {
         int u, v;
         cin >> u >> v;
-        gr.add_edge(u - 1, v - 1);
+        u--, v--;
+        gr.add_edge (u, v);
     }
-    gr.read();
+    vector<pair<int,int> > roads = gr.read();
+    DisjointSetUnion dsu(n);
+    //set<int> r;
+    for (auto& p: roads) {
+        dsu.join(p.first, p.second);
+        deg[p.first]++, deg[p.second]++;
+        //cout << p.first + 1 << " ? " << p.second + 1 << '\n';
+        //r.insert(p.first), r.insert(p.second);
+    }
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i == j) continue;
+            if (gr.isAncestor(i, j) && dsu.find_head(i) != dsu.find_head(j) && deg[i] && deg[j]) {
+                //cout << i + 1 << " <-> " << j + 1 << " " << dsu.find_head(i) + 1 << " " << dsu.find_head(j) + 1 << '\n';
+                dsu.join(i, j);
+                deg[i]++, deg[j]++;
+            }
+        }
+    }
+    int ans = 0;
+    for (int i: deg) {
+        ans += (i == 1);
+    }
+    cout << (ans + 1)/2;
 }
