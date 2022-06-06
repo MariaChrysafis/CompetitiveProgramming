@@ -81,6 +81,8 @@ struct State {
 };
 
 int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
     freopen("pushabox.in", "r", stdin);
     freopen("pushabox.out", "w", stdout);
     int n, m, q;
@@ -142,7 +144,6 @@ int main() {
     set<State> vis;
     set<int> pos;
     biconnected_components g(edges);
-    cout << '\n';
     while (!myQueue.empty()) {
         State myState = myQueue.front();
         myQueue.pop();
@@ -162,11 +163,9 @@ int main() {
                 int b = myMap[make_pair(new_me.first * m + new_me.second, myState.box.first * m + myState.box.second)];
                 //cout << a << " " << b << " " << g[a] << " " << g[b] << '\n';
                 if (g[a] != g[b]) continue;
-                myState.print();
                 State nxt;
                 nxt.box = myState.box;
                 nxt.me = new_me;
-                nxt.print();
                 myQueue.push(nxt);
             }
         }
