@@ -174,6 +174,7 @@ int main() {
                 State nxt;
                 nxt.box = myState.box;
                 nxt.me = new_me;
+                if (!vis[nxt.me.first][nxt.me.second][nxt.box.first - nxt.me.first + 1][nxt.box.second - nxt.me.second + 1])
                 myQueue.push(nxt);
             }
         }
