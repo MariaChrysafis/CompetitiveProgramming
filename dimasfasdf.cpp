@@ -93,7 +93,7 @@ int main() {
     }
     vector<vector< pair<int,int> > > edges(n * m);
     int c = 0;
-    map<pair<int,int>,int> myMap;
+    int myMap[n][m][3][3];
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
             for (int dx = -1; dx <= 1; dx++) {
@@ -104,14 +104,17 @@ int main() {
                     if (abs(dx) + abs(dy) == 1 && grid[i][j] != '#' && grid[i + dx][j + dy] != '#') {
                         edges[m * i + j].push_back(make_pair(c, m * (i + dx) + j + dy));
                         edges[m * (i + dx) + j + dy].push_back(make_pair(c,m * i + j ));
-                        myMap[make_pair(m * i + j, m * (i + dx) + j + dy)] = c;
-                        myMap[make_pair(m * (i + dx) + j + dy,m * i + j)] = c;
+                        myMap[i][j][dx + 1][dy + 1] = c;
+                        myMap[i + dx][j + dy][-dx + 1][-dy + 1] = c;
+                        //myMap[make_pair(m * i + j, m * (i + dx) + j + dy)] = c;
+                        //myMap[make_pair(m * (i + dx) + j + dy,m * i + j)] = c;
                         c++;
                     }
                 }
             }
         }
     }
+    biconnected_components g(edges);
     State cur;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
@@ -143,7 +146,6 @@ int main() {
     }
     set<State> vis;
     set<int> pos;
-    biconnected_components g(edges);
     while (!myQueue.empty()) {
         State myState = myQueue.front();
         myQueue.pop();
@@ -158,8 +160,10 @@ int main() {
                 if (abs(dx) + abs(dy) != 1) continue;
                 pair<int,int> new_me = make_pair(myState.box.first + dx, myState.box.second + dy);
                 if (new_me.first < 0 || new_me.second < 0 || new_me.first == n || new_me.second == m || grid[new_me.first][new_me.second] == '#') continue;
-                int a = myMap[make_pair(myState.me.first * m + myState.me.second, myState.box.first * m + myState.box.second)];
-                int b = myMap[make_pair(new_me.first * m + new_me.second, myState.box.first * m + myState.box.second)];
+                int a = myMap[myState.me.first][myState.me.second][myState.box.first - myState.me.first + 1][myState.box.second - myState.me.second + 1];
+                int b = myMap[new_me.first][new_me.second][myState.box.first - new_me.first + 1][myState.box.second - new_me.second + 1];
+                //int a = myMap[make_pair(myState.me.first * m + myState.me.second, myState.box.first * m + myState.box.second)];
+                //int b = myMap[make_pair(new_me.first * m + new_me.second, myState.box.first * m + myState.box.second)];
                 if (g[a] != g[b]) continue;
                 State nxt;
                 nxt.box = myState.box;
