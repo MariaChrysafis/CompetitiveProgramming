@@ -143,13 +143,18 @@ int main() {
         }
     }
     set<State> vis;
-    set<int> pos;
+    bool pos[n][m];
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            pos[i][j] = false;
+        }
+    }
     while (!myQueue.empty()) {
         State myState = myQueue.front();
         myQueue.pop();
         if (vis.count(myState)) continue;
         vis.insert(myState);
-        pos.insert(m * myState.box.first + myState.box.second);
+        pos[myState.box.first][myState.box.second] = true;
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy ++) {
                 if (myState.box.first + dx == myState.me.first && myState.box.second + dy == myState.me.second) {
@@ -160,8 +165,6 @@ int main() {
                 if (new_me.first < 0 || new_me.second < 0 || new_me.first == n || new_me.second == m || grid[new_me.first][new_me.second] == '#') continue;
                 int a = myMap[myState.me.first][myState.me.second][myState.box.first - myState.me.first + 1][myState.box.second - myState.me.second + 1];
                 int b = myMap[new_me.first][new_me.second][myState.box.first - new_me.first + 1][myState.box.second - new_me.second + 1];
-                //int a = myMap[make_pair(myState.me.first * m + myState.me.second, myState.box.first * m + myState.box.second)];
-                //int b = myMap[make_pair(new_me.first * m + new_me.second, myState.box.first * m + myState.box.second)];
                 if (g[a] != g[b]) continue;
                 State nxt;
                 nxt.box = myState.box;
@@ -181,7 +184,7 @@ int main() {
         int u, v;
         cin >> u >> v;
         u--, v--;
-        if (pos.count(m * u + v)) {
+        if (pos[u][v]) {
             cout << "YES\n";
         } else {
             cout << "NO\n";
