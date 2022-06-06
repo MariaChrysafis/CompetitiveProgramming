@@ -142,18 +142,23 @@ int main() {
             }
         }
     }
-    set<State> vis;
     bool pos[n][m];
+    bool vis[n][m][3][3];
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
             pos[i][j] = false;
+            for (int x = 0; x < 3; x++) {
+                for (int y = 0; y < 3; y++) {
+                    vis[i][j][x][y] = false;
+                }
+            }
         }
     }
     while (!myQueue.empty()) {
         State myState = myQueue.front();
         myQueue.pop();
-        if (vis.count(myState)) continue;
-        vis.insert(myState);
+        if (vis[myState.me.first][myState.me.second][myState.box.first - myState.me.first + 1][myState.box.second - myState.me.second + 1]) continue;
+        vis[myState.me.first][myState.me.second][myState.box.first - myState.me.first + 1][myState.box.second - myState.me.second + 1] = true;
         pos[myState.box.first][myState.box.second] = true;
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy ++) {
@@ -169,7 +174,7 @@ int main() {
                 State nxt;
                 nxt.box = myState.box;
                 nxt.me = new_me;
-                if (!vis.count(nxt)) myQueue.push(nxt);
+                myQueue.push(nxt);
             }
         }
         pair<int,int> nxt = make_pair(2 * myState.box.first - myState.me.first, 2 * myState.box.second - myState.me.second);
@@ -178,6 +183,7 @@ int main() {
         if (grid[nxt.first][nxt.second] == '#') continue;
         myState.me = myState.box;
         myState.box = nxt;
+        if (vis[myState.me.first][myState.me.second][myState.box.first - myState.me.first + 1][myState.box.second - myState.me.second + 1]) continue;
         myQueue.push(myState);
     }
     while (q--) {
