@@ -268,14 +268,15 @@ int main() {
                     continue;
                 }
                 if (abs(dx) + abs(dy) != 1) continue;
-                if (myState.box.first + dx < 0 || myState.box.second + dy < 0) continue;
-                if (myState.box.first + dx == n || myState.box.second + dy == m) continue;
-                if (grid[myState.box.first + dx][myState.box.second + dy] == '#') continue;
-                if (!myTree.myMap[make_pair(myState.box.first * m + myState.box.second, make_pair(myState.me.first * m + myState.me.second, (myState.box.first + dx) * m + myState.box.second + dy))]) continue;
-                pair<int,int> mv = make_pair(myState.me.first * m + myState.me.second, (myState.box.first + dx) * m + myState.box.second + dy);
+                pair<int,int> new_me = make_pair(myState.box.first + dx, myState.box.second + dy);
+                if (new_me.first < 0 || new_me.second < 0) continue;
+                if (new_me.first == n || new_me.second == m) continue;
+                if (grid[new_me.first][new_me.second] == '#') continue;
+                if (!myTree.myMap[make_pair(myState.box.first * m + myState.box.second, make_pair(myState.me.first * m + myState.me.second, new_me.first * m +new_me.second))]) continue;
+                pair<int,int> mv = make_pair(myState.me.first * m + myState.me.second, new_me.first * m + new_me.second);
                 State nxt;
                 nxt.box = myState.box;
-                nxt.me = make_pair(myState.box.first + dx, myState.box.second + dy);
+                nxt.me = new_me;
                 myQueue.push(nxt);
             }
         }
