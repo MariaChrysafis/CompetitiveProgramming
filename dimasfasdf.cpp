@@ -106,8 +106,6 @@ int main() {
                         edges[m * (i + dx) + j + dy].push_back(make_pair(c,m * i + j ));
                         myMap[i][j][dx + 1][dy + 1] = c;
                         myMap[i + dx][j + dy][-dx + 1][-dy + 1] = c;
-                        //myMap[make_pair(m * i + j, m * (i + dx) + j + dy)] = c;
-                        //myMap[make_pair(m * (i + dx) + j + dy,m * i + j)] = c;
                         c++;
                     }
                 }
