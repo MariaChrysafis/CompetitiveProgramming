@@ -25,8 +25,6 @@ class Tree {
     vector<bool> t;
     vector<int> pre, post;
     vector <vector<int> > st, en;
-    vector <vector<pair < int, int> > >
-    queries;
     vector <pair<int, int> > edges;
     int cntr = 0;
 
@@ -143,7 +141,7 @@ class Tree {
         return onPath(a, l, c) || onPath(b, l, c);
     }
 
-    void init(int n, int m, int q, vector<pair<int,int> > edges, vector<pair<pair<int,int>,int> > qrs, int strt) {
+    void init(int n, int m, vector<pair<int,int> > edges, int strt) {
         dp.resize(n);
         for (int i = 0; i < n; i++) {
             dp[i].resize(22);
@@ -170,7 +168,6 @@ class Tree {
         }
         Seg<int> seg;
         seg.init(2 * n + 1);
-        queries.resize(n);
         dfs(strt, -1, seg);
     }
 };
@@ -192,7 +189,6 @@ int main() {
         cin >> grid[i];
     }
     vector<pair<int,int> > edges;
-    vector<pair<pair<int,int> , int > > vec;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
             vector<int> pos;
@@ -206,12 +202,6 @@ int main() {
                     }
                 }
             }
-            for (int x: pos) {
-                for (int y: pos) {
-                    //assert(x < n * m && y < n * m && x >= 0 && y >= 0);
-                    vec.push_back(make_pair(make_pair(x, y), m * i + j));
-                }
-            }
         }
     }
     State cur;
@@ -222,7 +212,7 @@ int main() {
         }
     }
     Tree myTree;
-    myTree.init(n * m, edges.size(), vec.size(), edges, vec, m * cur.me.first + cur.me.second);
+    myTree.init(n * m, edges.size(), edges, m * cur.me.first + cur.me.second);
     queue<pair<int,int> > dum;
     dum.push(cur.me);
     set<pair<int,int> > s;
