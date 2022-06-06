@@ -2,174 +2,70 @@
 
 using namespace std;
 
-template<class T> struct Seg { // comb(ID,b) = b
-	const T ID = 0; T comb(T a, T b) { return a+b; }
-	int n; vector<T> seg;
-	void init(int _n) { n = _n; seg.assign(2*n,ID); }
-	void pull(int p) { seg[p] = comb(seg[2*p],seg[2*p+1]); }
-	void upd(int p, T val) { // set val at position p
-		seg[p += n] += val; for (p /= 2; p; p /= 2) pull(p); }
-	T query(int l, int r) {	// sum on interval [l, r]
-		T ra = ID, rb = ID;
-		for (l += n, r += n+1; l < r; l /= 2, r /= 2) {
-			if (l&1) ra = comb(ra,seg[l++]);
-			if (r&1) rb = comb(seg[--r],rb);
-		}
-		return comb(ra,rb);
-	}
-};
-
-class Tree {
-    public:
-    vector <vector<int> > w, new_adj, dp;
-    vector<bool> t;
-    vector<int> pre, post;
-    vector <vector<int> > st, en;
-    vector <pair<int, int> > edges;
-    int cntr = 0;
-
-    void dfs1(int curNode, int prevNode) {
-        t[curNode] = true;
-        dp[curNode][0] = prevNode;
-        if (prevNode == -1) dp[curNode][0] = curNode;
-        for (int i: w[curNode]) {
-            if (i == prevNode) continue;
-            if (!t[i]) {
-                new_adj[i].push_back(curNode), new_adj[curNode].push_back(i);
-                dfs1(i, curNode);
-            } else {
-                edges.push_back(make_pair(i, curNode));
-            }
-        }
+struct biconnected_components{
+  int cnt;
+  vector<int> bcc;
+  biconnected_components(vector<vector<pair<int, int> > > &E){
+    int N = E.size();
+    vector<int> next(N, -1);
+    vector<int> d(N, -1);
+    vector<int> imos(N, 0);
+    for (int i = 0; i < N; i++){
+      if (d[i] == -1){
+        d[i] = 0;
+        dfs1(E, next, d, imos, i);
+      }
     }
-
-    void dfs2(int curNode, int prevNode) {
-        pre[curNode] = cntr++;
-        for (int i: new_adj[curNode]) {
-            if (i != prevNode) {
-                dfs2(i, curNode);
-            }
-        }
-        post[curNode] = cntr++;
+    int M = 0;
+    for (int i = 0; i < N; i++){
+      M += E[i].size();
     }
-
-    bool isAncestor(int u, int v) {
-        return (pre[u] <= pre[v] && post[u] >= post[v]);
+    M /= 2;
+    bcc = vector<int>(M, -1);
+    cnt = 0;
+    for (int i = 0; i < N; i++){
+      if (d[i] == 0){
+        dfs2(E, d, imos, cnt, i);
+      }
     }
-
-    int goUp(int u, int v) {
-        //assert(isAncestor(u, v));
-        for (int i = (int) dp[0].size() - 1; i >= 0; i--) {
-            if (!isAncestor(dp[v][i], u)) {
-                v = dp[v][i];
-            }
-        }
-        return v;
+  }
+  void dfs1(vector<vector<pair<int, int> > > &E, vector<int> &next, vector<int> &d, vector<int> &imos, int v){
+    for (auto P : E[v]){
+      int w = P.second;
+      if (d[w] == -1){
+        d[w] = d[v] + 1;
+        next[v] = w;
+        dfs1(E, next, d, imos, w);
+        imos[v] += imos[w];
+      } else if (d[w] < d[v] - 1){
+        imos[v]++;
+        imos[next[w]]--;
+      }
     }
-
-    int leastCommonAncestor(int a, int b) {
-        if (isAncestor(a, b)) return a;
-        if (isAncestor(b, a)) return b;
-        for (int i = dp[0].size() - 1; i >= 0; i--) {
-            if (!isAncestor(dp[a][i], b)) {
-                a = dp[a][i];
-            }
-        }
-        return dp[a][0];
-    }
-
-    map <pair<int, pair < int, int> >, bool>
-    myMap;
-
-    void dfs(int curNode, int prevNode, Seg<int> &seg) {
-        if (prevNode != -1) {
-            for (int i: st[prevNode]) {
-                seg.upd(pre[i], 1);
-            }
-        }
-        for (int i: new_adj[curNode]) {
-            if (i != prevNode) {
-                dfs(i, curNode, seg);
-            }
-        }
-
-        if (prevNode != -1) {
-            for (int i: w[curNode]) {
-                for (int j: w[curNode]) {
-                    if (!onPath(i, j, curNode)) {
-                        myMap[make_pair(curNode, make_pair(i, j))] = true;
-                        continue;
-                    }
-                    bool fine = true;
-                    if (isAncestor(curNode, i)) {
-                        int a = goUp(curNode, i);
-                        fine = fine & (bool) (seg.query(pre[a], post[a]));
-                    }
-                    if (isAncestor(curNode, j)) {
-                        int a = goUp(curNode, j);
-                        fine = fine & (bool) (seg.query(pre[a], post[a]));
-                    }
-                    myMap[make_pair(curNode, make_pair(i, j))] = fine;
-                }
-            }
+  }
+  void dfs2(vector<vector<pair<int, int> > > &E, vector<int> &d, vector<int> &imos, int b, int v){
+    for (auto P : E[v]){
+      int x = P.first;
+      int w = P.second;
+      if (d[w] < d[v]){
+        bcc[x] = b;
+      } else if (d[w] == d[v] + 1 && bcc[x] == -1){
+        if (imos[w] > 0){
+          bcc[x] = b;
         } else {
-            for (int i: w[curNode]) {
-                for (int j: w[curNode]) {
-                    if (i == j) continue;
-                    if (!onPath(i, j, curNode)) myMap[make_pair(curNode, make_pair (i, j))] = false;
-                    myMap[make_pair(curNode,make_pair(i, j))] = goUp(curNode, i) == goUp(curNode, j);
-                }
-            }
+          bcc[x] = cnt;
+          cnt++;
         }
-        if (prevNode != -1) {
-            for (int i: st[prevNode]) {
-                seg.upd(pre[i], -1);
-            }
-        }
+        dfs2(E, d, imos, bcc[x], w);
+      }
     }
-
-    bool onPath(int a, int b, int c) {
-        if (a == c || b == c) return true;
-        if (isAncestor(a, b) || isAncestor(b, a)) {
-            if (isAncestor(c, a) && isAncestor(b, c)) return true;
-            if (isAncestor(c, b) && isAncestor(a, c)) return true;
-            if (isAncestor(c, b) && isAncestor(c, a)) return false;
-            if (isAncestor(b, c) && isAncestor(a, c)) return false;
-            return false;
-        }
-        int l = leastCommonAncestor(a, b);
-        return onPath(a, l, c) || onPath(b, l, c);
-    }
-
-    void init(int n, int m, vector<pair<int,int> > edges, int strt) {
-        dp.resize(n);
-        for (int i = 0; i < n; i++) {
-            dp[i].resize(22);
-        }
-        w.resize(n), new_adj.resize(n), t.assign(n, false), pre.resize(n), post.resize(n), st.resize(
-                n), en.resize(n);
-        for (auto& p: edges) {
-            w[p.first].push_back(p.second), w[p.second].push_back(p.first);
-        }
-        dfs1(strt, -1);
-        dfs2(strt, -1);
-        for (auto &p: edges) {
-            int u = p.first, v = p.second;
-            if (!isAncestor(u, v)) {
-                swap(u, v);
-            }
-            st[u].push_back(v);
-            en[v].push_back(u);
-        }
-        for (int j = 1; j < dp[0].size(); j++) {
-            for (int i = 0; i < dp.size(); i++) {
-                dp[i][j] = dp[dp[i][j - 1]][j - 1];
-            }
-        }
-        Seg<int> seg;
-        seg.init(2 * n + 1);
-        dfs(strt, -1, seg);
-    }
+  }
+  int operator [](int k){
+    return bcc[k];
+  }
+  int count(){
+    return cnt;
+  }
 };
 
 struct State {
@@ -179,26 +75,36 @@ struct State {
         if (s1.me != me) return (s1.me < me);
         return (s1.box < box);
     }
+    void print() {
+        cout << me.first << " " << me.second << " " << box.first << " " << box.second << '\n';
+    }
 };
 
 int main() {
+    freopen("pushabox.in", "r", stdin);
+    freopen("pushabox.out", "w", stdout);
     int n, m, q;
     cin >> n >> m >> q;
     string grid[n];
     for (int i = 0; i < n; i++) {
         cin >> grid[i];
     }
-    vector<pair<int,int> > edges;
+    vector<vector< pair<int,int> > > edges(n * m);
+    int c = 0;
+    map<pair<int,int>,int> myMap;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            vector<int> pos;
             for (int dx = -1; dx <= 1; dx++) {
                 if (dx + i < 0 || dx + i == n) continue;
                 for (int dy = -1; dy <= 1; dy++) {
                     if (dy + j < 0 || dy + j == m) continue;
+                    if (make_pair(i, j) < make_pair(i + dx, j + dy)) continue;
                     if (abs(dx) + abs(dy) == 1 && grid[i][j] != '#' && grid[i + dx][j + dy] != '#') {
-                        edges.push_back(make_pair(m * i + j, m * (i + dx) + j + dy));
-                        pos.push_back(edges.back().second);
+                        edges[m * i + j].push_back(make_pair(c, m * (i + dx) + j + dy));
+                        edges[m * (i + dx) + j + dy].push_back(make_pair(c,m * i + j ));
+                        myMap[make_pair(m * i + j, m * (i + dx) + j + dy)] = c;
+                        myMap[make_pair(m * (i + dx) + j + dy,m * i + j)] = c;
+                        c++;
                     }
                 }
             }
@@ -211,8 +117,6 @@ int main() {
             else if (grid[i][j] == 'B') cur.box = make_pair(i, j);
         }
     }
-    Tree myTree;
-    myTree.init(n * m, edges.size(), edges, m * cur.me.first + cur.me.second);
     queue<pair<int,int> > dum;
     dum.push(cur.me);
     set<pair<int,int> > s;
@@ -237,6 +141,8 @@ int main() {
     }
     set<State> vis;
     set<int> pos;
+    biconnected_components g(edges);
+    cout << '\n';
     while (!myQueue.empty()) {
         State myState = myQueue.front();
         myQueue.pop();
@@ -251,10 +157,16 @@ int main() {
                 if (abs(dx) + abs(dy) != 1) continue;
                 pair<int,int> new_me = make_pair(myState.box.first + dx, myState.box.second + dy);
                 if (new_me.first < 0 || new_me.second < 0 || new_me.first == n || new_me.second == m || grid[new_me.first][new_me.second] == '#') continue;
-                if (!myTree.myMap[make_pair(myState.box.first * m + myState.box.second, make_pair(myState.me.first * m + myState.me.second, new_me.first * m +new_me.second))]) continue;
+                //if (!myTree.myMap[make_pair(myState.box.first * m + myState.box.second, make_pair(myState.me.first * m + myState.me.second, new_me.first * m +new_me.second))]) continue;
+                int a = myMap[make_pair(myState.me.first * m + myState.me.second, myState.box.first * m + myState.box.second)];
+                int b = myMap[make_pair(new_me.first * m + new_me.second, myState.box.first * m + myState.box.second)];
+                //cout << a << " " << b << " " << g[a] << " " << g[b] << '\n';
+                if (g[a] != g[b]) continue;
+                myState.print();
                 State nxt;
                 nxt.box = myState.box;
                 nxt.me = new_me;
+                nxt.print();
                 myQueue.push(nxt);
             }
         }
