@@ -1,634 +1,169 @@
-#include <bits/stdc++.h>
-
-#pragma GCC optimize("O2")
-#pragma GCC optimize("avx2")
+#include <cmath>
+#include <iostream>
+#include <set>
+#include <vector>
+#include <climits>
+#include <algorithm>
+#include <cassert>
+#include <vector>
+#include <iomanip>
+#include <type_traits>
+#include <string>
+#include <queue>
+#include <map>
+#pragma GCC target ("avx2")
+#pragma GCC optimization ("O3")
+#pragma GCC optimization ("unroll-loops")
 using namespace std;
-template <class T> struct is_iterator {
-    template <class U, typename enable_if<!is_convertible<U, const char*>::value, int>::type = 0>
-    constexpr static auto has_indirection(int) -> decltype(*declval<U>(), bool()) { return true; }
-    template <class> constexpr static bool has_indirection(long) { return false; }
-    constexpr static bool value = has_indirection<T>(0);
-};
 
-using uint = unsigned int;
-// Buffer size should be 2^12 or 2^13 for optimal performance with files.
-const uint BUFFER_SIZE = 1 << 12;
-// Maximum possible length of a string representing primitive type
-// assuming we won't encounter huge double values.
-const uint MAX_LENGTH = 1 << 7;
-
-namespace Detail {
-    struct Width { uint value; };
-    struct Fill { char value; };
-    struct Base { uint value; };
-    struct Precision { uint value; };
-    struct Delimiter { const char* value; };
-}  // namespace Detail
-
-Detail::Width setWidth(uint value = 0) { return {value}; }
-Detail::Fill setFill(char value = ' ') { return {value}; }
-Detail::Base setBase(uint value = 10) { assert(2 <= value && value <= 36); return {value}; }
-Detail::Precision setPrecision(uint value = 9) { assert(value < MAX_LENGTH); return {value}; }
-Detail::Delimiter setDelimiter(const char* value = " ") { return {value}; }
-
-/******************************* input classes ********************************/
-class InputDevice {
-protected:
-    const char* head;
-    const char* tail;
-
-    InputDevice(const char* head, const char* tail) : head(head), tail(tail), base(setBase().value) {}
-
-    virtual void fillInput() = 0;
-
-    inline char nextChar() {
-        if (__builtin_expect(head >= tail, false)) fillInput();
-        return *head++;
-    }
-
-    template <class I> int readUnsignedIntGeneral(I& arg, char c) {
-        I value = 0;
-        int length = 0;
-        for (;; ++length, c = nextChar()) {
-            if (isDigit(c)) c -= '0';
-            else if (isUpper(c)) c -= 'A' - 10;
-            else if (isLower(c)) c -= 'a' - 10;
-            else c = base;
-            if (c >= base) break;
-            value = base * value + c;
-        }
-        arg = value;
-        return --head, length;
-    }
-
-    template <class I> inline int readUnsignedInt(I& arg, char c) {
-        if (__builtin_expect(base > 10, false)) return readUnsignedIntGeneral(arg, c);
-        I value = 0;
-        int length = 0;
-        for (; static_cast<unsigned char>(c - '0') < base; ++length, c = nextChar())
-            value = base * value + c - '0';
-        arg = value;
-        return --head, length;
-    }
-
-    template <class I> inline bool readSignedInt(I& arg, char c) {
-        bool negative = c == '-';
-        if (negative) c = nextChar();
-        typename make_unsigned<I>::type unsignedArg;
-        if (readUnsignedInt(unsignedArg, c) == 0) return false;
-        arg = negative ? ~static_cast<I>(unsignedArg - 1) : static_cast<I>(unsignedArg);
-        return true;
-    }
-
-    template <class F> bool readFloatingPoint(F& arg, char c) {
-        bool negative = c == '-';
-        if (negative) c = nextChar();
-        unsigned long long integerPart;
-        if (readUnsignedInt(integerPart, c) == 0) return false;
-        arg = static_cast<F>(integerPart);
-        if (nextChar() == '.') {
-            unsigned long long fractionalPart = 0;
-            int fractionalLength = readUnsignedInt(fractionalPart, nextChar());
-            if (fractionalLength > 0) {
-                unsigned long long basePower = 1;
-                for (; fractionalLength; --fractionalLength) basePower *= base;
-                arg += static_cast<F>(fractionalPart) / basePower;
-            }
-        } else --head;
-        if (negative) arg = -arg;
-        return true;
-    }
-
+class Graph {
 public:
-    uint base;
-
-    InputDevice(InputDevice const&) = delete;
-    InputDevice& operator = (InputDevice const&) = delete;
-
-    static inline bool isSpace(char c) { return static_cast<unsigned char>(c - '\t') < 5 || c == ' '; }
-    static inline bool isDigit(char c) { return static_cast<unsigned char>(c - '0') < 10; }
-    static inline bool isUpper(char c) { return static_cast<unsigned char>(c - 'A') < 26; }
-    static inline bool isLower(char c) { return static_cast<unsigned char>(c - 'a') < 26; }
-    static inline bool isOneOf(char c, const char* str) { return strchr(str, c) != nullptr; }
-
-    void putBack() { --head; }  // can be called only once directly after successfully reading a character
-
-    inline bool readChar(char& arg) {
-        if (__builtin_expect(head >= tail, false)) {
-            fillInput();
-            if (__builtin_expect(head >= tail, false)) return arg = '\0', false;
+    void add_edge (int a, int b) {
+        adj[a].push_back(b);
+        rev_adj[b].push_back(a);
+    }
+    Graph (int n) {
+        adj.resize(n), rev_adj.resize(n);
+    }
+    vector<int> order;
+    vector<vector<int> > v;
+    vector<vector<int> > adj;
+    vector<vector<int> > rev_adj;
+    vector<bool> hasVisited;
+    void dfs1 (int curNode) {
+        if (hasVisited[curNode]) return;
+        hasVisited[curNode] = true;
+        for (int i: adj[curNode]) {
+            dfs1 (i);
         }
-        return arg = *head++, true;
+        order.push_back(curNode);
     }
-
-    template <class UnaryPredicate>
-    inline char skipCharacters(UnaryPredicate isSkipped) {
-        char c;
-        do { c = nextChar(); } while (isSkipped(c));
-        return c;
-    }
-    inline char skipCharacters() { return skipCharacters(isSpace); }
-
-    template <class UnaryPredicate>
-    inline int readString(char* arg, int limit, UnaryPredicate isTerminator) {
-        skipCharacters(isTerminator);
-        // put back first non-skipped character, reserve space for null character
-        int charsRead = 0;
-        for (--head, --limit; head < tail; fillInput()) {
-            ptrdiff_t chunkSize = find_if(head, min(tail, head + limit - charsRead), isTerminator) - head;
-            arg = copy_n(head, chunkSize, arg);
-            head += chunkSize;
-            charsRead += chunkSize;
-            if (chunkSize == 0 || head < tail) break;
+    void dfs2 (int curNode) {
+        if (hasVisited[curNode]) return;
+        v.back().push_back(curNode);
+        hasVisited[curNode] = true;
+        for (int i: rev_adj[curNode]) {
+            dfs2(i);
         }
-        return *arg = '\0', charsRead;
     }
-
-    inline int readString(char* arg, int limit, const char* terminators) {
-        if (!*terminators) return readString(arg, limit, InputDevice::isSpace);
-        return readString(arg, limit, [terminators](char c) { return InputDevice::isOneOf(c, terminators); });
+    void dfs (vector<int>& dp, vector<int>&sz, vector< set<int> >& adj1, int curNode, int tot) {
+        dp[curNode] = max(dp[curNode], tot);
+        for (int i: adj1[curNode]) {
+            dfs(dp, sz, adj1, i, tot + sz[i]);
+        }
     }
-
-    // property setters
-    inline bool read(Detail::Base newBase) { base = newBase.value; return true; }
-    // primitive types
-    inline bool read() { return true; }
-    inline bool read(char& arg) { return readChar(arg); }
-    template <class I> inline typename enable_if<is_integral<I>::value && is_unsigned<I>::value,
-            bool>::type read(I& arg) { return readUnsignedInt(arg, skipCharacters()) > 0; }
-    template <class I> inline typename enable_if<is_integral<I>::value && is_signed<I>::value,
-            bool>::type read(I& arg) { return readSignedInt(arg, skipCharacters()); }
-    template <class F> inline typename enable_if<is_floating_point<F>::value,
-            bool>::type read(F& arg) { return readFloatingPoint(arg, skipCharacters()); }
-    // characters skip
-    inline bool read(const char& arg) { skipCharacters([arg](char c) { return arg != c; }); return true; }
-    inline bool read(const char* arg) {
-        if (*arg) skipCharacters([arg](char c) { return InputDevice::isOneOf(c, arg); });
-        else skipCharacters();
-        return putBack(), true;
+    int get_max (vector<int> v) {
+        int myMax = 0;
+        for (int i: v) {
+            myMax = max(myMax, i);
+        }
+        return myMax;
     }
-    inline bool read(bool (*isSkipped)(char)) { skipCharacters(isSkipped); putBack(); return true; }
-    // strings
-    template <class I, class Terminator, class... Ts> inline typename enable_if<is_integral<I>::value,
-            bool>::type read(char* arg, I limit, Terminator terminator, Ts&&... args) {
-        readString(arg, static_cast<int>(limit), terminator);
-        return read(forward<Ts>(args)...);
-    }
-    template <class I> inline typename enable_if<is_integral<I>::value,
-            bool>::type read(char* arg, I limit) { return read(arg, limit, ""); }
-    template <class... Ts>
-    inline bool read(char* first, char* last, Ts&&... args) {
-        return read(first, static_cast<int>(last - first), forward<Ts>(args)...);
-    }
-    template <int N, class... Ts>
-    inline bool read(char (&arg)[N], Ts&&... args) { return read(static_cast<char*>(arg), N, forward<Ts>(args)...); }
-    template <class Terminator, class... Ts>
-    inline bool read(string& arg, Terminator terminator, Ts&&... args) {
-        for (int length = 16, last = 0;; last += length, length <<= 1) {
-            arg.resize(last + length);
-            int charsRead = readString(&arg[last], length + 1, terminator);
-            if (charsRead < length) {
-                arg.resize(last + charsRead);
-                return read(forward<Ts>(args)...);
+    void read() {
+        hasVisited.assign(adj.size(), false);
+        for (int i = 0; i < adj.size(); i++) {
+            dfs1(i);
+        }
+        hasVisited.assign(adj.size(), false);
+        reverse(order.begin(), order.end());
+        for (int i = 0; i < adj.size(); i++) {
+            if (!hasVisited[order[i]]) {
+                vector<int> dum;
+                v.push_back(dum);
+                dfs2(order[i]);
             }
         }
-    }
-    inline bool read(string& arg) { return read(arg, ""); }
-    // complex types and ranges
-    template <class T1, class T2>
-    inline bool read(pair<T1, T2>& arg) { return read(arg.first, arg.second); }
-    template <class T>
-    inline bool read(complex<T>& arg) {
-        T real, imag;
-        if (!read(real, imag)) return false;
-        arg.real(real), arg.imag(imag);
-        return true;
-    }
-    template <class T>
-    inline bool read(vector<T>& arg) {
-        uint n;
-        if (!read(n)) return false;
-        arg.resize(n);
-        return read(arg.begin(), arg.end());
-    }
-    template <class Iterator, class... Ts> inline typename enable_if<is_iterator<Iterator>::value,
-            bool>::type read(Iterator first, Iterator last, Ts&&... args) {
-        for (; first != last; ++first) if (!read(*first)) return false;
-        return read(forward<Ts>(args)...);
-    }
-    template <class Iterator, class I, class... Ts>
-    inline typename enable_if<is_iterator<Iterator>::value && is_integral<I>::value,
-            bool>::type read(Iterator first, I count, Ts&&... args) { return read(first, first + count, forward<Ts>(args)...); }
-    // generic forwarding
-    template <class T>
-    inline auto read(T& arg) -> decltype(arg.read(*this)) { return arg.read(*this); }
-    template <class T0, class T1, class... Ts>
-    inline typename enable_if<!is_iterator<T0>::value && !is_convertible<T0, char*>::value,
-            bool>::type read(T0&& arg0, T1&& arg1, Ts&&... args) {
-        return read(forward<T0>(arg0)) && read(forward<T1>(arg1), forward<Ts>(args)...);
-    }
-};
-
-class InputFile : public InputDevice {
-    FILE* file;
-    bool lineBuffered;
-    bool owner;
-    char buffer[BUFFER_SIZE];
-
-    void fillInput() override {
-        head = buffer;
-        *buffer = '\0';
-        if (__builtin_expect(!lineBuffered, true)) {
-            tail = head + fread(buffer, 1, BUFFER_SIZE, file);
-        } else {
-            tail = head;
-            if (fgets(buffer, BUFFER_SIZE, file)) while (*tail) ++tail;
-        }
-    }
-
-public:
-    InputFile(FILE* file = stdin, bool lineBuffered = true, bool takeOwnership = false)
-            : InputDevice(buffer, buffer) , file(file), lineBuffered(lineBuffered), owner(takeOwnership) {}
-    InputFile(const char* fileName) : InputFile(fopen(fileName, "r"), false, true) {}
-    ~InputFile() { if (owner) fclose(file); }
-};
-
-// Picks up data appended to the string but doesn't handle reallocation.
-class InputString : public InputDevice {
-    void fillInput() override { while (*tail) ++tail; }
-
-public:
-    InputString(const string& s) : InputDevice(s.data(), s.data() + s.size()) {}
-    InputString(const char* s) : InputDevice(s, s + strlen(s)) {}
-};
-
-/******************************* output classes *******************************/
-class OutputDevice {
-protected:
-    char buffer[BUFFER_SIZE + MAX_LENGTH];
-    char* output;
-    char* end;
-    bool separate;
-
-    OutputDevice() : output(buffer), end(buffer + BUFFER_SIZE + MAX_LENGTH), separate(false)
-            , width(setWidth().value), fill(setFill().value), base(setBase().value), precision(setPrecision().value)
-            , delimiter(setDelimiter().value) { computeBasePower(); }
-
-    virtual void writeToDevice(uint count) = 0;
-
-    inline void flushMaybe() {
-        if (__builtin_expect(output >= buffer + BUFFER_SIZE, false)) {
-            writeToDevice(BUFFER_SIZE);
-            output = copy(buffer + BUFFER_SIZE, output, buffer);
-        }
-    }
-
-    void computeBasePower() {
-        basePower = 1;
-        for (uint i = 0; i < precision; ++i) basePower *= base;
-    }
-
-    template <class I> inline char* writeUnsignedInt(I arg, char* last) {
-        if (__builtin_expect(arg == 0, false)) *--last = '0';
-        if (__builtin_expect(base == 10, true)) {
-            for (; arg; arg /= 10) *--last = '0' + arg % 10;
-        } else for (; arg; arg /= base) {
-                I digit = arg % base;
-                *--last = digit < 10 ? '0' + digit : 'A' - 10 + digit;
+        vector<int> id(adj.size());
+        for (int i = 0; i < v.size(); i++) {
+            for (int j: v[i]) {
+                id[j] = i;
             }
-        return last;
-    }
-
-    template <class I> inline char* writeSignedInt(I arg, char* last) {
-        auto unsignedArg = static_cast<typename make_unsigned<I>::type>(arg);
-        if (arg < 0) {
-            last = writeUnsignedInt(~unsignedArg + 1, last);
-            *--last = '-';
-            return last;
         }
-        return writeUnsignedInt(unsignedArg, last);
-    }
-
-    template <class F> char* writeFloatingPoint(F arg, char* last) {
-        bool negative = signbit(arg);
-        if (negative) arg = -arg;
-        if (isnan(arg)) for (int i = 0; i < 3; ++i) *--last = i["NaN"];
-        else if (isinf(arg)) for (int i = 0; i < 3; ++i) *--last = i["fnI"];
-        else {
-            auto integerPart = static_cast<unsigned long long>(arg);
-            auto fractionalPart = static_cast<unsigned long long>((arg - integerPart) * basePower + F(0.5));
-            if (fractionalPart >= basePower) ++integerPart, fractionalPart = 0;
-            char* point = last - precision;
-            if (precision > 0) {
-                ::fill(point, writeUnsignedInt(fractionalPart, last), '0');
-                *--point = '.';
+        vector<vector<int> > new_adj(v.size()), new_adj_rev(v.size());
+        vector<int> deg; deg.assign(v.size(), 0);
+        for (int i = 0; i < adj.size(); i++) {
+            for (int j: adj[i]) {
+                if (id[i] != id[j]) {
+                    new_adj[id[i]].push_back(id[j]);
+                    new_adj_rev[id[j]].push_back(id[i]);
+                }
             }
-            last = writeUnsignedInt(integerPart, point);
         }
-        if (negative) *--last = '-';
-        return last;
-    }
-
-    inline int writeT(char* first) {
-        int delimiterLenght = separate ? writeDelimiter() : 0;
-        separate = true;
-        uint charsWritten = static_cast<uint>(end - first);
-        if (__builtin_expect(charsWritten < width, false))
-            charsWritten += writeFill(width - charsWritten);
-        output = copy(first, end, output);
-        flushMaybe();
-        return delimiterLenght + static_cast<int>(charsWritten);
-    }
-
-    inline int writeFill(uint count) {
-        int charsWritten = static_cast<int>(count);
-        if (__builtin_expect(output + count + MAX_LENGTH < end, true)) {
-            if (count == 1) *output++ = fill;
-            else output = fill_n(output, count, fill);
-        } else for (uint chunkSize = static_cast<uint>(buffer + BUFFER_SIZE - output);; chunkSize = BUFFER_SIZE) {
-                if (chunkSize > count) chunkSize = count;
-                output = fill_n(output, chunkSize, fill);
-                flushMaybe();
-                if ((count -= chunkSize) == 0) break;
+        queue<int> q;
+        for (int i = 0; i < v.size(); i++) {
+            deg[i] = new_adj[i].size();
+            if (deg[i] == 0) {
+                q.push(i);
             }
-        return charsWritten;
-    }
-
-public:
-    uint width;
-    char fill;
-    uint base;
-    uint precision;
-    unsigned long long basePower;
-    string delimiter;
-
-    OutputDevice(OutputDevice const&) = delete;
-    OutputDevice& operator = (OutputDevice const&) = delete;
-    virtual ~OutputDevice() {};
-
-    inline int writeChar(char arg) { separate = false; *output++ = arg; flushMaybe(); return 1; }
-
-    inline int writeString(const char* arg, size_t length, bool checkWidth = true) {
-        separate = false;
-        uint count = static_cast<uint>(length);
-        int charsWritten = static_cast<int>(count) + (checkWidth && count < width ? writeFill(width - count) : 0);
-        if (__builtin_expect(output + count + MAX_LENGTH < end, true)) {
-            if (count == 1) *output++ = *arg;
-            else output = copy_n(arg, count, output);
-        } else for (uint chunkSize = static_cast<uint>(buffer + BUFFER_SIZE - output);; chunkSize = BUFFER_SIZE) {
-                if (chunkSize > count) chunkSize = count;
-                output = copy_n(arg, chunkSize, output);
-                flushMaybe();
-                if ((count -= chunkSize) == 0) break;
-                arg += chunkSize;
+        }
+        vector<int> nodes;
+        while (!q.empty()) {
+            int x = q.front();
+            nodes.push_back(x);
+            q.pop();
+            for (int i: new_adj_rev[x]) {
+                deg[i]--;
+                if (deg[i] == 0) {
+                    q.push(i);
+                }
             }
-        return charsWritten;
-    }
-
-    inline int writeDelimiter() { return writeString(delimiter.c_str(), delimiter.size(), false); }
-
-    inline void flush() {
-        writeToDevice(static_cast<uint>(output - buffer));
-        output = buffer;
-    }
-
-    // property setters
-    inline int write(Detail::Width newWidth) { width = newWidth.value; return 0; }
-    inline int write(Detail::Fill newFill) { fill = newFill.value; return 0; }
-    inline int write(Detail::Base newBase) { base = newBase.value; computeBasePower(); return 0; }
-    inline int write(Detail::Precision newPrecision) {
-        precision = newPrecision.value; computeBasePower(); return 0;
-    }
-    inline int write(Detail::Delimiter newDelimiter) { delimiter = newDelimiter.value; return 0; }
-    // primitive types
-    inline int write() { return 0; }
-    inline int write(char arg) { return writeChar(arg); }
-    template <class I> inline typename enable_if<is_integral<I>::value && is_unsigned<I>::value,
-            int>::type write(I arg) { return writeT(writeUnsignedInt(arg, end)); }
-    template <class I> inline typename enable_if<is_integral<I>::value && is_signed<I>::value,
-            int>::type write(I arg) { return writeT(writeSignedInt(arg, end)); }
-    template <class F> inline typename enable_if<is_floating_point<F>::value,
-            int>::type write(F arg) { return writeT(writeFloatingPoint(arg, end)); }
-    // complex types
-    inline int write(const char* arg) { return writeString(arg, strlen(arg)); }
-    template <int N>
-    inline int write(char (&arg)[N]) { return writeString(arg, strlen(arg)); }
-    inline int write(const string& arg) { return writeString(arg.c_str(), arg.size()); }
-    template <class T1, class T2>
-    inline int write(const pair<T1, T2>& arg) {
-        int charsWritten = write(arg.first);
-        charsWritten += writeDelimiter();
-        return charsWritten + write(arg.second);
-    }
-    template <class T>
-    inline int write(const complex<T>& arg) { return write(real(arg), imag(arg)); }
-    // ranges
-    template <class Iterator, class... Ts> inline typename enable_if<is_iterator<Iterator>::value,
-            int>::type write(Iterator first, Iterator last, Ts&&... args) {
-        int charsWritten = 0;
-        for (; first != last; charsWritten += ++first == last ? 0 : writeDelimiter()) charsWritten += write(*first);
-        return charsWritten + write(forward<Ts>(args)...);
-    }
-    template <class Iterator, class I, class... Ts>
-    inline typename enable_if<is_iterator<Iterator>::value && is_integral<I>::value,
-            int>::type write(Iterator first, I count, Ts&&... args) { return write(first, first + count, forward<Ts>(args)...); }
-    // generic forwarding
-    template <class T>
-    inline auto write(const T& arg) -> decltype(arg.write(*this)) { return arg.write(*this); }
-    template <class T0, class T1, class... Ts> inline typename enable_if<!is_iterator<T0>::value,
-            int>::type write(T0&& arg0, T1&& arg1, Ts&&... args) {
-        int charsWritten = write(forward<T0>(arg0));
-        return charsWritten + write(forward<T1>(arg1), forward<Ts>(args)...);
+        }
+        vector<vector<int> > act(v.size());
+        for (int i = 0; i < v.size(); i++) {
+            act[i] = v[nodes[i]];
+            for (int j: act[i]) {
+                id[j] = i;
+            }
+        }
+        int ans = 0;
+        reverse(act.begin(), act.end());
+        vector<int> sz;
+        sz.assign((int)v.size(), 0);
+        vector<set<int> > adj1(v.size());
+        for (int i = 0; i < adj.size(); i++) {
+            sz[id[i]]++;
+            for (int j: adj[i]) {
+                if (id[i] != id[j]) {
+                    adj1[id[i]].insert(id[j]);
+                }
+            }
+        }
+        vector<int> dp = sz;
+        dfs(dp, sz, adj1, id[0], 0);
+        int prev = get_max(dp);
+        adj1.clear(); adj1.resize(v.size());
+        for (int i = 0; i < adj.size(); i++) {
+            for (int j: adj[i]) {
+                if (id[i] != id[j]) {
+                    adj1[id[j]].insert(id[i]);
+                }
+            }
+        }
+        vector<int> dp1 = sz;
+        dfs(dp1, sz, adj1, id[0], sz[id[0]]);
+        int myMax = sz[id[0]];
+        for (int i = 0; i < adj.size(); i++) {
+            for (int j: adj[i]) {
+                if (id[i] != id[j] && id[i] > id[0] && id[j] < id[0]) {
+                    //cout << id[i] << " " << id[j] << " " << dp1[id[i]] << " " << dp[id[j]] << '\n';
+                    myMax = max(dp1[id[i]] + dp[id[j]], myMax);
+                }
+            }
+        }
+        cout << myMax << '\n';
     }
 };
 
-class OutputFile : public OutputDevice {
-    FILE* file;
-    bool owner;
-
-    void writeToDevice(uint count) override {
-        fwrite(buffer, 1, count, file);
-        fflush(file);
-    }
-
-public:
-    OutputFile(FILE* file = stdout, bool takeOwnership = false) : file(file), owner(takeOwnership) {}
-    OutputFile(const char* fileName) : OutputFile(fopen(fileName, "w"), true) {}
-    ~OutputFile() override { flush(); if (owner) fclose(file); }
-};
-
-class OutputString : public OutputDevice {
-    string& str;
-
-    void writeToDevice(uint count) override { str.append(buffer, count); }
-
-public:
-    OutputString(string& str) : OutputDevice(), str(str) {}
-    ~OutputString() override { flush(); }
-};
-
-unique_ptr<InputDevice> input;
-unique_ptr<OutputDevice> output;
-
-template <class... Ts> inline bool read(Ts&&... args) { return input->read(forward<Ts>(args)...); }
-template <class... Ts> inline int write(Ts&&... args) { return output->write(forward<Ts>(args)...); }
-template <class... Ts> inline int writeln(Ts&&... args) { return write(forward<Ts>(args)..., '\n'); }
-void flush() { output->flush(); }
-template<class T> struct Seg { // comb(ID,b) = b
-    const T ID = INT_MAX; T comb(T a, T b) { return min(a,b); }
-    int n; vector<T> seg;
-    void init(int _n) { n = _n; seg.assign(2*n,ID); }
-    void pull(int p) { seg[p] = comb(seg[2*p],seg[2*p+1]); }
-    void update(int p, T val) { // set val at position p
-        seg[p += n] = val; for (p /= 2; p; p /= 2) pull(p); }
-    T query(int l, int r) {	// sum on interval [l, r]
-        return seg[1];
-        T ra = ID, rb = ID;
-        for (l += n, r += n+1; l < r; l /= 2, r /= 2) {
-            if (l&1) ra = comb(ra,seg[l++]);
-            if (r&1) rb = comb(seg[--r],rb);
-        }
-        return comb(ra,rb);
-    }
-};
-struct DisjointSetUnion {
-    vector<int> parent, sz;
-    void resz (int n) {
-        parent.resize(n), sz.assign(n, 1);
-        for (int i = 0; i < n; i++) {
-            parent[i] = i;
-        }
-    }
-    int find_head (int u) {
-        int x = u;
-        while (u != parent[u]) {
-            u = parent[u];
-        }
-        return (parent[x] = u);
-    }
-    bool join (int u, int v) {
-        u = find_head(u), v = find_head(v);
-        if (u == v) {
-            return false;
-        }
-        if (sz[u] > sz[v]) {
-            swap(u, v);
-        }
-        sz[v] += sz[u], parent[u] = v;
-        return true;
-    }
-};
-
-vector<pair<int,int> >adj[200000]; //(weight, node)
-int parent[200000];
-int w[200000];
-map<pair<int,int>,int> weight;
-void dfs (int curNode, int prevNode) {
-    parent[curNode] = prevNode;
-    w[curNode] = weight[make_pair(curNode, prevNode)];
-    for (auto& p: adj[curNode]) {
-        if (p.second != prevNode) {
-            dfs (p.second, curNode);
-        }
-    }
-}
-int colors[200000];
-map<int,set<int>> myMap[200000];
-set<int> rgb[200000];
-int main () {
-    freopen("grass.in", "r", stdin);
-    freopen("grass.out", "w", stdout);
-    input.reset(new InputFile(stdin, false));
-    output.reset(new OutputFile());
-    int N, M, K, Q;
-    read(N, M, K, Q);
-    vector<pair<int,pair<int,int> > > edges;
-    for (int i = 0; i < M; i++) {
-        int u, v, w;
-        read(u, v, w);
+using namespace std;
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int n, m; cin >> n >> m;
+    Graph gr(n);
+    while (m--) {
+        int u, v; cin >> u >> v;
         u--, v--;
-        edges.push_back(make_pair(w, make_pair(u, v)));
+        gr.add_edge(u, v);
     }
-    sort(edges.begin(), edges.end());
-    int actual[edges.size()];
-    for (int i = 0; i < edges.size(); i++) {
-        actual[i] = edges[i].first;
-        weight[make_pair(edges[i].second.first, edges[i].second.second)] = weight[make_pair(edges[i].second.second, edges[i].second.first)] = i;
-        edges[i].first = i;
-    }
-    DisjointSetUnion dsu;
-    dsu.resz(N);
-    Seg<int> st;
-    st.init(N + 1);
-    for (auto& p: edges) {
-        if (dsu.join(p.second.first, p.second.second)) {
-            adj[p.second.first].push_back(make_pair(p.first, p.second.second));
-            adj[p.second.second].push_back(make_pair(p.first, p.second.first));
-        }
-    }
-    dfs (0, 0);
-    for (int i = 0; i < N; i++) {
-        read(colors[i]);
-    }
-    for (int i = 0; i < N; i++) {
-        for (auto& p: adj[i]) {
-            if (p.second == parent[i]) {
-                continue;
-            }
-            myMap[i][colors[p.second]].insert(p.first);
-        }
-    }
-    for (int i = 0; i < N; i++) {
-        for (auto& p: myMap[i]) {
-            if (p.first != colors[i]) {
-                rgb[i].insert(*p.second.begin());
-            }
-        }
-    }
-    for (int i = 0; i < N; i++) {
-        if (!rgb[i].empty()) {
-            st.update(i, *rgb[i].begin());
-        }
-    }
-    while (Q--) {
-        int u, c;
-        read(u, c);
-        u--;
-        if (u != 0) {
-            if (!rgb[parent[u]].empty()) {
-                st.update(parent[u], INT_MAX);
-            }
-            if (colors[parent[u]] != colors[u]) {
-                rgb[parent[u]].erase(*myMap[parent[u]][colors[u]].begin());
-            }
-            if (c != colors[parent[u]] && !myMap[parent[u]][c].empty()) {
-                rgb[parent[u]].erase(*myMap[parent[u]][c].begin());
-            }
-            myMap[parent[u]][colors[u]].erase(w[u]);
-            myMap[parent[u]][c].insert(w[u]);
-            if (colors[u] != colors[parent[u]] && !myMap[parent[u]][colors[u]].empty()) {
-                rgb[parent[u]].insert(*myMap[parent[u]][colors[u]].begin());
-            }
-            if (c != colors[parent[u]]) {
-                rgb[parent[u]].insert(*myMap[parent[u]][c].begin());
-            }
-            if (!rgb[parent[u]].empty()) {
-                st.update(parent[u], *rgb[parent[u]].begin());
-            }
-        }
-        if (!rgb[u].empty()) {
-            st.update(u, INT_MAX);
-        }
-        if (!myMap[u][c].empty()) {
-            rgb[u].erase(*myMap[u][c].begin());
-        }
-        if (!myMap[u][colors[u]].empty()) {
-            rgb[u].insert(*myMap[u][colors[u]].begin());
-        }
-        if (!rgb[u].empty()) {
-            st.update(u, *rgb[u].begin());
-        }
-        colors[u] = c;
-        writeln(actual[st.query(0, N - 1)]);
-    }
+    gr.read();
 }
