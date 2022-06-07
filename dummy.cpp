@@ -130,7 +130,6 @@ public:
         }
         vector<int> dp = sz;
         dfs(dp, sz, adj1, id[0], 0);
-        int prev = get_max(dp);
         adj1.clear(); adj1.resize(v.size());
         for (int i = 0; i < adj.size(); i++) {
             for (int j: adj[i]) {
@@ -141,11 +140,12 @@ public:
         }
         vector<int> dp1 = sz;
         dfs(dp1, sz, adj1, id[0], sz[id[0]]);
-        int myMax = sz[id[0]];
+        int myMax = 0;
         for (int i = 0; i < adj.size(); i++) {
+            myMax = max(dp1[id[i]], myMax);
+            myMax = max(dp[id[i]], myMax);
             for (int j: adj[i]) {
                 if (id[i] != id[j] && id[i] > id[0] && id[j] < id[0]) {
-                    //cout << id[i] << " " << id[j] << " " << dp1[id[i]] << " " << dp[id[j]] << '\n';
                     myMax = max(dp1[id[i]] + dp[id[j]], myMax);
                 }
             }
