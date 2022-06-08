@@ -109,31 +109,29 @@ public:
     void solve (int x) {
         myMapUp.clear(), myMapDown.clear();
         dfs_sub (x, -1);
-        int centroid = find_centroid(x, -1); //centroid of the tree
+        int centroid = find_centroid(x, -1); 
         dfs_sub (centroid, -1);
-        //cout << "GET " << centroid + 1 << '\n';
         hasVisited[centroid] = true;
         up[centroid].min_depth = min(sgn[centroid], 0);
         up[centroid].cur_depth = sgn[centroid];
         up[centroid].max_depth = max(sgn[centroid], 0);
         down[centroid] = up[centroid];
-        for (int dum: adj[centroid]) {
-            if (hasVisited[dum]) continue;
-            vector<int> v = update(dum);
-            for (int i: v) {
-                ans = max(ans, myMapUp[make_pair(sgn[centroid] - down[i].cur_depth, 0)]);
+        int t = 2;
+        while (t--) {
+            myMapUp.clear(), myMapDown.clear();
+            for (int dum: adj[centroid]) {
+                if (hasVisited[dum]) continue;
+                for (int i: update(dum)) {
+                    if (up[i].min_depth == 0) {
+                        if (myMapDown.count(make_pair(sgn[centroid] - up[i].cur_depth, sgn[centroid] - up[i].cur_depth))) {
+                            ans = max(ans, max(up[i].cur_depth - sgn[centroid], 0) + myMapDown[make_pair(sgn[centroid] - up[i].cur_depth, sgn[centroid] - up[i].cur_depth)]);
+                        }
+                    }
+                    ans = max(ans, myMapUp[make_pair(sgn[centroid] - down[i].cur_depth, 0)]);
+                }
+                add(dum);
             }
-            add(dum);
-        }
-        myMapUp.clear(), myMapDown.clear();
-        reverse(adj[centroid].begin(), adj[centroid].end());
-        for (int dum: adj[centroid]) {
-            if (hasVisited[dum]) continue;
-            vector<int> v = update(dum);
-            for (int i: v) {
-                ans = max(ans, myMapUp[make_pair(sgn[centroid] - down[i].cur_depth, 0)]);
-            }
-            add(dum);
+            reverse(adj[centroid].begin(), adj[centroid].end());
         }
         for (int i: adj[centroid]) {
             if (!hasVisited[i]) {
