@@ -76,7 +76,6 @@ public:
     }
     vector<int> update (int st) {
         vector<int> tot;
-        //cout << "? " << st + 1 << '\n';
         queue<int> q;
         q.push(st);
         while (!q.empty()) {
@@ -93,16 +92,15 @@ public:
             up[x].max_depth = max(up[x].max_depth, 0);
             down[x].min_depth = min(down[x].min_depth, 0);
             down[x].max_depth = max(down[x].max_depth, 0);
-            //cout << "|" << x + 1 << " " << parent[x] + 1 << '\n';
+            if (up[x].cur_depth == 0 && up[x].min_depth == 0) {
+                ans = max(ans, up[x].max_depth);
+            }
+            if (down[x].cur_depth == 0 && down[x].min_depth == 0) {
+                ans = max(ans, down[x].max_depth);
+            }
             for (int i: adj[x]) {
                 if (i != parent[x] && !hasVisited[i]) {
                     q.push(i);
-                    if (up[i].cur_depth == 0 && up[i].min_depth == 0) {
-                        ans = max(ans, up[i].max_depth);
-                    }
-                    if (down[i].cur_depth == 0 && down[i].min_depth == 0) {
-                        ans = max(ans, down[i].max_depth);
-                    }
                 }
             }
         }
@@ -115,8 +113,6 @@ public:
         dfs_sub (centroid, -1);
         //cout << "GET " << centroid + 1 << '\n';
         hasVisited[centroid] = true;
-        queue<int> q;
-        q.push(centroid);
         up[centroid].min_depth = min(sgn[centroid], 0);
         up[centroid].cur_depth = sgn[centroid];
         up[centroid].max_depth = max(sgn[centroid], 0);
@@ -125,7 +121,6 @@ public:
             if (hasVisited[dum]) continue;
             vector<int> v = update(dum);
             for (int i: v) {
-                //cout << i << '\n';
                 ans = max(ans, myMapDown[make_pair(sgn[centroid] - up[i].cur_depth, sgn[centroid] - up[i].cur_depth)]);
                 ans = max(ans, myMapUp[make_pair(sgn[centroid] - down[i].cur_depth, 0)]);
             }
@@ -139,8 +134,8 @@ public:
     }
 };
 int main() {
-    freopen("btree.in", "r", stdin);
-    freopen("btree.out", "w", stdout);
+    //freopen("btree.in", "r", stdin);
+    //freopen("btree.out", "w", stdout);
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     int n;
