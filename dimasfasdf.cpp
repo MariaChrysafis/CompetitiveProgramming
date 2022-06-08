@@ -121,7 +121,16 @@ public:
             if (hasVisited[dum]) continue;
             vector<int> v = update(dum);
             for (int i: v) {
-                ans = max(ans, myMapDown[make_pair(sgn[centroid] - up[i].cur_depth, sgn[centroid] - up[i].cur_depth)]);
+                ans = max(ans, myMapUp[make_pair(sgn[centroid] - down[i].cur_depth, 0)]);
+            }
+            add(dum);
+        }
+        myMapUp.clear(), myMapDown.clear();
+        reverse(adj[centroid].begin(), adj[centroid].end());
+        for (int dum: adj[centroid]) {
+            if (hasVisited[dum]) continue;
+            vector<int> v = update(dum);
+            for (int i: v) {
                 ans = max(ans, myMapUp[make_pair(sgn[centroid] - down[i].cur_depth, 0)]);
             }
             add(dum);
@@ -134,8 +143,8 @@ public:
     }
 };
 int main() {
-    //freopen("btree.in", "r", stdin);
-    //freopen("btree.out", "w", stdout);
+    freopen("btree.in", "r", stdin);
+    freopen("btree.out", "w", stdout);
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     int n;
