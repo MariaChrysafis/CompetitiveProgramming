@@ -19,35 +19,12 @@ struct SparseTable {
         }
     }
 };
-int first_oc (SparseTable& st, int val, int left) {
-    //find the first occurence of val which appears after left
-    if (st.queryMin(left, st.dp_min.size() - 1) > val) {
-        return -1;
+int rng (vector<int>&v, int l, int r) {
+    int ans = 0;
+    for (int i: v) {
+        ans += (i >= l && i <= r);
     }
-    int l = left;
-    int r = st.dp_min.size() - 1;
-    while (l != r) {
-        int m = (l + r)/2;
-        if (st.queryMin(left, m) < val) {
-            l = m + 1;
-        } else {
-            r = m;
-        }
-    }
-    return l;
-}
-vector<int> intersection (vector<int> a, vector<int> b) {
-    set<int> ma;
-    for (int i: a) {
-        ma.insert(i);
-    }
-    vector<int> tot;
-    for (int i: b) {
-        if (ma.count(i)) {
-            tot.push_back(i);
-        }
-    }
-    return tot;
+    return ans;
 }
 int main() {
     ios_base::sync_with_stdio(false);
@@ -57,7 +34,10 @@ int main() {
     int n, k;
     cin >> n >> k;
     SparseTable st[n];
-    map<int,vector<int> > myMap[n];
+    int64_t hash[k + 1];
+    for (int i = 0; i <= k; i++) {
+        hash[i] = 0;
+    }
     for (int i = 0; i < n; i++) {
         vector<int> pref; pref.push_back(0);
         string s;
@@ -65,10 +45,21 @@ int main() {
         for (int j = 0; j < k; j++) {
             pref.push_back(pref.back() + ((s[j] == ')') ?  -1 : 1));
         }
-        for (int j = 0 ; j < pref.size(); j++) {
-            myMap[i][pref[j]].push_back(j);
-        }
         st[i].resz(pref);
+    }
+    int64_t MOD = 1e9 + 9;
+    int64_t powr = 1;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j <= k; j++) {
+            hash[j] += (st[i].queryMin(j, j) + MOD) % MOD * powr;
+            hash[j] %= MOD;
+        }
+        powr *= 100;
+        powr %= MOD;
+    }
+    map<int,vector<int> > myMap;
+    for (int i = 0; i <= k; i++) {
+        myMap[hash[i]].push_back(i);
     }
     int ans = 0;
     for (int i = 0; i <= k - 1; i++) { //k is small
@@ -87,19 +78,7 @@ int main() {
             }
             myMax = min(myMax, l);
         }
-        vector<vector<int> > vec(n);
-        for (int j = 0; j < n; j++) {
-            for (int x: myMap[j][st[j].queryMin(i, i)]) {
-                if (x <= i) continue;
-                if (x > myMax) break;
-                vec[j].push_back(x);
-            }
-        }
-        vector<int> dum = vec[0];
-        for (int j = 0; j < vec.size(); j++) {
-            dum = intersection(dum, vec[j]);
-        }
-        ans += dum.size();
+        ans += rng(myMap[hash[i]], i + 1, myMax);
     }
     cout << ans;
 
