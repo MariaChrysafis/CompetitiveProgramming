@@ -13,11 +13,11 @@ struct SparseTable {
     void resz (vector<int> v) {
         dp_max.resize(v.size());
         for (int i = 0; i < v.size(); i++) {
-            dp_max[i].resize(32);
+            dp_max[i].resize(22);
             dp_max[i][0] = v[i];
         }
         dp_min = dp_max;
-        for (int j = 1; j < 32; j++) {
+        for (int j = 1; j < dp_max[0].size(); j++) {
             for (int i = 0; i < v.size(); i++) {
                 dp_max[i][j] = max(dp_max[i][j - 1], dp_max[min(i + (1 << (j - 1)), (int)dp_max.size() - 1)][j - 1]);
                 dp_min[i][j] = min(dp_min[i][j - 1], dp_min[min(i + (1 << (j - 1)), (int)dp_max.size() - 1)][j - 1]);
@@ -77,17 +77,16 @@ int main() {
         st[i].resz(pref);
     }
     int ans = 0;
-    for (int i = 0; i <= k - 1; i++) {
-        //cout << "CAN FIND " << i << '\n';
+    for (int i = 0; i <= k - 1; i++) { //k is small
         vector<vector<int> > vec(n);
         for (int j = 0; j < n; j++) {
             for (int x: myMap[j][st[j].queryMax(i, i)]) {
                 if (x <= i) continue;
-                //cout << "A\n";
                 if (st[j].queryMin(i, x) == st[j].queryMin(i, i)) {
                     vec[j].push_back(x);
+                } else {
+                    break;
                 }
-                //cout << "B\n";
             }
         }
         vector<int> dum = vec[0];
