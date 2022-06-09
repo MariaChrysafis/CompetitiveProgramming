@@ -72,15 +72,27 @@ int main() {
     }
     int ans = 0;
     for (int i = 0; i <= k - 1; i++) { //k is small
+        int myMax = k;
+        for (int j = 0; j < n; j++) {
+            if (st[j].queryMin(i, k) >= st[j].queryMin(i, i)) continue;
+            int l = i + 1;
+            int r = k;
+            while (l != r) {
+                int m = (l + r + 1)/2;
+                if (st[j].queryMin(i, m) < st[j].queryMin(i, i)) {
+                    r = m - 1;
+                } else {
+                    l = m;
+                }
+            }
+            myMax = min(myMax, l);
+        }
         vector<vector<int> > vec(n);
         for (int j = 0; j < n; j++) {
             for (int x: myMap[j][st[j].queryMin(i, i)]) {
                 if (x <= i) continue;
-                if (st[j].queryMin(i, x) == st[j].queryMin(i, i)) {
-                    vec[j].push_back(x);
-                } else {
-                    break;
-                }
+                if (x > myMax) break;
+                vec[j].push_back(x);
             }
         }
         vector<int> dum = vec[0];
