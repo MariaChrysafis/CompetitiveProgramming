@@ -13,7 +13,7 @@ struct SparseTable {
     void resz (vector<int> v) {
         dp_max.resize(v.size());
         for (int i = 0; i < v.size(); i++) {
-            dp_max[i].resize(22);
+            dp_max[i].resize(17);
             dp_max[i][0] = v[i];
         }
         dp_min = dp_max;
