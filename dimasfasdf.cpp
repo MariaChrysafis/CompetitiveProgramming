@@ -1,164 +1,101 @@
 #include <bits/stdc++.h>
 using namespace std;
-struct State {
-    int min_depth;
-    int cur_depth;
-    int max_depth;
-    void print() {
-        cout << "Minimum Depth: " << min_depth << " | Depth: " << cur_depth << " | Maximum Depth: " << max_depth << '\n';
+struct SparseTable {
+    vector<vector<int> > dp_max, dp_min;
+    int queryMin (int l, int r) {
+        int sz = log2(r - l + 1);
+        return min(dp_min[l][sz], dp_min[r - (1 << sz) + 1][sz]);
     }
-};
-class Tree {
-    vector<int> sgn, sub, parent;
-    vector<vector<int> > adj;
-    vector<bool> hasVisited;
-    vector<State> up, down;
-    int sz;
-public:
-    void upd_sgn (int x, int y) {
-        sgn[x] = y;
+    int queryMax (int l, int r) {
+        int sz = log2(r - l + 1);
+        return max(dp_max[l][sz], dp_max[r - (1 << sz) + 1][sz]);
     }
-    void add_edge (int u, int v) {
-        adj[u].push_back(v), adj[v].push_back(u);
-    }
-    Tree (int n) {
-        sgn.resize(n), adj.resize(n), hasVisited.assign(n, false), sub.resize(n);
-        parent.resize(n), up.resize(n), down.resize(n);
-    }
-    int dfs_sub (int curNode, int prevNode) {
-        parent[curNode] = prevNode;
-        sub[curNode] = 1;
-        for (int i: adj[curNode]) {
-            if (i != prevNode && !hasVisited[i]) {
-                sub[curNode] += dfs_sub(i, curNode);
-            }
+    void resz (vector<int> v) {
+        dp_max.resize(v.size());
+        for (int i = 0; i < v.size(); i++) {
+            dp_max[i].resize(32);
+            dp_max[i][0] = v[i];
         }
-        return (sz = sub[curNode]);
-    }
-    int find_centroid (int curNode, int prevNode) {
-        for (int i: adj[curNode]) {
-            if (i != prevNode && !hasVisited[i]) {
-                if (sub[i] > sz/2) {
-                    return find_centroid(i, curNode);
-                } 
-            }
-        }
-        return curNode;
-    }
-    int ans = 0;
-    map<pair<int,int> ,int> myMapUp, myMapDown;
-    void upd_myMapUp (State s) {
-        //s.print();
-        int val = s.max_depth;
-        pair<int,int> key= make_pair(s.cur_depth, s.min_depth);
-        myMapUp[key] = max(myMapUp[key], val);
-        //cout << myMapUp[key] << '\n';
-    }
-    void upd_myMapDown (State s) {
-        int val = s.max_depth;
-        pair<int,int> key= make_pair(s.cur_depth, s.min_depth);
-        myMapDown[key] = max(myMapDown[key], val);
-    }
-    void add (int st) {
-        queue<int> q;
-        q.push(st);
-        while (!q.empty()) {
-            int x = q.front();
-            q.pop();
-            upd_myMapUp(up[x]);
-            upd_myMapDown(down[x]);
-            //cout << "ADD " << x << '\n';
-            for (int i: adj[x]) {
-                if (hasVisited[i] || i == parent[x]) continue;
-                q.push(i);
-            }
-        }
-    }
-    vector<int> update (int st) {
-        vector<int> tot;
-        queue<int> q;
-        q.push(st);
-        while (!q.empty()) {
-            int x = q.front();
-            tot.push_back(x);
-            q.pop();
-            up[x].cur_depth = up[parent[x]].cur_depth + sgn[x];
-            up[x].min_depth = sgn[x] + min(0, up[parent[x]].min_depth);
-            up[x].max_depth = sgn[x] + max(0, up[parent[x]].max_depth);
-            down[x].cur_depth = down[parent[x]].cur_depth + sgn[x];
-            down[x].min_depth = min(down[x].cur_depth, down[parent[x]].min_depth);
-            down[x].max_depth = max(down[x].cur_depth, down[parent[x]].max_depth);
-            up[x].min_depth = min(up[x].min_depth, 0);
-            up[x].max_depth = max(up[x].max_depth, 0);
-            down[x].min_depth = min(down[x].min_depth, 0);
-            down[x].max_depth = max(down[x].max_depth, 0);
-            if (up[x].cur_depth == 0 && up[x].min_depth == 0) {
-                ans = max(ans, up[x].max_depth);
-            }
-            if (down[x].cur_depth == 0 && down[x].min_depth == 0) {
-                ans = max(ans, down[x].max_depth);
-            }
-            for (int i: adj[x]) {
-                if (i != parent[x] && !hasVisited[i]) {
-                    q.push(i);
-                }
-            }
-        }
-        return tot;
-    }
-    void solve (int x) {
-        myMapUp.clear(), myMapDown.clear();
-        dfs_sub (x, -1);
-        int centroid = find_centroid(x, -1); 
-        dfs_sub (centroid, -1);
-        hasVisited[centroid] = true;
-        up[centroid].min_depth = min(sgn[centroid], 0);
-        up[centroid].cur_depth = sgn[centroid];
-        up[centroid].max_depth = max(sgn[centroid], 0);
-        down[centroid] = up[centroid];
-        int t = 2;
-        while (t--) {
-            myMapUp.clear(), myMapDown.clear();
-            for (int dum: adj[centroid]) {
-                if (hasVisited[dum]) continue;
-                for (int i: update(dum)) {
-                    if (up[i].min_depth == 0) {
-                        if (myMapDown.count(make_pair(sgn[centroid] - up[i].cur_depth, sgn[centroid] - up[i].cur_depth))) {
-                            ans = max(ans, max(up[i].cur_depth - sgn[centroid], 0) + myMapDown[make_pair(sgn[centroid] - up[i].cur_depth, sgn[centroid] - up[i].cur_depth)]);
-                        }
-                    }
-                    ans = max(ans, myMapUp[make_pair(sgn[centroid] - down[i].cur_depth, 0)]);
-                }
-                add(dum);
-            }
-            reverse(adj[centroid].begin(), adj[centroid].end());
-        }
-        for (int i: adj[centroid]) {
-            if (!hasVisited[i]) {
-                solve(i);
+        dp_min = dp_max;
+        for (int j = 1; j < 32; j++) {
+            for (int i = 0; i < v.size(); i++) {
+                dp_max[i][j] = max(dp_max[i][j - 1], dp_max[min(i + (1 << (j - 1)), (int)dp_max.size() - 1)][j - 1]);
+                dp_min[i][j] = min(dp_min[i][j - 1], dp_min[min(i + (1 << (j - 1)), (int)dp_max.size() - 1)][j - 1]);
             }
         }
     }
 };
+int first_oc (SparseTable& st, int val, int left) {
+    //find the first occurence of val which appears after left
+    if (st.queryMin(left, st.dp_max.size() - 1) > val) {
+        return -1;
+    }
+    int l = left;
+    int r = st.dp_max.size() - 1;
+    while (l != r) {
+        int m = (l + r)/2;
+        if (st.queryMin(left, m) < val) {
+            l = m + 1;
+        } else {
+            r = m;
+        }
+    }
+    return l;
+}
+vector<int> intersection (vector<int> a, vector<int> b) {
+    set<int> ma;
+    for (int i: a) {
+        ma.insert(i);
+    }
+    vector<int> tot;
+    for (int i: b) {
+        if (ma.count(i)) {
+            tot.push_back(i);
+        }
+    }
+    return tot;
+}
 int main() {
-    freopen("btree.in", "r", stdin);
-    freopen("btree.out", "w", stdout);
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    int n;
-    cin >> n;
-    Tree tree(n);
-    for (int i = 1; i < n; i++) {
-        int x;
-        cin >> x;
-        x--;
-        tree.add_edge(i, x);
-    }
+    freopen("cbs.in", "r", stdin);
+    freopen("cbs.out", "w", stdout);
+    int n, k;
+    cin >> n >> k;
+    SparseTable st[n];
+    map<int,vector<int> > myMap[n];
     for (int i = 0; i < n; i++) {
-        char c;
-        cin >> c;
-        tree.upd_sgn(i, ((c == '(') ? 1 : -1));
+        vector<int> pref; pref.push_back(0);
+        string s;
+        cin >> s;
+        for (int j = 0; j < k; j++) {
+            pref.push_back(pref.back() + ((s[j] == ')') ?  -1 : 1));
+        }
+        for (int j = 0 ; j < pref.size(); j++) {
+            myMap[i][pref[j]].push_back(j);
+        }
+        st[i].resz(pref);
     }
-    tree.solve(0);
-    cout << tree.ans << '\n';
+    int ans = 0;
+    for (int i = 0; i <= k - 1; i++) {
+        //cout << "CAN FIND " << i << '\n';
+        vector<vector<int> > vec(n);
+        for (int j = 0; j < n; j++) {
+            for (int x: myMap[j][st[j].queryMax(i, i)]) {
+                if (x <= i) continue;
+                //cout << "A\n";
+                if (st[j].queryMin(i, x) == st[j].queryMin(i, i)) {
+                    vec[j].push_back(x);
+                }
+                //cout << "B\n";
+            }
+        }
+        vector<int> dum = vec[0];
+        for (int j = 0; j < vec.size(); j++) {
+            dum = intersection(dum, vec[j]);
+        }
+        ans += dum.size();
+    }
+    cout << ans;
+
 }
