@@ -53,7 +53,7 @@ int main() {
     for (int i = 0; i < n; i++) {
         cin >> arr[i];
     }
-    multiset<int> tot;
+    set<int> tot;
     set<int> lst;
     for (int i = 0; i < n; i++) {
         pref[i].resize(arr[i].size() + 1);
