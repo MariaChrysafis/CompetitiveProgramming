@@ -1,37 +1,31 @@
 #include <bits/stdc++.h>
 using namespace std;
 struct SparseTable {
-    vector<vector<int> > dp_max, dp_min;
+    vector<vector<int> > dp_min;
     int queryMin (int l, int r) {
         int sz = log2(r - l + 1);
         return min(dp_min[l][sz], dp_min[r - (1 << sz) + 1][sz]);
     }
-    int queryMax (int l, int r) {
-        int sz = log2(r - l + 1);
-        return max(dp_max[l][sz], dp_max[r - (1 << sz) + 1][sz]);
-    }
     void resz (vector<int> v) {
-        dp_max.resize(v.size());
+        dp_min.resize(v.size());
         for (int i = 0; i < v.size(); i++) {
-            dp_max[i].resize(17);
-            dp_max[i][0] = v[i];
+            dp_min[i].resize(17);
+            dp_min[i][0] = v[i];
         }
-        dp_min = dp_max;
-        for (int j = 1; j < dp_max[0].size(); j++) {
+        for (int j = 1; j < dp_min[0].size(); j++) {
             for (int i = 0; i < v.size(); i++) {
-                dp_max[i][j] = max(dp_max[i][j - 1], dp_max[min(i + (1 << (j - 1)), (int)dp_max.size() - 1)][j - 1]);
-                dp_min[i][j] = min(dp_min[i][j - 1], dp_min[min(i + (1 << (j - 1)), (int)dp_max.size() - 1)][j - 1]);
+                dp_min[i][j] = min(dp_min[i][j - 1], dp_min[min(i + (1 << (j - 1)), (int)dp_min.size() - 1)][j - 1]);
             }
         }
     }
 };
 int first_oc (SparseTable& st, int val, int left) {
     //find the first occurence of val which appears after left
-    if (st.queryMin(left, st.dp_max.size() - 1) > val) {
+    if (st.queryMin(left, st.dp_min.size() - 1) > val) {
         return -1;
     }
     int l = left;
-    int r = st.dp_max.size() - 1;
+    int r = st.dp_min.size() - 1;
     while (l != r) {
         int m = (l + r)/2;
         if (st.queryMin(left, m) < val) {
@@ -80,7 +74,7 @@ int main() {
     for (int i = 0; i <= k - 1; i++) { //k is small
         vector<vector<int> > vec(n);
         for (int j = 0; j < n; j++) {
-            for (int x: myMap[j][st[j].queryMax(i, i)]) {
+            for (int x: myMap[j][st[j].queryMin(i, i)]) {
                 if (x <= i) continue;
                 if (st[j].queryMin(i, x) == st[j].queryMin(i, i)) {
                     vec[j].push_back(x);
