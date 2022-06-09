@@ -3,29 +3,30 @@ using namespace std;
 const int MOD = 1e9 + 7;
 struct Graph {
     vector<int> adj[26];
-    set<char> pos;
+    vector<bool> pos;
     void add_edge (char u, char v) {
-        pos.insert(u), pos.insert(v);
         adj[u - 'a'].push_back(v - 'a');
     }
     bool hasCycle () {
         vector<int> in_deg;
         in_deg.assign(26, false);
-        int cntr = pos.size();
+        pos.assign(26, false);
+        int cntr = 0;
         for (int i = 0; i < 26; i++) {
             for (int j: adj[i]) {
                 in_deg[j]++;
+                pos[i] = pos[j] = true;
             }
         }
         queue<int> q;
         for (int i = 0; i < 26; i++) {
-            if (in_deg[i] == 0 && pos.count('a' + i)) {
+            if (in_deg[i] == 0 && pos[i]) {
                 q.push(i);
             }
         }
         while (!q.empty()) {
             int x = q.front();
-            cntr--;
+            cntr++;
             q.pop();
             for (int i: adj[x]) {
                 in_deg[i]--;
@@ -33,6 +34,9 @@ struct Graph {
                     q.push(i);
                 }
             }
+        }
+        for (bool i: pos) {
+            cntr -= i;
         }
         return (cntr == 0);
     }
@@ -67,7 +71,6 @@ int main() {
             for (char c = 'a'; c <= 'z'; c++) {
                 if (c != arr[i][j] && tot.count((pref[i][j] * 30 + c) % MOD)) {
                     gr.add_edge(c, arr[i][j]);
-                    //cout << c << " <-> " << arr[i][j] << '\n';
                 }
             }
             if (lst.count(pref[i][j])) {
@@ -77,7 +80,6 @@ int main() {
         if (gr.hasCycle()) {
             ans.push_back(arr[i]);
         }
-        //cout << gr.hasCycle() << '\n';
     }
     cout << ans.size() << '\n';
     for (string s: ans) {
