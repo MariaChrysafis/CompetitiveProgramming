@@ -1,163 +1,157 @@
-//See KQuery: https://github.com/phoemur/competitive-programming/blob/master/SPOJ/KQUERY%20-%20K-query.cpp
-
-#include <cmath>
-#include <iostream>
-#include <set>
-#include <climits>
-#include <cstdio>
-#include <algorithm>
-#include <cassert>
-#include <string>
-#include <vector>
-#include <iomanip>
-#include <unordered_map>
-#include <type_traits>
-#include <string>
-#include <queue>
-#define ll long long
-#include <map>
-
+#include <bits/stdc++.h>
 using namespace std;
-const ll MAX = 400001;
+template<class T>
+class SegmentTree {
+public:
+
+    SegmentTree() {
+
+    }
+
+    void resz (int N) {
+        N = (1 << ((int)floor(log2(N - 1)) + 1));
+        this->N = N;
+        val.assign(2 * N, ID);
+    }
+
+    void update (int x, T y) {
+        x += N - 1;
+        val[x] = y;
+        while (x != 0) {
+            x = (x - 1)/2;
+            val[x] = merge(val[2 * x + 1], val[2 * x + 2]);
+        }
+    }
+
+    T query (int ind, const int l, const int r, int tl, int tr) {
+        if (tl >= l && tr <= r) {
+            return val[ind];
+        }
+        if (tr < l || tl > r) {
+            return ID;
+        }
+        return merge(query(2 * ind + 1, l, r, tl, (tl + tr)/2), query(2 * ind + 2, l, r, (tl + tr)/2 + 1, tr));
+    }
+
+    T query (int l, int r) {
+        return query(0, l, r, 0, N - 1);
+    }
+private:
+    vector<T> val;
+    T ID = 0;
+    T merge (T x, T y) {
+        return x + y;
+    }
+    int N;
+};
+
 struct Query {
-    ll l;
-    ll r;
-    ll k;
-    ll index;
+    int l, r, ind, res;
+    int64_t k;
 };
 
-ll tree[1 << 19]; // BIT
-
-void update_tree(ll pos) {
-    while (pos <= MAX) {
-        tree[pos] += 1;
-        pos += (pos & -pos);
-    }
+bool compIndex (Query q1, Query q2) {
+    return (q1.ind < q2.ind);
 }
 
-ll query_tree(ll pos) {
-    ll result = 0;
-
-    while (pos > 0) {
-        result += tree[pos];
-        pos -= (pos & -pos);
-    }
-
-    return result;
+bool compValue (Query q1, Query q2) {
+    return (q1.k > q2.k);
 }
 
-struct Solver {
-    ll n;
-    ll q;
-    vector<Query> queries;
-    vector<pair<ll,ll>> arr;
-    vector<ll> read() {
-        for (ll i = 0; i < (1 << 18); i++) {
-            tree[i] = 0;
+class Queries {
+    vector<int64_t> v;
+    SegmentTree<int> st;
+public:
+    Queries (vector<int64_t> v) {
+        this->v = v;
+        st.resz(v.size());
+    }
+
+    void respond (vector<Query> &queries) {
+        sort(queries.begin(), queries.end(), compValue);
+        vector<pair<int,int> > tot;
+        for (int i = 0; i < v.size(); i++) {
+            tot.push_back(make_pair(v[i], i));
         }
-        sort(arr.rbegin(), arr.rend());
-        vector<ll> result(q);
-        sort(queries.begin(), queries.end(), [](const Query &a, const Query &b) { return a.k > b.k; });
-        ll pos = 0;
-        for (ll i = 0; i < q; ++i) {
-            while (pos < n && arr[pos].first > queries[i].k) {
-                update_tree(arr[pos].second + 1);
-                ++pos;
+        sort(tot.begin(), tot.end()), reverse(tot.begin(), tot.end());
+        int prev = -1;
+        vector< pair<int,int> > ans;
+        for (auto& q: queries) {
+            while (prev + 1 < v.size() && tot[prev + 1].first > q.k) {
+                st.update(tot[++prev].second, 1);
             }
-
-            result[queries[i].index] = query_tree(queries[i].r) - query_tree(queries[i].l - 1);
+            q.res = st.query(q.l, q.r);
         }
-
-        return result;
+        sort(queries.begin(), queries.end(), compIndex);
     }
 };
-struct Tree{
-    vector<vector<pair<ll,ll>>> adj;
-    map<pair<int,int>,ll> myMap;
-    vector<ll> first, last;
-    vector<ll> dist;
-    vector<ll> sub;
-    vector<ll> parent;
-    ll counter = 0;
-    void pre_euler(){
+
+class Tree {
+public:
+    vector<vector<int> > adj;
+    vector<int> pre, post;
+    vector<int64_t> depth;
+    map<pair<int,int>, int64_t > myMap;
+    int cntr = 0;
+    
+    void add_edge (int u, int v, int64_t w) {
+        myMap[make_pair(u, v)] = myMap[make_pair(v, u)] = w;
+        adj[u].push_back(v), adj[v].push_back(u);
+    }
+
+    void dfs (int curNode, int prevNode) {
+        if (prevNode == -1) {
+            depth[curNode] = 0;
+        } else {
+            depth[curNode] = depth[prevNode] + myMap[make_pair(curNode, prevNode)];
+        }
+        pre[curNode] = cntr++;
+        for (int i: adj[curNode]) {
+            if (i != prevNode) {
+                dfs (i, curNode);
+            }
+        }
+        post[curNode] = cntr++;
+    }
+
+    Tree (int n) {
+        adj.resize(n), pre.resize(n), post.resize(n), depth.resize(n);
+    }
+
+    void read (int64_t L) {
+        int n = adj.size();
+        dfs (0, -1);
+        vector<int64_t> v(2 * n);
         for (int i = 0; i < adj.size(); i++) {
-            for (auto p: adj[i]) {
-                myMap[{(int)p.first, (int)i}] = p.second;
-            }
+            v[pre[i]] = depth[i], v[post[i]] = depth[i];
         }
-        first.resize(adj.size());
-        last.resize(adj.size());
-        dist.assign(adj.size(), -1);
-        sub.resize(adj.size());
-        parent.resize(adj.size());
-        subt(0, -1);
-        dfs(0, -1);
-        for (int i = 0; i < adj.size(); i++) {
-            dist[i] = memoize(i);
+        Queries queries(v);
+        vector<Query> vec(n);
+        for (int i = 0; i < n; i++) {
+            vec[i].l = pre[i], vec[i].r = post[i], vec[i].ind = i;
+            vec[i].k = L + depth[i];
         }
-    }
-    ll memoize (ll curNode) {
-        if (dist[curNode] != -1) return dist[curNode];
-        return (dist[curNode] = dist[parent[curNode]] + myMap[{curNode, parent[curNode]}]);
-    }
-    ll subt (ll curNode, ll prevNode) {
-        parent[curNode] = prevNode;
-        sub[curNode] = 1;
-        for (pair<ll,ll> p: adj[curNode]) {
-            if (p.first != prevNode) {
-                sub[curNode] += subt(p.first, curNode);
-            }
-        }
-        return sub[curNode];
-    }
-    void dfs(ll node, ll parent){
-        first[node] = counter++;
-        for(pair<ll,ll> p: adj[node]){
-            if(p.first != parent){
-                dfs(p.first, node);
-            }
-        }
-        last[node] = counter++;
+        queries.respond(vec);
+        for (auto& v: vec) {
+            cout << (v.r - v.l + 1 - v.res)/2 << '\n';
+        } 
     }
 };
+
 int main() {
     freopen("runaway.in", "r", stdin);
     freopen("runaway.out", "w", stdout);
-    Tree t;
-    ll n, l;
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int n; 
+    int64_t l;
     cin >> n >> l;
-    t.adj.resize(n);
-    for (ll i = 0; i < n - 1; i++) {
-        ll a, b;
-        cin >> a >> b;
-        a--;
-        t.adj[i + 1].push_back({a, b});
-        t.adj[a].push_back({i + 1, b});
+    Tree myTree(n);
+    for (int i = 1; i < n; i++) {
+        int x, y;
+        cin >> x >> y;
+        x--;
+        myTree.add_edge(i, x, y);
     }
-    t.pre_euler();
-    vector<ll> euler(2 * n);
-    for (ll i = 0; i < n; i++) {
-        euler[t.first[i]] = t.dist[i];
-        euler[t.last[i]] = t.dist[i];
-    }
-    Solver s;
-    s.n = 2 * euler.size();
-    s.arr.resize(s.n);
-    for (ll i = 0; i < s.n; i++) {
-        s.arr[i].first = euler[i];
-        s.arr[i].second = i;
-    }
-    s.q = n;
-    s.queries.resize(n);
-    for (ll i = 0; i < n; i++) {
-        s.queries[i].l = t.first[i];
-        s.queries[i].r = t.last[i];
-        s.queries[i].k = l + t.dist[i];
-        s.queries[i].index = i;
-    }
-    vector<ll> v = s.read();
-    for (ll i = 0; i < v.size(); i++) {
-        cout << t.sub[i] - v[i]/2 << endl;
-    }
-
+    myTree.read(l);
 }
