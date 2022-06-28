@@ -125,7 +125,7 @@ public:
             return st.query(id[b], id[a]);
         }
         if (topchain[a] != a) {
-            return max(f(topchain[a], b), st.query(id[topchain[a]], id[a]));
+            return max(f(parent[topchain[a]], b), st.query(id[topchain[a]], id[a]));
         } else {
             return max(f(parent[a], b), st.query(id[a], id[a]));
         }
