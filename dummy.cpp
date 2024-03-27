@@ -68,17 +68,35 @@ int main() {
         cin >> l >> r >> k;
         vec.emplace_back(Query(l, r, k, i));
     }
+    map<int,vector<Query>> myMap;
+    /* CASE 3 */
+    adder.clear();
+    myMap.clear();
+    for (auto& q: vec) {
+        myMap[q.left].push_back(q);
+    }
+    for (auto& p: myMap) {
+        for (auto& q: myMap[p.first]) {
+            adder.add(q.right);
+        }
+        for (auto& q: myMap[p.first]) {
+            vec[q.index].ans += adder.range(q.k + q.left, q.right - 1);
+        }
+    }
+    /*
     for (int i = 0; i < vec.size(); i++) {
         for (int j = 0; j < vec.size(); j++) {
             if (j != i) {
-                bool b1 = vec[j].right < vec[i].right && vec[j].left <= vec[i].left && vec[i].k + vec[i].left <= vec[j].right;
+                bool b1 = vec[j].right <= vec[i].right - 1 && vec[j].left <= vec[i].left && vec[i].k + vec[i].left <= vec[j].right;
                 if (b1) {
                     vec[i].upd();
                 }
             }
         }
     }
-    map<int,vector<Query>> myMap;
+     */
+    /* CASE 1 */
+    myMap.clear();
     for (auto& q: vec) {
         myMap[-q.right].push_back(q);
     }
@@ -91,6 +109,7 @@ int main() {
             vec[q.index].ans += adder.range(q.left + 1, q.right - q.k);
         }
     }
+    /* CASE 2 */
     myMap.clear();
     for (auto& q: vec) {
         myMap[q.left].push_back(q);
