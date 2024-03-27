@@ -78,17 +78,20 @@ int main() {
             }
         }
     }
-    for (int i = 0; i < vec.size(); i++) {
-        for (int j = 0; j < vec.size(); j++) {
-            if (j != i) {
-                bool b2 = vec[i].left < vec[j].left && vec[i].right <= vec[j].right && vec[i].right - vec[i].k >= vec[j].left;
-                if (b2) {
-                    vec[i].upd();
-                }
-            }
+    map<int,vector<Query>> myMap;
+    for (auto& q: vec) {
+        myMap[-q.right].push_back(q);
+    }
+    adder.clear();
+    for (auto& p: myMap) {
+        for (auto& q: myMap[p.first]) {
+            adder.add(q.left);
+        }
+        for (auto& q: myMap[p.first]) {
+            vec[q.index].ans += adder.range(q.left + 1, q.right - q.k);
         }
     }
-    map<int,vector<Query>> myMap;
+    myMap.clear();
     for (auto& q: vec) {
         myMap[q.left].push_back(q);
     }
