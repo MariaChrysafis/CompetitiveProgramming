@@ -40,15 +40,49 @@ int main() {
     for (int i = 0; i < vec.size(); i++) {
         for (int j = 0; j < vec.size(); j++) {
             if (j != i) {
-                bool b1 = vec[j].left <= vec[i].left && vec[i].k + vec[i].left <= vec[j].right && vec[j].right < vec[i].right;
-                bool b2 = vec[i].left < vec[j].left && vec[i].right <= vec[j].right && vec[i].right - vec[i].k >= vec[j].left;
-                bool b3 = vec[j].left <= vec[i].left && vec[i].right <= vec[j].right;
-                bool b4 = vec[i].left <= vec[j].left && vec[j].right - vec[j].left >= vec[i].k && vec[j].right < vec[i].right;
-                assert(!(b1 && b2));
-                assert(!(b3 && b4));
-                assert(!(b2 && b3));
-                if (b1 || b2 || b3 || b4) {
+                bool b1 = vec[j].right < vec[i].right && vec[j].left <= vec[i].left && vec[i].k + vec[i].left <= vec[j].right;
+                if (b1) {
                     vec[i].upd();
+                }
+            }
+        }
+    }
+    for (int i = 0; i < vec.size(); i++) {
+        for (int j = 0; j < vec.size(); j++) {
+            if (j != i) {
+                bool b2 = vec[i].left < vec[j].left && vec[i].right <= vec[j].right && vec[i].right - vec[i].k >= vec[j].left;
+                if (b2) {
+                    vec[i].upd();
+                }
+            }
+        }
+    }
+    for (int i = 0; i < vec.size(); i++) {
+        for (int j = 0; j < vec.size(); j++) {
+            if (j != i) {
+                bool b3 = vec[j].left <= vec[i].left && vec[i].right <= vec[j].right;
+                if (b3) {
+                    vec[i].upd();
+                }
+            }
+        }
+    }
+    for (int i = 0; i < vec.size(); i++) {
+        for (int j = 0; j < vec.size(); j++) {
+            if (j != i) {
+                bool b4 = vec[j].right < vec[i].right && vec[i].left <= vec[j].left && vec[j].right - vec[j].left >= vec[i].k;
+                if (b4) {
+                    vec[i].upd();
+                }
+            }
+        }
+    }
+    for (int i = 0; i < vec.size(); i++) {
+        for (int j = 0; j < vec.size(); j++) {
+            if (j != i) {
+                bool b = vec[j].right < vec[i].right && vec[j].left == vec[i].left && vec[j].right - vec[j].left >= vec[i].k;
+                if (b) {
+                    vec[i].ans -= 1;
                 }
             }
         }
