@@ -83,18 +83,6 @@ int main() {
             vec[q.index].ans += adder.range(q.k + q.left, q.right - 1);
         }
     }
-    /*
-    for (int i = 0; i < vec.size(); i++) {
-        for (int j = 0; j < vec.size(); j++) {
-            if (j != i) {
-                bool b1 = vec[j].right <= vec[i].right - 1 && vec[j].left <= vec[i].left && vec[i].k + vec[i].left <= vec[j].right;
-                if (b1) {
-                    vec[i].upd();
-                }
-            }
-        }
-    }
-     */
     /* CASE 1 */
     myMap.clear();
     for (auto& q: vec) {
