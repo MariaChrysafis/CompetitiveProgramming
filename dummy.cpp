@@ -41,11 +41,12 @@ int main() {
         for (int j = 0; j < vec.size(); j++) {
             if (j != i) {
                 bool b1 = vec[j].left <= vec[i].left && vec[i].k + vec[i].left <= vec[j].right && vec[j].right < vec[i].right;
-                bool b2 = vec[i].left <= vec[j].left && vec[i].right <= vec[j].right && vec[i].right - vec[i].k >= vec[j].left;
+                bool b2 = vec[i].left < vec[j].left && vec[i].right <= vec[j].right && vec[i].right - vec[i].k >= vec[j].left;
                 bool b3 = vec[j].left <= vec[i].left && vec[i].right <= vec[j].right;
                 bool b4 = vec[i].left <= vec[j].left && vec[j].right - vec[j].left >= vec[i].k && vec[j].right < vec[i].right;
                 assert(!(b1 && b2));
                 assert(!(b3 && b4));
+                assert(!(b2 && b3));
                 if (b1 || b2 || b3 || b4) {
                     vec[i].upd();
                 }
