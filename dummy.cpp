@@ -1,88 +1,57 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+#include <cassert>
+#include <set>
+#include <functional>
+#include <queue>
 using namespace std;
-const int MOD = 1e9 + 7;
-struct Graph {
-    vector<int> adj[26];
-    vector<bool> pos;
-    void add_edge (char u, char v) {
-        adj[u - 'a'].push_back(v - 'a');
+struct Query {
+    int left, right, k, index, ans;
+    void upd () {
+        this->ans += 1;
     }
-    bool hasCycle () {
-        vector<int> in_deg;
-        in_deg.assign(26, false);
-        pos.assign(26, false);
-        int cntr = 0;
-        for (int i = 0; i < 26; i++) {
-            for (int j: adj[i]) {
-                in_deg[j]++;
-                pos[i] = pos[j] = true;
-            }
-        }
-        queue<int> q;
-        for (int i = 0; i < 26; i++) {
-            if (in_deg[i] == 0 && pos[i]) {
-                q.push(i);
-            }
-        }
-        while (!q.empty()) {
-            int x = q.front();
-            cntr++;
-            q.pop();
-            for (int i: adj[x]) {
-                in_deg[i]--;
-                if (in_deg[i] == 0) {
-                    q.push(i);
-                }
-            }
-        }
-        for (bool i: pos) {
-            cntr -= i;
-        }
-        return (cntr == 0);
+    Query (int left, int right, int k, int index) : left(left), right(right), k(k), index(index), ans(0) {
+
     }
 };
+bool compIndex (Query q1, Query q2) {
+    return (q1.index < q2.index);
+}
+bool compK (Query q1, Query q2) {
+    if (q1.k != q2.k) {
+        return (q1.k < q2.k);
+    }
+    return (q1.index < q2.index);
+}
 int main() {
-    freopen("first.in", "r", stdin);
-    freopen("first.out", "w", stdout);
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     int n;
     cin >> n;
-    vector<string> arr(n);
-    vector<vector<int64_t> > pref(n);
+    vector<Query> vec;
     for (int i = 0; i < n; i++) {
-        cin >> arr[i];
+        int l, r, k;
+        cin >> l >> r >> k;
+        vec.emplace_back(Query(l, r, k, i));
     }
-    set<int> tot;
-    set<int> lst;
-    for (int i = 0; i < n; i++) {
-        pref[i].resize(arr[i].size() + 1);
-        pref[i][0] = 0;
-        for (int j = 1; j <= arr[i].size(); j++) {
-            pref[i][j] = (30 * pref[i][j - 1] + arr[i][j - 1]) % MOD;
-            tot.insert(pref[i][j]);
-        }
-        lst.insert(pref[i].back());
-    }
-    vector<string> ans;
-    for (int i = 0; i < n; i++) {
-        Graph gr;
-        for (int j = 0; j < arr[i].size(); j++) {
-            for (char c = 'a'; c <= 'z'; c++) {
-                if (c != arr[i][j] && tot.count((pref[i][j] * 30 + c) % MOD)) {
-                    gr.add_edge(c, arr[i][j]);
+    sort(vec.begin(), vec.end(), compK);
+    for (int i = 0; i < vec.size(); i++) {
+        for (int j = 0; j < vec.size(); j++) {
+            if (j != i) {
+                bool b1 = vec[j].left <= vec[i].left && vec[i].k + vec[i].left <= vec[j].right && vec[j].right < vec[i].right;
+                bool b2 = vec[i].left <= vec[j].left && vec[i].right <= vec[j].right && vec[i].right - vec[i].k >= vec[j].left;
+                bool b3 = vec[j].left <= vec[i].left && vec[i].right <= vec[j].right;
+                bool b4 = vec[i].left <= vec[j].left && vec[j].right - vec[j].left >= vec[i].k && vec[j].right < vec[i].right;
+                if (b1 || b2 || b3 || b4) {
+                    vec[i].upd();
                 }
             }
-            if (lst.count(pref[i][j])) {
-                gr.add_edge('a', 'b'), gr.add_edge('b', 'a');
-            }
-        }
-        if (gr.hasCycle()) {
-            ans.push_back(arr[i]);
         }
     }
-    cout << ans.size() << '\n';
-    for (string s: ans) {
-        cout << s << '\n';
+    sort(vec.begin(), vec.end(), compIndex);
+    for (auto& p: vec) {
+        cout << p.ans << '\n';
     }
 }
