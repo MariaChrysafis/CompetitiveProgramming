@@ -44,6 +44,8 @@ int main() {
                 bool b2 = vec[i].left <= vec[j].left && vec[i].right <= vec[j].right && vec[i].right - vec[i].k >= vec[j].left;
                 bool b3 = vec[j].left <= vec[i].left && vec[i].right <= vec[j].right;
                 bool b4 = vec[i].left <= vec[j].left && vec[j].right - vec[j].left >= vec[i].k && vec[j].right < vec[i].right;
+                assert(!(b1 && b2));
+                assert(!(b3 && b4));
                 if (b1 || b2 || b3 || b4) {
                     vec[i].upd();
                 }
