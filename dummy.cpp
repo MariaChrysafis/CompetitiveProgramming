@@ -6,6 +6,7 @@
 #include <set>
 #include <functional>
 #include <queue>
+#include <map>
 using namespace std;
 struct Query {
     int left, right, k, index, ans;
@@ -25,18 +26,48 @@ bool compK (Query q1, Query q2) {
     }
     return (q1.index < q2.index);
 }
+struct Adder {
+    vector<int64_t> vec;
+    int pref (int x) {
+        int ans = 0;
+        for (int i: vec) {
+            ans += (i <= x);
+        }
+        return ans;
+    }
+    int suf (int x) {
+        int ans = 0;
+        for (int i: vec) {
+            ans += (i >= x);
+        }
+        return ans;
+    }
+    int range (int l, int r) {
+        return pref(r) - pref(l - 1);
+    }
+    void add (int64_t x) {
+        vec.push_back(x);
+        sort(vec.begin(), vec.end());
+    }
+    void clear () {
+        vec.clear();
+    }
+    Adder () {
+        vec.clear();
+    }
+};
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     int n;
     cin >> n;
+    Adder adder = Adder();
     vector<Query> vec;
     for (int i = 0; i < n; i++) {
         int l, r, k;
         cin >> l >> r >> k;
         vec.emplace_back(Query(l, r, k, i));
     }
-    sort(vec.begin(), vec.end(), compK);
     for (int i = 0; i < vec.size(); i++) {
         for (int j = 0; j < vec.size(); j++) {
             if (j != i) {
@@ -57,14 +88,17 @@ int main() {
             }
         }
     }
-    for (int i = 0; i < vec.size(); i++) {
-        for (int j = 0; j < vec.size(); j++) {
-            if (j != i) {
-                bool b3 = vec[j].left <= vec[i].left && vec[i].right <= vec[j].right;
-                if (b3) {
-                    vec[i].upd();
-                }
-            }
+    map<int,vector<Query>> myMap;
+    for (auto& q: vec) {
+        myMap[q.left].push_back(q);
+    }
+    adder.clear();
+    for (auto& p: myMap) { //increasing order of left
+        for (auto& q: myMap[p.first]) {
+            adder.add(q.right);
+        }
+        for (auto& q: myMap[p.first]) {
+            vec[q.index].ans += adder.suf(q.right) - 1;
         }
     }
     for (int i = 0; i < vec.size(); i++) {
